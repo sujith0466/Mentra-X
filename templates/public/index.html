@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Mentra{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <p class="hero-brand">Mentra</p>
+        <h1>Learn Smarter. Build Your Future.</h1>
+        <p class="hero-subtitle">Master in-demand skills with structured courses,<br>guided learning, and real progress tracking.</p>
+        <div class="hero-actions">
+            <a href="{{ url_for('public.courses') }}" class="btn btn-primary btn-lg">Start Learning</a>
+            <!-- Explore Courses Button
+             <a href="{{ url_for('public.courses') }}" class="btn btn-secondary btn-lg">Explore Courses</a>
+            -->
+        </div>
+    </div>
+</section>
+
+<section class="why-mentra">
+    <div class="container">
+        <h2>Why Mentra?</h2>
+        <div class="why-grid">
+            <article class="why-card">
+                <div class="why-icon">01</div>
+                <h3>Structured Learning Paths</h3>
+                <p>Follow a clear progression from fundamentals to advanced concepts.</p>
+            </article>
+            <article class="why-card">
+                <div class="why-icon">02</div>
+                <h3>Learn at Your Own Pace</h3>
+                <p>Study when it works for you with flexible lesson access and schedules.</p>
+            </article>
+            <article class="why-card">
+                <div class="why-icon">03</div>
+                <h3>Track Your Progress</h3>
+                <p>Monitor completion, streaks, and milestones with real-time indicators.</p>
+            </article>
+            <article class="why-card">
+                <div class="why-icon">04</div>
+                <h3>Expert Curated Courses</h3>
+                <p>Learn from practical, outcome-driven content built for real skills.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<section class="trusted-learners">
+    <div class="container">
+        <h2>Trusted by Learners</h2>
+        <div class="trusted-grid">
+            <article class="trusted-card">
+                <h3>{{ total_students if total_students else '1000+' }}</h3>
+                <p>Students Learning</p>
+            </article>
+            <article class="trusted-card">
+                <h3>{{ total_courses if total_courses else '50+' }}</h3>
+                <p>Courses Available</p>
+            </article>
+            <article class="trusted-card">
+                <h3>{{ total_enrollments if total_enrollments else '10000+' }}</h3>
+                <p>Lessons Completed</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- HomePage Stats
+<section class="stats">
+    <div class="container">
+        <div class="stat-card">
+            <h3>{{ total_domains }}</h3>
+            <p>Learning Domains</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_courses }}</h3>
+            <p>Courses Available</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_students }}</h3>
+            <p>Active Students</p>
+        </div>
+        <div class="stat-card">
+            <h3>{{ total_enrollments }}</h3>
+            <p>Total Enrollments</p>
+        </div>
+    </div>
+</section>  -->
+
+{% if featured_courses %}
+<!-- Popular Courses
+<section class="popular-courses">
+    <div class="container">
+        <h2>Popular Courses</h2>
+        <div class="popular-grid">
+            {% for course in featured_courses[:4] %}
+            <article class="popular-card">
+                <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="popular-image-link">
+                    <div class="course-image">
+                        <img src="{{ course.resolved_image_url or url_for('static', filename='images/courses/default_course.png') }}" alt="{{ course.title }}">
+                    </div>
+                </a>
+                <div class="popular-content">
+                    <h3 class="course-title-simple">{{ course.title }}</h3>
+                    <p class="popular-instructor">{{ course.instructor or 'Mentra Instructor Team' }}</p>
+                    <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="btn btn-primary">Enroll Now</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section> -->
+
+<section class="featured-courses">
+    <div class="container">
+        <h2>Featured Courses</h2>
+        <div class="courses-grid">
+            {% for course in featured_courses %}
+            <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="course-card-link">
+                <div class="course-card-simple tutedude-tile">
+                    <div class="course-image">
+                        {% if course.resolved_image_url %}
+                        <img src="{{ course.resolved_image_url }}" alt="{{ course.title }}">
+                        {% else %}
+                        <div class="course-image-fallback">{{ course.title[:1] }}</div>
+                        {% endif %}
+                    </div>
+                    <h3 class="course-title-simple">{{ course.title }}</h3>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="text-center" style="margin-top: 30px;">
+            <a href="{{ url_for('public.courses') }}" class="btn btn-secondary btn-lg">View All Courses</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="final-cta">
+    <div class="container">
+        <div class="final-cta-card">
+            <h2>Start Your Learning Journey Today</h2>
+            <p>Join Mentra and build skills that shape your future.</p>
+            <a href="{{ url_for('public.courses') }}" class="btn btn-primary btn-lg">Start Learning Now</a>
+        </div>
+    </div>
+</section>
+
+<style>
+.hero {
+    background: radial-gradient(circle at 25% 20%, #d1fae5 0%, #ecfeff 45%, #ffffff 100%);
+    padding: 68px 20px 56px;
+    border-radius: 18px;
+    margin-top: 12px;
+}
+.hero-content {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: center;
+}
+.hero-brand {
+    margin: 0 0 6px;
+    color: #0f766e;
+    font-weight: 700;
+    font-size: 1.02rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.hero h1 {
+    margin: 0 0 10px;
+    color: #0f172a;
+    font-size: clamp(2rem, 3.2vw, 3rem);
+    line-height: 1.2;
+}
+.hero-subtitle {
+    margin: 0 auto 18px;
+    color: #334155;
+    font-size: 1.05rem;
+    max-width: 720px;
+    line-height: 1.6;
+}
+.hero-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.hero-actions .btn {
+    min-width: 170px;
+}
+
+.why-mentra {
+    text-align: center;
+    margin: 22px auto 12px;
+    padding: 20px 0 2px;
+}
+.why-mentra h2 {
+    margin: 0 0 14px;
+    color: #0f172a;
+    font-size: 1.7rem;
+}
+.why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+.why-card {
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 18px 14px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+.why-icon {
+    width: 34px;
+    height: 34px;
+    margin: 0 auto 8px;
+    border-radius: 999px;
+    background: #e0f2fe;
+    color: #0369a1;
+    display: grid;
+    place-items: center;
+    font-size: 0.84rem;
+    font-weight: 700;
+}
+.why-card h3 {
+    margin: 0 0 8px;
+    color: #0f172a;
+    font-size: 1.02rem;
+}
+.why-card p {
+    margin: 0;
+    color: #475569;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.trusted-learners {
+    margin: 18px auto 10px;
+    text-align: center;
+}
+.trusted-learners h2 {
+    margin: 0 0 12px;
+    color: #0f172a;
+    font-size: 1.6rem;
+}
+.trusted-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+.trusted-card {
+    border-radius: 14px;
+    padding: 20px 14px;
+    background: linear-gradient(180deg, #f0fdfa 0%, #ecfeff 100%);
+    border: 1px solid #bae6fd;
+}
+.trusted-card h3 {
+    margin: 0 0 6px;
+    color: #0f766e;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+}
+.trusted-card p {
+    margin: 0;
+    color: #334155;
+    font-weight: 600;
+}
+
+.popular-courses {
+    margin: 24px auto 8px;
+    text-align: center;
+}
+.popular-courses h2 {
+    margin: 0 0 14px;
+    color: #0f172a;
+    font-size: 1.7rem;
+}
+.popular-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+.popular-card {
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    overflow: hidden;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    text-align: left;
+}
+.popular-card .course-image {
+    height: 170px;
+    overflow: hidden;
+}
+.popular-card .course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.popular-content {
+    padding: 12px;
+}
+.popular-instructor {
+    margin: 0 0 12px;
+    color: #475569;
+    font-size: 0.92rem;
+}
+
+.final-cta {
+    margin: 26px auto 6px;
+}
+.final-cta-card {
+    border-radius: 16px;
+    padding: 34px 20px;
+    text-align: center;
+    background: radial-gradient(circle at 20% 10%, #cffafe 0%, #f0fdf4 55%, #ffffff 100%);
+    border: 1px solid #bfdbfe;
+}
+.final-cta-card h2 {
+    margin: 0 0 8px;
+    color: #0f172a;
+}
+.final-cta-card p {
+    margin: 0 0 18px;
+    color: #334155;
+    font-size: 1.02rem;
+}
+@media (max-width: 980px) {
+    .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .trusted-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .popular-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 620px) {
+    .hero { padding: 54px 16px 42px; }
+    .hero-subtitle br { display: none; }
+    .why-grid { grid-template-columns: 1fr; }
+    .trusted-grid { grid-template-columns: 1fr; }
+    .popular-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+{% endblock %}

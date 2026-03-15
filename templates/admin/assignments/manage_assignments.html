@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Manage Assignments - {{ course.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Assignments for {{ course.title }}</h1>
+    <p><a href="{{ url_for('admin_assignment.assignments_overview') }}">&larr; Back to Assignment Courses</a></p>
+
+    <form method="POST" action="{{ url_for('admin_assignment.add_assignment', course_id=course.id) }}" enctype="multipart/form-data" class="form">
+        <h2>Create Assignment</h2>
+        <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
+        <div class="form-group"><label>Instructions</label><textarea name="instructions" rows="4" required></textarea></div>
+        <div class="form-row">
+            <div class="form-group"><label>Due Date</label><input type="datetime-local" name="due_date"></div>
+            <div class="form-group"><label>Marks</label><input type="number" name="marks" min="1" value="100"></div>
+        </div>
+        <div class="form-group">
+            <label>Module</label>
+            <select name="module_id">
+                <option value="">Unassigned</option>
+                {% for module in modules %}
+                <option value="{{ module.id }}">{{ module.order_index }}. {{ module.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group"><label>Attachment (optional)</label><input type="file" name="attachment" accept=".pdf,.docx,.txt,.zip"></div>
+        <button class="btn btn-primary" type="submit">Create Assignment</button>
+    </form>
+
+    <table class="admin-table">
+        <thead><tr><th>Title</th><th>Due Date</th><th>Marks</th><th>Attachment</th><th>Actions</th></tr></thead>
+        <tbody>
+        {% for assignment in assignments.items %}
+            <tr>
+                <td>{{ assignment.title }}<br><small>{{ assignment.instructions[:110] }}{% if assignment.instructions|length > 110 %}...{% endif %}</small></td>
+                <td>{{ assignment.due_date.strftime('%Y-%m-%d %H:%M') if assignment.due_date else '-' }}</td>
+                <td>{{ assignment.marks }}</td>
+                <td>
+                    {% if assignment.attachment_path %}
+                    <a href="/{{ assignment.attachment_path }}" target="_blank">View</a>
+                    {% else %}-{% endif %}
+                </td>
+                <td>
+                    <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.assignment_submissions', assignment_id=assignment.id) }}">Submissions</a>
+                    <details>
+                        <summary>Edit</summary>
+                        <form method="POST" action="{{ url_for('admin_assignment.edit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+                            <input type="text" name="title" value="{{ assignment.title }}" required>
+                            <textarea name="instructions" rows="3" required>{{ assignment.instructions }}</textarea>
+                            <input type="datetime-local" name="due_date" value="{{ assignment.due_date.strftime('%Y-%m-%dT%H:%M') if assignment.due_date else '' }}">
+                            <input type="number" name="marks" min="1" value="{{ assignment.marks }}">
+                            <select name="module_id">
+                                <option value="">Unassigned</option>
+                                {% for module in modules %}
+                                <option value="{{ module.id }}" {% if assignment.module_id == module.id %}selected{% endif %}>{{ module.order_index }}. {{ module.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="file" name="attachment" accept=".pdf,.docx,.txt,.zip">
+                            <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                        </form>
+                    </details>
+                    <form method="POST" action="{{ url_for('admin_assignment.delete_assignment', assignment_id=assignment.id) }}" style="display:inline" data-confirm-delete="true">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="5">No assignments yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination-wrap">
+        {% if assignments.has_prev %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.prev_num) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ assignments.page }} of {{ assignments.pages }}</span>
+        {% if assignments.has_next %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+</div>
+<style>.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }</style>
+{% endblock %}

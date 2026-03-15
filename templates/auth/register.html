@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Mentra{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="auth-section">
+        <div class="auth-card">
+            <h1 class="auth-brand">Mentra</h1>
+            <p class="auth-tagline">Learn Smarter. Build Your Future.</p>
+            <h2>Student Registration</h2>
+            
+            <form method="POST" class="form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="name">Full Name:</label>
+                    <input type="text" id="name" name="name" required placeholder="Enter your full name" minlength="2" maxlength="100">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address:</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter password (min 6 characters)" minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password" minlength="6">
+                </div>
+                
+                <div class="form-group">
+                    <label for="referral_code">Referral Code (Optional):</label>
+                    <input type="text" id="referral_code" name="referral_code" 
+                           placeholder="Enter referral code to earn ₹100 bonus" 
+                           value="{{ referral_code }}">
+                    <small>Get ₹100 cashback when you enter a valid referral code!</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="resume">Upload Resume (Optional)</label>
+                    <input type="file" id="resume" name="resume" accept=".pdf,.docx">
+                    <small>PDF or DOCX only. You can upload later from Resume Analyzer.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+            </form>
+            
+            <p class="auth-footer">
+                Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>
+            </p>
+        </div>
+    </section>
+</div>
+
+<style>
+.auth-brand { margin: 0 0 6px; text-align: center; font-size: 1.7rem; color: #0f172a; }
+.auth-tagline { margin: 0 0 12px; text-align: center; color: #0f766e; font-weight: 600; }
+</style>
+
+<script>
+document.querySelector('form').addEventListener('submit', function(e) {
+    var password = document.getElementById('password').value;
+    var confirm = document.getElementById('confirm_password').value;
+    if (password !== confirm) {
+        e.preventDefault();
+        alert('Passwords do not match!');
+    }
+});
+</script>
+{% endblock %}

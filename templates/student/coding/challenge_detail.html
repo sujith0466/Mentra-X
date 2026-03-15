@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ challenge.title }} - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ challenge.title }}</h2>
+    </div>
+    <p class="muted"><strong>Topic:</strong> {{ challenge.topic }} | <strong>Difficulty:</strong> {{ challenge.difficulty }}</p>
+    <p>{{ challenge.description }}</p>
+</section>
+
+<section class="dashboard-section challenge-layout">
+    <div class="challenge-panel">
+        <h3>Starter Code</h3>
+        <pre>{{ challenge.starter_code }}</pre>
+
+        <h3>Expected Output</h3>
+        <pre>{{ challenge.expected_output }}</pre>
+
+        <h3>Test Cases</h3>
+        <ul class="test-case-list">
+            {% for test in test_cases %}
+            <li><strong>Input:</strong> {{ test.input }} | <strong>Output:</strong> {{ test.output }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="challenge-panel">
+        <h3>Code Editor</h3>
+        <form method="POST" action="{{ url_for('coding.coding_submit', id=challenge.id) }}" class="stack-form">
+            <label for="code_submitted">Write your solution</label>
+            <textarea id="code_submitted" name="code_submitted" rows="18" spellcheck="false">{{ latest_submission.code_submitted if latest_submission else challenge.starter_code }}</textarea>
+            <button type="submit" class="btn-primary-soft">Run Challenge</button>
+        </form>
+        {% if latest_submission %}
+        <div class="result-card">
+            <h4>Latest Submission</h4>
+            <p><strong>Score:</strong> {{ latest_submission.score }}%</p>
+            <p><strong>Passed Tests:</strong> {{ latest_submission.passed_tests }}</p>
+            <a href="{{ url_for('coding.coding_results', submission_id=latest_submission.id) }}">View latest results</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<style>
+.challenge-layout { display: grid; gap: 18px; grid-template-columns: 1fr 1.1fr; }
+.challenge-panel { border: 1px solid #e2e8f0; border-radius: 16px; background: #f8fafc; padding: 18px; }
+.stack-form { display: grid; gap: 10px; }
+.stack-form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 12px; padding: 12px; font-family: Consolas, Monaco, monospace; font-size: 0.95rem; }
+.test-case-list { display: grid; gap: 8px; padding-left: 18px; }
+.result-card { margin-top: 16px; padding: 14px; border-radius: 12px; background: #ecfeff; border: 1px solid #a5f3fc; }
+pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 12px; overflow-x: auto; }
+@media (max-width: 900px) { .challenge-layout { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+

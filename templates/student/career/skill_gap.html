@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Gap Detector - Mentra{% endblock %}
+
+{% block content %}
+<section class="ai-page-shell">
+    <div class="ai-hero-card">
+        <div>
+            <p class="eyebrow">AI Career Tools</p>
+            <h1>Skill Gap Detector</h1>
+            <p>Compare your current learning progress against a target role and see what to build next.</p>
+        </div>
+        <form method="GET" class="career-filter-form">
+            <label for="career_goal">Career Goal</label>
+            <select id="career_goal" name="career_goal" onchange="this.form.submit()">
+                {% for option in career_options %}
+                <option value="{{ option }}" {% if option == selected_goal %}selected{% endif %}>{{ option }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <section class="career-grid">
+        <article class="ai-card">
+            <h2>Skills You Have</h2>
+            <ul class="roadmap-list">
+                {% for item in gap_report.skills_you_have %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>Complete more courses and quizzes to build stronger skill evidence.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Skills Missing</h2>
+            <ul class="roadmap-list">
+                {% for item in gap_report.skills_missing %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>Your current skill profile is aligned with this role's core expectations.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Recommended Courses</h2>
+            <ul class="roadmap-list">
+                {% for item in gap_report.recommended_courses %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Recommended Projects</h2>
+            <ul class="roadmap-list">
+                {% for item in gap_report.recommended_projects %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+</section>
+
+<style>
+.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
+.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card { padding: 18px; display: flex; justify-content: space-between; gap: 16px; align-items: end; }
+.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
+.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
+.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
+.career-filter-form { min-width: 240px; display: grid; gap: 8px; }
+.career-filter-form label { font-weight: 600; color: #334155; }
+.career-filter-form select { border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font: inherit; }
+.career-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
+.ai-card h2 { margin: 0 0 10px; color: #0f172a; font-size: 1.05rem; }
+.roadmap-list { margin: 0; padding-left: 18px; color: #334155; line-height: 1.7; }
+@media (max-width: 920px) { .ai-hero-card { flex-direction: column; align-items: stretch; } .career-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

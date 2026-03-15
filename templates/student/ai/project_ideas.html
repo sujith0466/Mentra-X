@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}AI Project Ideas - Mentra{% endblock %}
+
+{% block content %}
+<section class="ai-page-shell">
+    <div class="ai-hero-card">
+        <div>
+            <p class="eyebrow">AI Tools</p>
+            <h1>Project Idea Generator</h1>
+            <p>Choose a domain and get curated project ideas that fit Mentra's learning tracks.</p>
+        </div>
+        <form method="GET" class="ai-filter-form">
+            <label for="domain">Domain</label>
+            <select id="domain" name="domain" onchange="this.form.submit()">
+                {% for domain in domains %}
+                <option value="{{ domain }}" {% if domain == selected_domain %}selected{% endif %}>{{ domain }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    <section class="ai-card-grid">
+        {% for idea in ideas %}
+        <article class="ai-card">
+            <div class="ai-card-head">
+                <span class="badge">{{ selected_domain }}</span>
+                <h2>{{ idea.title }}</h2>
+            </div>
+            <p>{{ idea.description }}</p>
+            <div class="ai-list-block">
+                <h3>Key Features</h3>
+                <ul>
+                    {% for feature in idea.features %}
+                    <li>{{ feature }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="ai-list-block">
+                <h3>Tech Stack</h3>
+                <div class="tag-row">
+                    {% for item in idea.tech_stack %}
+                    <span class="tag">{{ item }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+</section>
+
+<style>
+.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
+.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card { padding: 18px; display: flex; justify-content: space-between; gap: 16px; align-items: end; }
+.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
+.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
+.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
+.ai-filter-form { min-width: 220px; display: grid; gap: 8px; }
+.ai-filter-form label { font-weight: 600; color: #334155; }
+.ai-filter-form select { border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font: inherit; }
+.ai-card-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
+.ai-card-head h2 { margin: 10px 0 8px; font-size: 1.15rem; color: #0f172a; }
+.badge, .tag { display: inline-block; border-radius: 999px; font-weight: 600; }
+.badge { background: #ecfeff; color: #0f766e; border: 1px solid #99f6e4; padding: 4px 10px; font-size: 0.75rem; }
+.ai-card p { color: #334155; line-height: 1.6; }
+.ai-list-block h3 { margin: 14px 0 8px; font-size: 0.95rem; color: #0f172a; }
+.ai-list-block ul { margin: 0; padding-left: 18px; color: #475569; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; padding: 5px 10px; font-size: 0.78rem; }
+@media (max-width: 900px) {
+    .ai-card-grid { grid-template-columns: 1fr; }
+    .ai-hero-card { flex-direction: column; align-items: stretch; }
+}
+</style>
+{% endblock %}
+

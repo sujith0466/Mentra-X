@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Admins - Education Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-admins">
+        <h1>Admin Management</h1>
+        
+        <div class="admin-toolbar">
+            <button class="btn btn-primary" onclick="document.getElementById('addAdminForm').style.display='block'">+ Add New Admin</button>
+        </div>
+        
+        <!-- Add Admin Form -->
+        <div id="addAdminForm" style="display:none">
+            <form method="POST" action="{{ url_for('admin.add_admin') }}" class="form">
+                <h2>Add New Admin User</h2>
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="full_name">Full Name</label>
+                    <input type="text" id="full_name" name="full_name">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email">
+                </div>
+                <div class="form-group">
+                    <label for="admin_role">Admin Role *</label>
+                    <select id="admin_role" name="admin_role" required>
+                        <option value="content_admin">Content Admin</option>
+                        <option value="support_analyst">Support/Admin Analyst</option>
+                        <option value="super_admin">Super Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Admin</button>
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('addAdminForm').style.display='none'">Cancel</button>
+            </form>
+        </div>
+        
+        <!-- Admin Users List -->
+        {% if admin_users %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Last Login</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for admin in admin_users %}
+                <tr>
+                    <td><strong>{{ admin.username }}</strong></td>
+                    <td>{{ admin.full_name or '-' }}</td>
+                    <td>{{ admin.email or '-' }}</td>
+                    <td>{{ (admin.role or 'super_admin').replace('_', ' ')|title }}</td>
+                    <td>
+                        {% if admin.is_active %}
+                            <span class="badge badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ admin.last_login.strftime('%Y-%m-%d %H:%M') if admin.last_login else 'Never' }}</td>
+                    <td>{{ admin.created_at.strftime('%Y-%m-%d') }}</td>
+                    <td>
+                        <a href="{{ url_for('admin.edit_admin', admin_id=admin.id) }}" class="btn btn-sm">Edit</a>
+                        {% if admin_users|length > 1 %}
+                            <form method="POST" action="{{ url_for('admin.delete_admin', admin_id=admin.id) }}" style="display:inline" data-confirm-delete="true">
+                                <button type="submit" class="btn btn-sm">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No admins created yet.</p>
+        {% endif %}
+    </section>
+</div>
+
+<style>
+    .admin-admins {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .admin-toolbar {
+        margin: 20px 0;
+        display: flex;
+        gap: 10px;
+    }
+
+    .form {
+        background: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        margin: 20px 0;
+        border: 1px solid #e0e0e0;
+    }
+
+    .form h2 {
+        margin-top: 0;
+        margin-bottom: 20px;
+        color: #333;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+        box-sizing: border-box;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+    }
+
+    .admin-table thead {
+        background: #f5f5f5;
+        border-bottom: 2px solid #ddd;
+    }
+
+    .admin-table th {
+        padding: 15px;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .admin-table td {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .admin-table tr:hover {
+        background: #f9f9f9;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .btn {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        background: #007bff;
+        color: white;
+        margin-right: 5px;
+        transition: all 0.3s ease;
+    }
+
+    .btn:hover {
+        background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .btn-primary {
+        background: var(--primary-color, #4f46e5);
+    }
+
+    .btn-primary:hover {
+        background: #4338ca;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+</style>
+{% endblock %}

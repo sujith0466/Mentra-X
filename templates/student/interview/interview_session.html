@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Session - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ interview_session.role }} Mock Interview</h2>
+        <span class="badge-pill">Timer: {{ timer_minutes }} min</span>
+    </div>
+    <p class="muted"><strong>Difficulty:</strong> {{ interview_session.difficulty }}</p>
+</section>
+
+<section class="dashboard-section">
+    <form method="POST" action="{{ url_for('interview.interview_submit') }}" class="stack-form">
+        <input type="hidden" name="session_id" value="{{ interview_session.id }}">
+        {% for question in questions %}
+        <div class="question-card">
+            <p class="eyebrow">{{ question.question_type|title }}</p>
+            <label for="question_{{ question.id }}"><strong>{{ loop.index }}. {{ question.question_text }}</strong></label>
+            <textarea id="question_{{ question.id }}" name="question_{{ question.id }}" rows="6" placeholder="Write your answer here...">{{ responses[question.id].user_answer if responses.get(question.id) else '' }}</textarea>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-primary-soft">Submit Interview</button>
+    </form>
+</section>
+
+<style>
+.stack-form { display: grid; gap: 16px; }
+.question-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; background: #f8fafc; }
+.eyebrow { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #0f766e; font-weight: 700; }
+textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 12px; min-height: 120px; font-family: inherit; }
+</style>
+{% endblock %}
+

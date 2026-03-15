@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Audit Logs - Education Portal{% endblock %}
+{% block content %}
+<div class="container">
+<section class="audit-logs">
+    <h1>Audit Logs</h1>
+    <table class="admin-table">
+        <thead><tr><th>Time</th><th>Actor ID</th><th>Role</th><th>Action</th><th>Entity</th><th>Before</th><th>After</th></tr></thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M') if log.created_at else '-' }}</td>
+                <td>{{ log.actor_id or '-' }}</td>
+                <td>{{ log.actor_role or '-' }}</td>
+                <td>{{ log.action_type }}</td>
+                <td>{{ log.entity_type }}#{{ log.entity_id or '-' }}</td>
+                <td><code>{{ (log.before_values or '')[:120] }}</code></td>
+                <td><code>{{ (log.after_values or '')[:120] }}</code></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination-controls">
+        {% if pagination.has_prev %}<a class="btn btn-sm btn-secondary" href="{{ url_for('admin.audit_logs', page=pagination.prev_num) }}">Previous</a>{% endif %}
+        {% if pagination.has_next %}<a class="btn btn-sm btn-secondary" href="{{ url_for('admin.audit_logs', page=pagination.next_num) }}">Next</a>{% endif %}
+    </div>
+</section>
+</div>
+{% endblock %}

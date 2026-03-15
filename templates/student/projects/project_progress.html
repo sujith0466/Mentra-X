@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Project Progress - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ project.title }}</h2>
+    </div>
+    <p class="muted"><strong>Progress:</strong> {{ student_project.progress_percentage }}%</p>
+    <div class="progress-bar"><span style="width: {{ student_project.progress_percentage }}%"></span></div>
+</section>
+
+<section class="dashboard-section">
+    <form method="POST" class="stack-form">
+        {% for task in tasks %}
+        <label class="task-row">
+            <input type="checkbox" name="completed_tasks" value="{{ task.id }}" {% if task.completed %}checked{% endif %}>
+            <span><strong>{{ task.task_order }}. {{ task.task_title }}</strong><br>{{ task.task_description }}</span>
+        </label>
+        {% endfor %}
+        <button type="submit" class="btn-primary-soft">Update Progress</button>
+    </form>
+</section>
+
+<section class="dashboard-section">
+    <h3>Development Roadmap</h3>
+    <ul>
+        {% for item in blueprint.development_roadmap %}
+        <li>{{ item }}</li>
+        {% endfor %}
+    </ul>
+</section>
+
+<style>
+.stack-form { display: grid; gap: 12px; }
+.task-row { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; background: #f8fafc; }
+.progress-bar { height: 10px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+.progress-bar span { display: block; height: 100%; background: linear-gradient(90deg, #14b8a6, #0284c7); }
+</style>
+{% endblock %}
+

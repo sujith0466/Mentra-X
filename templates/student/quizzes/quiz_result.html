@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Quiz Result - {{ quiz.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="result-card">
+        <h1>Quiz Result</h1>
+        <h2>{{ quiz.title }}</h2>
+        <p><strong>Total Questions:</strong> {{ attempt.total_questions }}</p>
+        <p><strong>Correct Answers:</strong> {{ attempt.correct_answers }}</p>
+        <p><strong>Score:</strong> {{ attempt.score_percentage }}%</p>
+        <p><strong>Status:</strong> {% if attempt.passed %}<span class="pass">Pass</span>{% else %}<span class="fail">Fail</span>{% endif %}</p>
+        <a href="{{ url_for('student_quiz.course_quizzes', course_id=quiz.course_id) }}" class="btn btn-primary">Back to Quizzes</a>
+    </section>
+</div>
+<style>
+.result-card{max-width:520px;margin:20px auto;padding:18px;border:1px solid #e5e7eb;border-radius:12px;background:#fff;text-align:center;}
+.pass{color:#047857;font-weight:700;}
+.fail{color:#b91c1c;font-weight:700;}
+</style>
+{% endblock %}

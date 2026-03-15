@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Generate Project - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>Generate AI Project Idea</h2>
+    </div>
+    <form method="POST" class="stack-form">
+        <label for="domain">Domain</label>
+        <select id="domain" name="domain">
+            {% for domain in domains %}
+            <option value="{{ domain }}">{{ domain }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty" name="difficulty">
+            {% for difficulty in difficulty_levels %}
+            <option value="{{ difficulty }}">{{ difficulty }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit" class="btn-primary-soft">Generate Idea</button>
+    </form>
+</section>
+
+{% if created_project %}
+<section class="dashboard-section">
+    <h3>{{ created_project.title }}</h3>
+    <p>{{ created_project.description }}</p>
+    <p><strong>Tech Stack:</strong> {{ created_project.get_tech_stack_list()|join(', ') }}</p>
+    <a class="btn-secondary-soft" href="{{ url_for('projects.project_detail', id=created_project.id) }}">Open Project</a>
+</section>
+{% endif %}
+
+<style>
+.stack-form { display: grid; gap: 12px; }
+.stack-form select { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; }
+</style>
+{% endblock %}
+

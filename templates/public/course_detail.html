@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Mentra{% endblock %}
+
+{% block content %}
+
+<div class="container">
+    <!-- Debug Section -->
+    <div class="debug-section" style="font-size: 0.9em; color: #888; margin-bottom: 1em;">
+        <strong>Debug:</strong>
+        Course ID: {{ course.id }}<br>
+        Course Title: {{ course.title }}<br>
+        Domain: {{ course.domain.name if course.domain else 'No Domain' }}
+    </div>
+
+    <section class="course-detail">
+        <!-- 1. Course Title -->
+        <h1>{{ course.title or 'Untitled Course' }}</h1>
+
+        <!-- 2. Course Image -->
+        <div class="course-hero-image">
+            {% if course.image_url %}
+                <img src="{{ url_for('static', filename='images/courses/' + course.image_url) }}" alt="{{ course.title }}">
+            {% elif course.resolved_image_url %}
+                <img src="{{ course.resolved_image_url }}" alt="{{ course.title }}">
+            {% else %}
+                <div class="course-image-fallback large">No course image available.</div>
+            {% endif %}
+        </div>
+
+        <!-- 3. Instructor Name -->
+        {% if course.instructor %}
+            <p><strong>Instructor:</strong> {{ course.instructor }}</p>
+        {% else %}
+            <p><strong>Instructor:</strong> Instructor information not available.</p>
+        {% endif %}
+
+        <!-- 4. Domain Name -->
+        <p><strong>Domain:</strong> {{ course.domain.name if course.domain else 'No Domain' }}</p>
+
+        <!-- 5. Price -->
+        {% if course.price %}
+            <p><strong>Price:</strong> ₹{{ course.price }}</p>
+        {% else %}
+            <p><strong>Price:</strong> This course is free.</p>
+        {% endif %}
+
+        <!-- 6. Enroll Button -->
+        {% if current_user %}
+            {% set is_enrolled = false %}
+            {% for enrollment in current_user.enrollments %}
+                {% if enrollment.course_id == course.id %}
+                    {% set is_enrolled = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% if is_enrolled %}
+                <div class="alert alert-success">
+                    You are enrolled in this course
+                    <a href="{{ url_for('student.course_videos', course_id=course.id) }}" class="btn btn-primary">Watch Videos</a>
+                </div>
+            {% else %}
+                <form method="POST" action="{{ url_for('student.enroll_course', course_id=course.id) }}" class="enroll-form">
+                    <button type="submit" class="btn btn-primary btn-lg">Enroll Now</button>
+                </form>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-warning">
+                <p>Login to enroll in this course</p>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-secondary">Register</a>
+            </div>
+        {% endif %}
+
+        <!-- 7. Course Description -->
+        <div class="course-description">
+            <h2>Description</h2>
+            {% if course.description %}
+                <p>{{ course.description }}</p>
+            {% else %}
+                <p>No course description available.</p>
+            {% endif %}
+        </div>
+
+        <!-- 8. Demo Video -->
+        <div class="course-demo-video">
+            <h2>Demo Video</h2>
+            {% if course.demo_video_url %}
+                {% set youtube_id = None %}
+                {% if 'youtube.com/watch?v=' in course.demo_video_url %}
+                    {% set youtube_id = course.demo_video_url.split('v=')[-1].split('&')[0] %}
+                {% elif 'youtu.be/' in course.demo_video_url %}
+                    {% set youtube_id = course.demo_video_url.split('youtu.be/')[-1].split('?')[0] %}
+                {% endif %}
+                {% if youtube_id %}
+                    <iframe width="100%" height="400" src="https://www.youtube.com/embed/{{ youtube_id }}" frameborder="0" allowfullscreen></iframe>
+                {% else %}
+                    <iframe width="100%" height="400" src="{{ course.demo_video_url }}" frameborder="0" allowfullscreen></iframe>
+                {% endif %}
+            {% else %}
+                <p>No preview video available.</p>
+            {% endif %}
+        </div>
+
+        <!-- 9. Course Syllabus -->
+        <div class="syllabus-card">
+            <h2>Course Syllabus</h2>
+            {% if course.syllabuses and course.syllabuses|length > 0 %}
+                <ul>
+                {% for topic in course.syllabuses %}
+                    <li>
+                        <strong>{{ topic.topic_title }}</strong>
+                        {% if topic.topic_description %}<br>{{ topic.topic_description }}{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No syllabus topics added yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- 10. Course Videos -->
+        <div class="videos-preview full-width">
+            <h2>Course Videos</h2>
+            {% if course.videos and course.videos|length > 0 %}
+                <ul class="video-list">
+                {% for video in course.videos %}
+                    <li>
+                        <strong>{{ video.title }}</strong>
+                        {% if video.duration %}<span class="duration">{{ video.duration }}</span>{% endif %}
+                        {% if video.video_url %}<br><a href="{{ video.video_url }}" target="_blank">Watch Video</a>{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p>No course videos available.</p>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if course.domain.courses|length > 1 %}
+    <section class="related-courses">
+        <h2>More Courses in {{ course.domain.name }}</h2>
+        <div class="courses-grid">
+            {% for related_course in course.domain.courses %}
+                {% if related_course.id != course.id %}
+                <a href="{{ url_for('public.course_detail', course_id=related_course.id) }}" class="course-card-link">
+                    <div class="course-card-simple tutedude-tile">
+                        <div class="course-image">
+                            {% if related_course.resolved_image_url %}
+                            <img src="{{ related_course.resolved_image_url }}" alt="{{ related_course.title }}">
+                            {% else %}
+                            <div class="course-image-fallback">{{ related_course.title[:1] }}</div>
+                            {% endif %}
+                        </div>
+                        <h3 class="course-title-simple">{{ related_course.title }}</h3>
+                    </div>
+                </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="motivation-courses-detail">
+        <p>Every expert was once a beginner.</p>
+        <p>Start learning today and become unstoppable.</p>
+    </section>
+</div>
+<style>
+.motivation-courses-detail {
+    text-align: center;
+    margin: 28px auto 10px;
+    padding: 20px 16px;
+    border-radius: 12px;
+    max-width: 780px;
+    background: linear-gradient(180deg, #f0fdfa 0%, #f8fafc 100%);
+    border: 1px solid #bae6fd;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+.motivation-courses-detail p {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.motivation-courses-detail p + p {
+    margin-top: 4px;
+    color: #0f766e;
+}
+</style>
+{% endblock %}

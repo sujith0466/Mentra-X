@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Coding Challenges - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>Coding Sandbox & Challenges</h2>
+    </div>
+    <p class="muted">Practice coding inside Mentra, run your logic, and review AI-guided feedback after each submission.</p>
+
+    <form method="GET" class="inline-form">
+        <label for="topic">Topic</label>
+        <select id="topic" name="topic">
+            <option value="">All Topics</option>
+            {% for topic in topics %}
+            <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>{{ topic }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn-primary-soft">Filter</button>
+    </form>
+</section>
+
+<section class="dashboard-section">
+    <div class="challenge-grid">
+        {% for challenge in challenges %}
+        <article class="challenge-card">
+            <p class="eyebrow">{{ challenge.topic }}</p>
+            <h3>{{ challenge.title }}</h3>
+            <p>{{ challenge.description }}</p>
+            <div class="meta-row">
+                <span>{{ challenge.difficulty }}</span>
+                <span>{{ challenge.get_test_cases()|length }} tests</span>
+            </div>
+            <a class="btn-primary-soft" href="{{ url_for('coding.coding_challenge_detail', id=challenge.id) }}">Open Challenge</a>
+        </article>
+        {% else %}
+        <p>No coding challenges are available for this topic yet.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+.inline-form { display: grid; gap: 10px; grid-template-columns: 120px 1fr auto; align-items: end; }
+.inline-form select { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; }
+.challenge-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.challenge-card { border: 1px solid #e2e8f0; border-radius: 16px; padding: 18px; background: #f8fafc; display: grid; gap: 10px; }
+.eyebrow { margin: 0; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #0f766e; font-weight: 700; }
+.meta-row { display: flex; justify-content: space-between; gap: 12px; color: #475569; font-size: 0.95rem; }
+@media (max-width: 700px) { .inline-form { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+

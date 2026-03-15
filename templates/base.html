@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token if csrf_token is defined else '' }}">
+    <title>{% block title %}Mentra{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container-fluid px-4">
+            <div class="nav-brand">
+                <h1>Mentra</h1>
+                <p class="brand-tagline">Learn Smarter. Build Your Future.</p>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('public.index') }}" class="nav-link">Home</a></li>
+                <li><a href="{{ url_for('public.courses') }}" class="nav-link">Courses</a></li>
+                <li><a href="{{ url_for('public.about') }}" class="nav-link">About Us</a></li>
+                <li><a href="{{ url_for('public.contact') }}" class="nav-link">Contact</a></li>
+                {% if session.get('user_id') and session.get('user_role') == 'student' %}
+                <li><a href="{{ url_for('student.dashboard') }}" class="nav-link">Dashboard</a></li>
+                {% elif session.get('user_id') and session.get('user_role') == 'admin' %}
+                <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Dashboard</a></li>
+                {% endif %}
+                {% if session.get('user_id') %}
+                <li><a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a></li>
+                {% else %}
+                <li><a href="{{ url_for('auth.login') }}" class="nav-link">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container-fluid px-4">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                            <span class="close-alert">&times;</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% set is_admin_page = request.path.startswith('/admin') and session.get('user_role') == 'admin' %}
+            <div class="{{ 'admin-shell' if is_admin_page else '' }}">
+                {% if is_admin_page %}
+                    {% include 'admin/_sidebar.html' %}
+                    <div class="admin-main">
+                {% endif %}
+                {% block content %}{% endblock %}
+                {% if is_admin_page %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container-fluid px-4">
+            <p>&copy; 2026 Mentra. All rights reserved.</p>
+            <p class="footer-motivation">Invest in your mind. It's the most powerful asset you own.</p>
+        </div>
+    </footer>
+
+    {% include 'components/chatbot.html' %}
+
+    <script>
+        document.querySelectorAll('.close-alert').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.target.parentElement.style.display = 'none';
+            });
+        });
+
+        (function () {
+            const csrfMeta = document.querySelector('meta[name="csrf-token"]');
+            const csrfToken = csrfMeta ? csrfMeta.getAttribute('content') : '';
+
+            if (csrfToken) {
+                document.querySelectorAll('form[method="POST"], form[method="post"]').forEach(form => {
+                    if (!form.querySelector('input[name="csrf_token"]')) {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'csrf_token';
+                        input.value = csrfToken;
+                        form.appendChild(input);
+                    }
+                });
+
+                const originalFetch = window.fetch;
+                window.fetch = function(resource, config = {}) {
+                    const headers = new Headers(config.headers || {});
+                    if (!headers.has('X-CSRF-Token')) {
+                        headers.set('X-CSRF-Token', csrfToken);
+                    }
+                    return originalFetch(resource, { ...config, headers });
+                };
+            }
+        })();
+
+        document.querySelectorAll('form[data-confirm-delete="true"]').forEach(form => {
+            form.addEventListener('submit', (e) => {
+                const ok = window.confirm('This action is destructive. Click OK to continue.');
+                if (!ok) {
+                    e.preventDefault();
+                    return;
+                }
+                const phrase = window.prompt('Type DELETE to confirm this operation.');
+                if ((phrase || '').toUpperCase() !== 'DELETE') {
+                    e.preventDefault();
+                    alert('Delete confirmation failed.');
+                    return;
+                }
+                let input = form.querySelector('input[name="confirm_phrase"]');
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'confirm_phrase';
+                    form.appendChild(input);
+                }
+                input.value = 'DELETE';
+            });
+        });
+
+        window.confirmDeleteButton = function(buttonEl) {
+            const ok = window.confirm('This action is destructive. Click OK to continue.');
+            if (!ok) return false;
+            const phrase = window.prompt('Type DELETE to confirm this operation.');
+            if ((phrase || '').toUpperCase() !== 'DELETE') {
+                alert('Delete confirmation failed.');
+                return false;
+            }
+            const form = buttonEl.form;
+            if (form) {
+                let input = form.querySelector('input[name="confirm_phrase"]');
+                if (!input) {
+                    input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'confirm_phrase';
+                    form.appendChild(input);
+                }
+                input.value = 'DELETE';
+            }
+            return true;
+        };
+    </script>
+    <style>
+    .nav-brand h1 { margin: 0; line-height: 1.1; letter-spacing: 0.2px; }
+    .brand-tagline { margin: 2px 0 0; font-size: 0.72rem; color: rgba(255,255,255,0.88); }
+    .footer-motivation { margin-top: 6px; font-style: italic; opacity: 0.95; }
+    .admin-shell { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
+    .admin-sidebar { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; position: sticky; top: 12px; }
+    .admin-sidebar h3 { margin: 0 0 8px; }
+    .admin-role { font-size: 0.84rem; color: #6b7280; margin-bottom: 8px; }
+    .admin-sidebar nav { display: flex; flex-direction: column; gap: 6px; }
+    .admin-sidebar nav a { text-decoration: none; color: #111827; padding: 7px 8px; border-radius: 6px; }
+    .admin-sidebar nav a:hover { background: #f3f4f6; }
+    .admin-main { min-width: 0; }
+    @media (max-width: 980px) {
+        .admin-shell { grid-template-columns: 1fr; }
+        .admin-sidebar { position: static; }
+        .brand-tagline { font-size: 0.68rem; }
+    }
+    </style>
+</body>
+</html>

@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Education Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-dashboard">
+        <h1>Admin Dashboard</h1>
+
+        <div class="quick-actions">
+            <a class="quick-btn" href="{{ url_for('admin.manage_courses') }}">Manage Courses</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_courses', status='draft') }}">Drafts ({{ lifecycle_counts.get('draft', 0) }})</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_students') }}">Students</a>
+            <a class="quick-btn" href="{{ url_for('admin.view_enrollments') }}">Enrollments</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_admins') }}">Admin Users</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_courses', status='review') }}">In Review ({{ lifecycle_counts.get('review', 0) }})</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_courses', status='published') }}">Published ({{ lifecycle_counts.get('published', 0) }})</a>
+            <a class="quick-btn" href="{{ url_for('admin.manage_courses', content='none') }}">Needs Content</a>
+            <a class="quick-btn" href="{{ url_for('auth.logout') }}">Logout</a>
+        </div>
+
+        {% if quality_alerts.alerts %}
+        <div class="quality-alerts">
+            <h2>Content Quality Alerts</h2>
+            <ul>
+                {% for alert in quality_alerts.alerts %}
+                <li class="alert-{{ alert.level }}">{{ alert.message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="dashboard-stats">
+            <div class="stat-card"><h3>Total Students</h3><div class="stat-number">{{ total_users }}</div></div>
+            <div class="stat-card"><h3>Total Courses</h3><div class="stat-number">{{ total_courses }}</div></div>
+            <div class="stat-card"><h3>Total Enrollments</h3><div class="stat-number">{{ total_enrollments }}</div></div>
+            <div class="stat-card"><h3>Total Domains</h3><div class="stat-number">{{ total_domains }}</div></div>
+        </div>
+
+        <div class="recent-section">
+            <div class="recent-header">
+                <h2>Resume Intelligence Insights</h2>
+            </div>
+            <div class="dashboard-stats resume-stats">
+                <div class="stat-card alt"><h3>Resume Uploads</h3><div class="stat-number">{{ resume_upload_count }}</div></div>
+                <div class="stat-card alt"><h3>Upload Rate</h3><div class="stat-number">{{ resume_upload_rate }}%</div></div>
+            </div>
+            <div class="resume-grid">
+                <div>
+                    <h3>Top Skills Across Students</h3>
+                    <ul>
+                        {% for item in top_resume_skills %}
+                        <li>{{ item.skill }} - {{ item.percent }}%</li>
+                        {% else %}
+                        <li>No resume skills collected yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div>
+                    <h3>Most Missing Skills</h3>
+                    <ul>
+                        {% for skill in top_missing_skills %}
+                        <li>{{ skill }}</li>
+                        {% else %}
+                        <li>No missing-skill data available yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="recent-section">
+            <div class="recent-header">
+                <h2>Recent Enrollments</h2>
+                <a href="{{ url_for('admin.view_enrollments') }}">View all enrollments</a>
+            </div>
+            {% if recent_enrollments %}
+            <table class="admin-table">
+                <thead><tr><th>Student</th><th>Course</th><th>Enrolled Date</th></tr></thead>
+                <tbody>
+                    {% for enrollment in recent_enrollments %}
+                    <tr>
+                        <td>{{ enrollment.student.name }}</td>
+                        <td>{{ enrollment.course.title }}</td>
+                        <td>{{ enrollment.enrolled_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No recent enrollments found.</p>
+            {% endif %}
+        </div>
+    </section>
+</div>
+
+<style>
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 18px 0; }
+.quick-btn { background: #111827; color: #fff; text-decoration: none; padding: 8px 12px; border-radius: 8px; }
+.quick-btn:hover { background: #1f2937; }
+.dashboard-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 20px 0; }
+.stat-card { background: linear-gradient(135deg, #FF6B35, #F7931E); color: white; padding: 26px 20px; border-radius: 12px; text-align: center; }
+.stat-number { font-size: 2.2rem; font-weight: 700; }
+.resume-stats { margin-top: 12px; }
+.stat-card.alt { background: linear-gradient(135deg, #0f766e, #14b8a6); }
+.resume-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-top: 12px; }
+.resume-grid ul { margin: 8px 0 0; padding-left: 18px; }
+.recent-section { margin-top: 24px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+.recent-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.admin-table { width: 100%; border-collapse: collapse; margin-top: 8px; background: white; }
+.admin-table th, .admin-table td { padding: 12px; border-bottom: 1px solid #eee; }
+.admin-table th { background: #ff7a3d; color: white; }
+.quality-alerts { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-top: 14px; }
+.quality-alerts ul { margin: 8px 0 0; padding-left: 18px; }
+.quality-alerts li { margin: 4px 0; }
+</style>
+{% endblock %}

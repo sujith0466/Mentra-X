@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Students - Education Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-students">
+        <h1>Student Management ({{ pagination.total }} Students)</h1>
+
+        {% if student_rows %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    {% set next_name_dir = 'asc' if sort != 'name' or direction == 'desc' else 'desc' %}
+                    {% set next_email_dir = 'asc' if sort != 'email' or direction == 'desc' else 'desc' %}
+                    {% set next_wallet_dir = 'asc' if sort != 'wallet_balance' or direction == 'desc' else 'desc' %}
+                    {% set next_enrollments_dir = 'asc' if sort != 'enrollment_count' or direction == 'desc' else 'desc' %}
+                    {% set next_created_dir = 'asc' if sort != 'created_at' or direction == 'desc' else 'desc' %}
+                    <th><a href="{{ url_for('admin.manage_students', sort='name', dir=next_name_dir) }}">Name</a></th>
+                    <th><a href="{{ url_for('admin.manage_students', sort='email', dir=next_email_dir) }}">Email</a></th>
+                    <th>Referral Code</th>
+                    <th><a href="{{ url_for('admin.manage_students', sort='wallet_balance', dir=next_wallet_dir) }}">Wallet Balance</a></th>
+                    <th><a href="{{ url_for('admin.manage_students', sort='enrollment_count', dir=next_enrollments_dir) }}">Courses Enrolled</a></th>
+                    <th><a href="{{ url_for('admin.manage_students', sort='created_at', dir=next_created_dir) }}">Member Since</a></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in student_rows %}
+                {% set student = row[0] %}
+                <tr>
+                    <td><strong>{{ student.name }}</strong></td>
+                    <td>{{ student.email }}</td>
+                    <td><code>{{ student.referral_code }}</code></td>
+                    <td>Rs {{ "%.2f"|format(student.wallet_balance or 0) }}</td>
+                    <td>{{ row[1] }}</td>
+                    <td>{{ student.created_at.strftime('%Y-%m-%d') if student.created_at else '-' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="pagination-wrap">
+            <span class="pagination-meta">Showing page {{ pagination.page }} of {{ pagination.pages }}</span>
+            <div class="pagination-controls">
+                {% if pagination.has_prev %}
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.manage_students', page=pagination.prev_num, sort=sort, dir=direction) }}">Previous</a>
+                {% endif %}
+                {% if pagination.has_next %}
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.manage_students', page=pagination.next_num, sort=sort, dir=direction) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p>No students registered yet.</p>
+        {% endif %}
+    </section>
+</div>
+
+<style>
+.admin-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f9fafb;
+}
+.admin-table thead th a {
+    color: #111827;
+    text-decoration: none;
+}
+.admin-table tbody tr:hover {
+    background: #f5f9ff;
+}
+.pagination-wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.pagination-controls {
+    display: flex;
+    gap: 8px;
+}
+</style>
+{% endblock %}

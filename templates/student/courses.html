@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Courses - Mentra{% endblock %}
+
+{% block styles %}
+<style>
+    .courses-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 60px 20px 40px;
+    }
+
+    .courses-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 50px;
+    }
+
+    .courses-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        font-weight: 700;
+    }
+
+    .courses-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .filters-section {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 40px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-end;
+    }
+
+    .filter-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .filter-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    .filter-group select,
+    .filter-group input {
+        width: 100%;
+        padding: 10px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .filter-group select:focus,
+    .filter-group input:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-search,
+    .btn-reset {
+        padding: 10px 25px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+
+    .btn-search {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-reset {
+        background: #f0f0f0;
+        color: #666;
+    }
+
+    .btn-reset:hover {
+        background: #e0e0e0;
+    }
+
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+    }
+
+    .course-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .course-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(102, 126, 234, 0.2);
+    }
+
+    .course-image {
+        width: 100%;
+        height: 180px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 3rem;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .course-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .course-icon {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 3rem;
+    }
+
+    .course-body {
+        padding: 20px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .course-domain {
+        display: inline-block;
+        background: #f0f0f0;
+        color: #667eea;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        width: fit-content;
+    }
+
+    .course-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #333;
+        margin-bottom: 12px;
+        line-height: 1.4;
+    }
+
+    .course-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 15px;
+        line-height: 1.5;
+        flex: 1;
+    }
+
+    .course-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .course-instructor {
+        font-size: 0.85rem;
+        color: #999;
+        font-style: italic;
+    }
+
+    .course-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .course-price.free {
+        color: #10b981;
+    }
+
+    .course-footer {
+        padding: 15px 20px;
+        background: #f9f9f9;
+    }
+
+    .btn-view-details {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        text-align: center;
+        display: block;
+    }
+
+    .btn-view-details:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .no-courses {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-courses h3 {
+        color: #666;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+    }
+
+    .no-courses p {
+        color: #999;
+        margin-bottom: 20px;
+    }
+
+    .no-courses a {
+        display: inline-block;
+        padding: 10px 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .no-courses a:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    .results-info {
+        color: white;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .courses-header h1 {
+            font-size: 2rem;
+        }
+
+        .filter-row {
+            flex-direction: column;
+        }
+
+        .filter-group {
+            width: 100%;
+        }
+
+        .filter-buttons {
+            width: 100%;
+        }
+
+        .filter-buttons button {
+            flex: 1;
+        }
+
+        .courses-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="courses-container">
+    <div class="courses-header">
+        <h1>🎓 Explore Our Courses</h1>
+        <p>Choose from {{ courses|length }} carefully curated courses taught by industry experts</p>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="filters-section">
+        <form method="GET" action="{{ url_for('student.browse_courses') }}" class="filter-row">
+            <div class="filter-group">
+                <label for="domain">Filter by Domain:</label>
+                <select name="domain" id="domain">
+                    <option value="">All Domains</option>
+                    {% for domain in domains %}
+                        <option value="{{ domain.id }}" {% if domain_filter == domain.id %}selected{% endif %}>
+                            {{ domain.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="search">Search Courses:</label>
+                <input type="text" name="search" id="search" placeholder="Search by title or description..." value="{{ search_query }}">
+            </div>
+
+            <div class="filter-buttons">
+                <button type="submit" class="btn-search">🔍 Search</button>
+                <a href="{{ url_for('student.browse_courses') }}" class="btn-reset">Reset</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results Info -->
+    {% if search_query or domain_filter %}
+        <div class="results-info">
+            Found {{ courses|length }} course(s)
+            {% if search_query %} matching "{{ search_query }}"{% endif %}
+            {% if domain_filter and search_query %} in selected domain{% elif domain_filter %} in selected domain{% endif %}
+        </div>
+    {% endif %}
+
+    <!-- Courses Grid -->
+    {% if courses %}
+        <div class="courses-grid">
+            {% for course in courses %}
+                <div class="course-card" onclick="window.location.href='{{ url_for('student.course_details', course_id=course.id) }}'">
+                    <!-- Course Image/Icon -->
+                    <div class="course-image">
+                        {% if course.image_url %}
+                            <img src="{{ course.image_url }}" alt="{{ course.title }}">
+                        {% else %}
+                            <div class="course-icon">📚</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Course Info -->
+                    <div class="course-body">
+                        <span class="course-domain">{{ course.domain.name }}</span>
+                        <h3 class="course-title">{{ course.title }}</h3>
+                        <p class="course-description">
+                            {% if course.description %}
+                                {{ course.description[:100] }}{% if course.description|length > 100 %}...{% endif %}
+                            {% else %}
+                                Learn {{ course.title }} from industry experts
+                            {% endif %}
+                        </p>
+                        
+                        <div class="course-meta">
+                            {% if course.instructor %}
+                                <span class="course-instructor">By {{ course.instructor }}</span>
+                            {% else %}
+                                <span class="course-instructor">By Expert Instructors</span>
+                            {% endif %}
+                            {% if course.price > 0 %}
+                                <span class="course-price">₹{{ "%.0f"|format(course.price) }}</span>
+                            {% else %}
+                                <span class="course-price free">FREE</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="course-footer">
+                        <a href="{{ url_for('student.course_details', course_id=course.id) }}" class="btn-view-details">
+                            View Details →
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-courses">
+            <h3>📭 No Courses Found</h3>
+            <p>
+                {% if search_query or domain_filter %}
+                    No courses match your search criteria. Try adjusting your filters.
+                {% else %}
+                    No courses available at the moment. Check back soon!
+                {% endif %}
+            </p>
+            <a href="{{ url_for('student.browse_courses') }}">View All Courses</a>
+        </div>
+    {% endif %}
+
+    <section class="motivation-courses-student">
+        <p>Every expert was once a beginner.</p>
+        <p>Start learning today and become unstoppable.</p>
+    </section>
+</div>
+
+{% include "components/chatbot.html" %}
+<style>
+.motivation-courses-student {
+    text-align: center;
+    margin: 18px auto 6px;
+    padding: 16px;
+    border-radius: 12px;
+    max-width: 760px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #dbeafe;
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.1);
+}
+.motivation-courses-student p {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.motivation-courses-student p + p {
+    margin-top: 4px;
+    color: #4f46e5;
+}
+</style>
+{% endblock %}

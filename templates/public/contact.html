@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Contact - Education Portal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="contact-section">
+        <div class="contact-container">
+            <div class="contact-form-wrapper">
+                <h1>Get In Touch</h1>
+                <p>Have questions? We'd love to hear from you. Send us a message!</p>
+                
+                <form method="POST" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Full Name *</label>
+                        <input type="text" id="name" name="name" required 
+                               minlength="2" maxlength="100"
+                               placeholder="Your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email Address *</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subject">Subject *</label>
+                        <input type="text" id="subject" name="subject" required 
+                               minlength="3" maxlength="200"
+                               placeholder="What is this about?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="message">Message *</label>
+                        <textarea id="message" name="message" required 
+                                  minlength="5" maxlength="1000"
+                                  rows="6"
+                                  placeholder="Tell us your message..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-lg btn-block">Send Message</button>
+                </form>
+            </div>
+            
+            <div class="contact-info-wrapper">
+                <h2>Contact Information</h2>
+                
+                <div class="contact-info">
+                    <div class="info-item">
+                        <h3>📧 Email</h3>
+                        <p><a href="mailto:info@eduportal.com">info@eduportal.com</a></p>
+                        <p><a href="mailto:support@eduportal.com">support@eduportal.com</a></p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h3>📞 Phone</h3>
+                        <p>+1 (555) 123-4567</p>
+                        <p>+1 (555) 987-6543</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h3>🏢 Office</h3>
+                        <p>123 Education Street</p>
+                        <p>Tech City, TC 12345</p>
+                        <p>United States</p>
+                    </div>
+                    
+                    <div class="info-item">
+                        <h3>⏰ Business Hours</h3>
+                        <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
+                        <p>Saturday: 10:00 AM - 4:00 PM</p>
+                        <p>Sunday: Closed</p>
+                    </div>
+                </div>
+                
+                <div class="faq-section">
+                    <h3>FAQ</h3>
+                    <details>
+                        <summary>How do I reset my password?</summary>
+                        <p>Contact our support team at support@eduportal.com with your registered email address.</p>
+                    </details>
+                    <details>
+                        <summary>Can I get a refund?</summary>
+                        <p>Yes, we offer refunds within 30 days of enrollment if you're not satisfied.</p>
+                    </details>
+                    <details>
+                        <summary>How does the referral program work?</summary>
+                        <p>Share your referral code with friends. When they register using your code, you both get ₹100 bonus!</p>
+                    </details>
+                    <details>
+                        <summary>Are the courses self-paced?</summary>
+                        <p>Yes! You can learn at your own pace with lifetime access to course content.</p>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Recent Messages Display -->
+    {% if recent_messages %}
+    <section class="recent-messages">
+        <div class="messages-container">
+            <h2>Recent Messages</h2>
+            <div class="messages-list">
+                {% for msg in recent_messages %}
+                <div class="message-item">
+                    <div class="message-header">
+                        <strong>{{ msg.name }}</strong>
+                        <small>{{ msg.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                    </div>
+                    <div class="message-subject">
+                        <strong>Subject:</strong> {{ msg.subject }}
+                    </div>
+                    <div class="message-content">
+                        {{ msg.message[:100] }}...
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

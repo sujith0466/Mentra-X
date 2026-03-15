@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Coding Practice - Mentra{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+    <header class="tool-hero">
+        <div>
+            <p class="eyebrow">Developer Tools</p>
+            <h1>AI Coding Practice</h1>
+            <p class="muted">Practice structured coding prompts inside a cleaner workspace and capture feedback before moving to full coding challenges.</p>
+        </div>
+        <form method="GET" class="topic-picker card-shell">
+            <label for="topic">Practice Topic</label>
+            <div class="picker-row">
+                <select id="topic" name="topic">
+                    {% for topic in topics %}
+                    <option value="{{ topic }}" {% if topic == selected_topic %}selected{% endif %}>{{ topic }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn-primary-soft">Load Problem</button>
+            </div>
+        </form>
+    </header>
+
+    <section class="workspace-grid">
+        <article class="card-shell info-panel">
+            <div class="card-head">
+                <div>
+                    <p class="eyebrow">Problem Description</p>
+                    <h2>{{ problem.title }}</h2>
+                </div>
+                <span class="difficulty-badge difficulty-{{ (problem.difficulty or 'Easy')|lower }}">{{ problem.difficulty or 'Easy' }}</span>
+            </div>
+
+            <div class="tag-row">
+                <span class="tag">{{ problem.topic }}</span>
+                {% for tag in problem.tags or [] %}
+                <span class="tag secondary">{{ tag }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="content-stack">
+                <div>
+                    <h3>Description</h3>
+                    <p>{{ problem.description }}</p>
+                </div>
+                <div>
+                    <h3>Example Input</h3>
+                    <pre>{{ problem.input_example }}</pre>
+                </div>
+                <div>
+                    <h3>Example Output</h3>
+                    <pre>{{ problem.expected_output }}</pre>
+                </div>
+                <div>
+                    <h3>Hints</h3>
+                    <ul>
+                        {% for hint in problem.hints or [] %}
+                        <li>{{ hint }}</li>
+                        {% else %}
+                        <li>No hints available for this practice item yet.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </article>
+
+        <article class="card-shell editor-panel">
+            <div class="card-head compact">
+                <div>
+                    <p class="eyebrow">Code Editor</p>
+                    <h2>Build Your Solution</h2>
+                </div>
+                <div class="language-badge">{{ problem.language or 'Python' }}</div>
+            </div>
+
+            <form method="POST" class="editor-form">
+                <input type="hidden" name="topic" value="{{ selected_topic }}">
+                <input type="hidden" name="show_solution" value="{% if show_solution %}1{% else %}0{% endif %}">
+                <label for="attempt">Language</label>
+                <select id="language" name="language" disabled>
+                    <option selected>{{ problem.language or 'Python' }}</option>
+                </select>
+
+                <label for="attempt">Solution Draft</label>
+                <textarea id="attempt" name="attempt" rows="18" class="code-editor" spellcheck="false" placeholder="Write your solution approach or sample code here...">{{ submitted_attempt }}</textarea>
+
+                <label class="checkbox-row"><input type="checkbox" name="show_solution" value="1" {% if show_solution %}checked{% endif %}> Show reference solution</label>
+
+                <div class="button-row">
+                    <button type="submit" name="action" value="run" class="btn-secondary-soft">Run Code</button>
+                    <button type="submit" name="action" value="submit" class="btn-primary-soft">Submit Solution</button>
+                </div>
+            </form>
+
+            <h3 class="panel-section-title">Result Panel</h3>
+            <section class="result-grid">
+                <div class="result-card">
+                    <h3>Test Cases Passed</h3>
+                    <p>{{ result_summary.test_cases_passed if result_summary else 'Not run yet' }}</p>
+                </div>
+                <div class="result-card">
+                    <h3>Status</h3>
+                    <p>{{ result_summary.status if result_summary else 'Waiting for input' }}</p>
+                </div>
+                <div class="result-card wide">
+                    <h3>Feedback</h3>
+                    <p>{{ result_summary.feedback if result_summary else 'Use the hints and examples to prepare your first attempt.' }}</p>
+                </div>
+            </section>
+
+            {% if submitted_attempt %}
+            <section class="output-card">
+                <h3>Your Current Attempt</h3>
+                <pre>{{ submitted_attempt }}</pre>
+            </section>
+            {% endif %}
+
+            {% if show_solution %}
+            <section class="output-card success-state">
+                <h3>Reference Solution</h3>
+                <p>{{ problem.solution }}</p>
+            </section>
+            {% endif %}
+        </article>
+    </section>
+</section>
+
+<style>
+.tool-shell { display: grid; gap: 18px; }
+.tool-hero { display: grid; gap: 16px; grid-template-columns: 1.2fr .9fr; align-items: start; }
+.card-shell { background: #ffffff; border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
+.topic-picker { display: grid; gap: 10px; }
+.picker-row { display: grid; gap: 10px; grid-template-columns: 1fr auto; }
+.workspace-grid { display: grid; gap: 18px; grid-template-columns: .95fr 1.05fr; }
+.card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+.card-head.compact { margin-bottom: 10px; }
+.card-head h2, .output-card h3, .result-card h3, .content-stack h3 { margin: 0 0 6px; }
+.eyebrow { margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: #0f766e; font-weight: 700; }
+.muted { color: #64748b; }
+.difficulty-badge, .language-badge, .tag { display: inline-flex; align-items: center; border-radius: 999px; padding: 6px 12px; font-size: .8rem; font-weight: 700; }
+.difficulty-easy { background: #dcfce7; color: #166534; }
+.difficulty-medium { background: #fef3c7; color: #92400e; }
+.difficulty-hard { background: #fee2e2; color: #991b1b; }
+.language-badge { background: #e0f2fe; color: #075985; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tag { background: #ecfeff; color: #0f766e; }
+.tag.secondary { background: #f8fafc; color: #334155; }
+.content-stack { display: grid; gap: 14px; }
+pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+.editor-form { display: grid; gap: 10px; }
+.editor-form select { width: 100%; border: 1px solid #cbd5e1; border-radius: 12px; padding: 10px 12px; background: #fff; }
+.code-editor { width: 100%; border: 1px solid #1e293b; border-radius: 16px; padding: 14px; background: #0f172a; color: #e2e8f0; font-family: Consolas, 'Courier New', monospace; line-height: 1.55; box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.15); }
+.checkbox-row { display: flex; gap: 8px; align-items: center; color: #334155; }
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.result-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 8px; }
+.result-card, .output-card { border-radius: 16px; border: 1px solid #dbe4ee; background: #f8fafc; padding: 14px; }
+.result-card p { margin: 0; color: #0f172a; font-weight: 600; }
+.result-card.wide { grid-column: 1 / -1; }
+.success-state { background: #f0fdfa; border-color: #99f6e4; }
+.panel-section-title { margin: 14px 0 8px; font-size: 0.95rem; color: #0f172a; }
+@media (max-width: 960px) {
+    .tool-hero, .workspace-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+    .picker-row, .result-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}

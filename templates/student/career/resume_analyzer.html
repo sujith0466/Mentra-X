@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Analyzer - Mentra{% endblock %}
+
+{% block content %}
+<section class="ai-page-shell">
+    <div class="ai-hero-card">
+        <div>
+            <p class="eyebrow">AI Career Tools</p>
+            <h1>Resume Analyzer</h1>
+            <p>Paste your resume text or upload a simple file to get rule-based skill detection and career guidance.</p>
+        </div>
+    </div>
+
+    <section class="career-grid">
+        <article class="ai-card">
+            <form method="POST" enctype="multipart/form-data" class="career-form">
+                {% if resume_exists %}
+                <div class="resume-note">
+                    <strong>Stored resume detected.</strong>
+                    <span class="muted">Upload a new file to replace it, or analyze using the stored data.</span>
+                </div>
+                {% endif %}
+                <label for="resume_text">Resume Text</label>
+                <textarea id="resume_text" name="resume_text" rows="12" placeholder="Paste resume text here...">{{ resume_text }}</textarea>
+                <label for="resume_file">{{ 'Upload New Resume' if resume_exists else 'Upload Resume' }}</label>
+                <input id="resume_file" type="file" name="resume_file" accept=".txt,.pdf,.docx">
+                <button type="submit" class="action-link">Analyze Resume</button>
+            </form>
+        </article>
+
+        {% if analysis %}
+        <article class="ai-card">
+            <h2>Detected Skills</h2>
+            <div class="tag-row">
+                {% for item in analysis.detected_skills %}
+                <span class="tag">{{ item }}</span>
+                {% else %}
+                <span class="muted">No clear skills detected yet.</span>
+                {% endfor %}
+            </div>
+            <h2>Career Matches</h2>
+            <ul class="roadmap-list">
+                {% for item in analysis.career_matches %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+            <h2>Missing Skills</h2>
+            <ul class="roadmap-list">
+                {% for item in analysis.missing_skills %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>Your resume already covers many core skills for the top detected path.</li>
+                {% endfor %}
+            </ul>
+            <h2>Suggestions</h2>
+            <ul class="roadmap-list">
+                {% for item in analysis.suggestions %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        {% endif %}
+    </section>
+</section>
+
+<style>
+.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
+.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card { padding: 18px; }
+.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
+.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
+.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
+.career-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
+.career-form { display: grid; gap: 10px; }
+.career-form label { font-weight: 600; color: #334155; }
+.career-form textarea, .career-form input[type=file] { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font: inherit; }
+.resume-note { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px 12px; color: #334155; }
+.ai-card h2 { margin: 0 0 10px; color: #0f172a; font-size: 1.05rem; }
+.roadmap-list { margin: 0 0 14px; padding-left: 18px; color: #334155; line-height: 1.7; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.tag { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; border-radius: 999px; padding: 5px 10px; font-size: 0.78rem; }
+.muted { color: #64748b; }
+.action-link { display: inline-block; text-decoration: none; border-radius: 8px; background: #0f766e; color: #fff; padding: 10px 12px; font-weight: 600; border: none; cursor: pointer; }
+@media (max-width: 920px) { .career-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

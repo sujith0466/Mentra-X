@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Coding Results - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ challenge.title if challenge else 'Coding Results' }}</h2>
+    </div>
+    <p class="muted"><strong>Topic:</strong> {{ challenge.topic if challenge else 'Coding' }}</p>
+    <div class="results-summary">
+        <div class="summary-card">
+            <span>Score</span>
+            <strong>{{ evaluation.score }}%</strong>
+        </div>
+        <div class="summary-card">
+            <span>Passed Tests</span>
+            <strong>{{ evaluation.passed_tests }} / {{ evaluation.total_tests }}</strong>
+        </div>
+        <div class="summary-card">
+            <span>Submitted</span>
+            <strong>{{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</strong>
+        </div>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <h3>Test Results</h3>
+    {% if evaluation.error %}
+    <div class="result-card failure">{{ evaluation.error }}</div>
+    {% endif %}
+    {% for result in evaluation.results %}
+    <div class="result-card {% if result.passed %}success{% else %}failure{% endif %}">
+        <p><strong>Input:</strong> {{ result.input }}</p>
+        <p><strong>Expected:</strong> {{ result.expected }}</p>
+        <p><strong>Actual:</strong> {{ result.actual }}</p>
+        {% if result.error %}
+        <p><strong>Error:</strong> {{ result.error }}</p>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <h3>AI Feedback</h3>
+    <div class="result-card">
+        <p><strong>Complexity Hint:</strong> {{ feedback.complexity_hint }}</p>
+        <p><strong>Suggestion:</strong> {{ feedback.suggestion }}</p>
+        {% if feedback.common_mistakes %}
+        <ul>
+            {% for issue in feedback.common_mistakes %}
+            <li>{{ issue }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <h3>Execution Output</h3>
+    <pre>{{ submission.execution_output or 'No console output was produced.' }}</pre>
+    <a class="btn-primary-soft" href="{{ url_for('coding.coding_challenge_detail', id=challenge.id) }}">Try Again</a>
+</section>
+
+<style>
+.results-summary { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.summary-card, .result-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; background: #f8fafc; }
+.summary-card span { display: block; color: #64748b; margin-bottom: 8px; }
+.summary-card strong { font-size: 1.15rem; }
+.result-card.success { background: #f0fdf4; border-color: #86efac; }
+.result-card.failure { background: #fef2f2; border-color: #fca5a5; }
+pre { white-space: pre-wrap; word-break: break-word; background: #0f172a; color: #e2e8f0; padding: 14px; border-radius: 12px; overflow-x: auto; }
+</style>
+{% endblock %}

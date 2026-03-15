@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}Portfolio Builder - Mentra{% endblock %}
+
+{% block content %}
+<section class="ai-page-shell">
+    <div class="ai-hero-card">
+        <div>
+            <p class="eyebrow">AI Career Tools</p>
+            <h1>Developer Portfolio Builder</h1>
+            <p>This page turns your Mentra progress into a simple portfolio draft you can refine for applications and sharing.</p>
+        </div>
+    </div>
+
+    <section class="career-grid">
+        <article class="ai-card">
+            <h2>{{ portfolio.name }}</h2>
+            <p class="muted">Mentra learner portfolio snapshot</p>
+            <h3>Skills</h3>
+            <div class="tag-row">
+                {% for item in portfolio.skills %}
+                <span class="tag">{{ item }}</span>
+                {% else %}
+                <span class="muted">Complete more courses to grow your visible skills.</span>
+                {% endfor %}
+            </div>
+        </article>
+        <article class="ai-card">
+            <h2>Completed Courses</h2>
+            <ul class="roadmap-list">
+                {% for item in portfolio.courses_completed %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No completed courses yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Suggested Projects</h2>
+            <ul class="roadmap-list">
+                {% for item in portfolio.projects %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Achievements</h2>
+            <ul class="roadmap-list">
+                {% for item in portfolio.achievements %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+</section>
+
+<style>
+.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
+.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card { padding: 18px; }
+.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
+.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
+.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
+.career-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
+.ai-card h2, .ai-card h3 { margin: 0 0 10px; color: #0f172a; font-size: 1.05rem; }
+.muted { color: #64748b; }
+.tag-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; border-radius: 999px; padding: 5px 10px; font-size: 0.78rem; }
+.roadmap-list { margin: 0; padding-left: 18px; color: #334155; line-height: 1.7; }
+@media (max-width: 920px) { .career-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}

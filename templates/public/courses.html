@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Courses - Mentra{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="courses-section">
+        <h1>Explore Courses</h1>
+        
+        <!-- Search and Filter -->
+        <div class="search-filter">
+            <form method="GET" class="search-form">
+                <input type="text" name="search" placeholder="Search courses..." value="{{ search_query }}" class="search-input">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+            
+            <div class="domain-filter">
+                <a href="{{ url_for('public.courses') }}" class="filter-btn {% if not selected_domain %}active{% endif %}">All Domains</a>
+                {% for domain in domains %}
+                <a href="{{ url_for('public.courses', domain=domain.id) }}" 
+                   class="filter-btn {% if selected_domain|string == domain.id|string %}active{% endif %}">
+                    {{ domain.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Courses Grid -->
+        {% if courses %}
+            <div class="courses-grid">
+                {% for course in courses %}
+                <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="course-card-link">
+                    <div class="course-card-simple tutedude-tile">
+                        <div class="course-image">
+                            <img src="{{ course.resolved_image_url or url_for('static', filename='images/courses/default_course.png') }}" alt="{{ course.title }}">
+                        </div>
+                        <h3 class="course-title-simple">{{ course.title }}</h3>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-results">
+                <p>No courses found. Try a different search or filter.</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="motivation-courses">
+        <p>Every expert was once a beginner.</p>
+        <p>Start learning today and become unstoppable.</p>
+    </section>
+</div>
+<style>
+.motivation-courses {
+    text-align: center;
+    margin: 24px auto 6px;
+    padding: 18px 16px;
+    border-radius: 12px;
+    max-width: 760px;
+    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #cbd5e1;
+}
+.motivation-courses p {
+    margin: 0;
+    font-size: 1.08rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+.motivation-courses p + p {
+    margin-top: 4px;
+    color: #0f766e;
+}
+</style>
+{% endblock %}
