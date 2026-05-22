@@ -1,9 +1,20 @@
 {% extends "base.html" %}
-{% block title %}System Alerts - Education Portal{% endblock %}
+{% block title %}System Alerts - Mentra{% endblock %}
 {% block content %}
 <div class="container">
 <section class="system-alerts">
     <h1>System Alerts</h1>
+    <p class="muted">Proactive visibility into data quality, security signals, and operational stability.</p>
+    <div class="referral-stats">
+        <article class="stat-card">
+            <h3>Quality Alerts</h3>
+            <p class="stat-value">{{ quality.alerts|length }}</p>
+        </article>
+        <article class="stat-card">
+            <h3>Recent Events</h3>
+            <p class="stat-value">{{ recent_errors|length }}</p>
+        </article>
+    </div>
     <h2>Content Quality</h2>
     <ul>
         {% if quality.alerts %}
@@ -16,19 +27,21 @@
     </ul>
 
     <h2>Recent Security/Health Events</h2>
-    <table class="admin-table">
-        <thead><tr><th>Time</th><th>Action</th><th>Actor</th><th>Meta</th></tr></thead>
-        <tbody>
-            {% for log in recent_errors %}
-            <tr>
-                <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M') if log.created_at else '-' }}</td>
-                <td>{{ log.action_type }}</td>
-                <td>{{ log.actor_id or '-' }}</td>
-                <td><code>{{ (log.metadata_json or '')[:120] }}</code></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="admin-table-wrap">
+        <table class="admin-table">
+            <thead><tr><th>Time</th><th>Action</th><th>Actor</th><th>Meta</th></tr></thead>
+            <tbody>
+                {% for log in recent_errors %}
+                <tr>
+                    <td>{{ log.created_at.strftime('%Y-%m-%d %H:%M') if log.created_at else '-' }}</td>
+                    <td>{{ log.action_type }}</td>
+                    <td>{{ log.actor_id or '-' }}</td>
+                    <td><code>{{ (log.metadata_json or '')[:120] }}</code></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </section>
 </div>
 {% endblock %}

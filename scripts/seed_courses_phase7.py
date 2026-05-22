@@ -74,88 +74,27 @@ DOMAIN_VIDEO_URLS = {
     ],
 }
 
-DOMAIN_MODULES = {
-    "Web Development": [
-        "Foundations of the Web",
-        "Page Structure and Styling",
-        "Interactive Frontend Development",
-        "Backend Integration",
-        "Testing and Deployment",
-        "Final Project",
-    ],
-    "Artificial Intelligence": [
-        "AI Foundations",
-        "Problem Solving with Python",
-        "Intelligent Systems and Models",
-        "Real World AI Applications",
-        "Ethics and Evaluation",
-        "Final Project",
-    ],
-    "Data Science": [
-        "Data Science Foundations",
-        "Working with Data",
-        "Visualization and Storytelling",
-        "Statistical Reasoning",
-        "Insights and Decision Making",
-        "Final Project",
-    ],
-    "Machine Learning": [
-        "ML Foundations",
-        "Preparing Data",
-        "Training Models",
-        "Evaluation and Improvement",
-        "Deployment Thinking",
-        "Final Project",
-    ],
-    "Cybersecurity": [
-        "Security Foundations",
-        "Threats and Risk Awareness",
-        "Network and Application Security",
-        "Detection and Response",
-        "Hardening Best Practices",
-        "Final Project",
-    ],
-    "Cloud Computing": [
-        "Cloud Foundations",
-        "Core Services and Architecture",
-        "Containers and Compute",
-        "Scaling and Reliability",
-        "Security and Cost Control",
-        "Final Project",
-    ],
-    "DevOps": [
-        "DevOps Culture and Workflow",
-        "Source Control and Automation",
-        "CI/CD Delivery Practices",
-        "Infrastructure and Environments",
-        "Monitoring and Reliability",
-        "Final Project",
-    ],
-    "Mobile Development": [
-        "Mobile Foundations",
-        "UI and Navigation",
-        "State and Data Handling",
-        "Platform Features",
-        "Testing and Release",
-        "Final Project",
-    ],
-    "Blockchain": [
-        "Blockchain Foundations",
-        "Transactions and Consensus",
-        "Smart Contract Development",
-        "Security and Testing",
-        "DApp Integration",
-        "Final Project",
-    ],
-    "Software Engineering": [
-        "Engineering Foundations",
-        "Requirements and Design",
-        "Architecture and Patterns",
-        "Testing and Quality",
-        "Collaboration and Delivery",
-        "Final Project",
-    ],
+DOMAIN_IMAGE_MAP = {
+    "Web Development": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1200&q=80",
+    "Artificial Intelligence": "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1200&q=80",
+    "Data Science": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    "Machine Learning": "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=1200&q=80",
+    "Cybersecurity": "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=1200&q=80",
+    "Cloud Computing": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80",
+    "DevOps": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+    "Mobile Development": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?auto=format&fit=crop&w=1200&q=80",
+    "Blockchain": "https://images.unsplash.com/photo-1639762681485-074b7f938ba0?auto=format&fit=crop&w=1200&q=80",
+    "Software Engineering": "https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?auto=format&fit=crop&w=1200&q=80",
 }
+
+
+def module_structure(project_title: str) -> list[str]:
+    return [
+        "Module 1: Basics",
+        "Module 2: Core Concepts",
+        "Module 3: Intermediate",
+        f"Module 4: Advanced / Project - {project_title}",
+    ]
 
 CATALOG = {
     "Web Development": [
@@ -243,8 +182,8 @@ def ensure_course(domain: Domain, title: str, description: str, project_title: s
     course.instructor = instructor
     course.status = "published"
     course.demo_video_url = DOMAIN_VIDEO_URLS[domain.name][0]
-    if not course.image_url:
-        course.image_url = ""
+    # Keep image data realistic and domain-specific.
+    course.image_url = DOMAIN_IMAGE_MAP.get(domain.name, course.image_url or "")
     return course, created
 
 
@@ -294,7 +233,7 @@ def ensure_module_content(course: Course, domain_name: str, module_title: str, m
         module.order_index = module_order
 
     video_urls = DOMAIN_VIDEO_URLS[domain_name]
-    is_final_project = module_title == "Final Project"
+    is_final_project = module_title.startswith("Module 4:")
     titles = lesson_titles(module_title if not is_final_project else project_title, is_final_project)
 
     for lesson_order, title in enumerate(titles, start=1):
@@ -382,7 +321,7 @@ def ensure_module_content(course: Course, domain_name: str, module_title: str, m
         question.order_index = index
         question.order_number = index
 
-    if module_title == "Final Project":
+    if is_final_project:
         assignment_title = f"Final Project: {project_title}"
         instructions = (
             f"Build and submit the final course project for {course.title}. "
@@ -425,12 +364,12 @@ def seed_catalog() -> dict[str, int]:
     for domain_name, courses in CATALOG.items():
         domain, domain_created = ensure_domain(domain_name)
         totals["domains_created"] += 1 if domain_created else 0
-        module_titles = DOMAIN_MODULES[domain_name]
 
         for title, description, project_title, instructor in courses:
             course, course_created = ensure_course(domain, title, description, project_title, instructor)
             totals["courses_created"] += 1 if course_created else 0
             totals["courses_total"] += 1
+            module_titles = module_structure(project_title)
             totals["syllabus_created"] += ensure_syllabus(course, module_titles)
 
             for module_order, module_title in enumerate(module_titles, start=1):

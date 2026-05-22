@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}Debugging Assistant - Mentra{% endblock %}
 
@@ -14,6 +14,10 @@
         <form method="POST" class="stack-form">
             <label for="error_text">Error Text</label>
             <textarea id="error_text" name="error_text" rows="10" class="code-editor" placeholder="Example: IndexError: list index out of range">{{ error_text }}</textarea>
+            <label for="stack_trace">Stack Trace (optional)</label>
+            <textarea id="stack_trace" name="stack_trace" rows="8" class="code-editor" placeholder="Paste the traceback stack...">{{ stack_trace }}</textarea>
+            <label for="code_snippet">Code Snippet (optional)</label>
+            <textarea id="code_snippet" name="code_snippet" rows="10" class="code-editor" placeholder="Paste the relevant code here...">{{ code_snippet }}</textarea>
             <div class="button-row">
                 <button type="submit" class="btn-primary-soft">Analyze Error</button>
             </div>
@@ -43,13 +47,19 @@
             <h3>Corrected Example</h3>
             <pre>{{ analysis.corrected_example or analysis.example }}</pre>
         </article>
+        {% if analysis.trace_hint %}
+        <article class="card-shell info-card wide">
+            <h3>Trace Hint</h3>
+            <pre>{{ analysis.trace_hint }}</pre>
+        </article>
+        {% endif %}
     </section>
     {% endif %}
 </section>
 
 <style>
 .tool-shell { display: grid; gap: 18px; }
-.card-shell { background: #ffffff; border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
+.card-shell { background: var(--surface); border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
 .hero-card h1 { margin: 0 0 8px; }
 .eyebrow { margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: #0f766e; font-weight: 700; }
 .muted { color: #64748b; }
@@ -70,3 +80,4 @@
 }
 </style>
 {% endblock %}
+

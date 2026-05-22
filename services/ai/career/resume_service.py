@@ -6,8 +6,8 @@ from typing import Dict, List
 CAREER_SKILL_MAP: Dict[str, List[str]] = {
     "AI Engineer": ["Python", "Machine Learning", "Neural Networks", "Data Processing", "Deep Learning"],
     "Data Scientist": ["Python", "Pandas", "Statistics", "Visualization", "Machine Learning"],
-    "Full Stack Developer": ["HTML", "CSS", "JavaScript", "Flask", "SQL"],
-    "Backend Developer": ["Python", "Flask", "APIs", "SQL", "Authentication"],
+    "Full Stack Developer": ["HTML", "CSS", "JavaScript", "Flask", "SQL", "REST APIs"],
+    "Backend Developer": ["Python", "Flask", "REST APIs", "SQL", "Authentication", "Docker"],
     "Frontend Developer": ["HTML", "CSS", "JavaScript", "React", "Responsive Design"],
 }
 
@@ -25,10 +25,12 @@ SKILL_KEYWORDS = {
     "JavaScript": ["javascript", "js"],
     "Flask": ["flask"],
     "SQL": ["sql", "database", "mysql", "sqlite", "postgres"],
-    "APIs": ["api", "rest"],
+    "REST APIs": ["api", "rest", "rest api", "restful"],
     "Authentication": ["authentication", "auth", "login"],
     "React": ["react", "next.js", "nextjs"],
     "Responsive Design": ["responsive", "mobile first", "adaptive"],
+    "Data Structures": ["data structures", "dsa", "algorithms", "algorithm"],
+    "Docker": ["docker", "containers", "containerization", "kubernetes"],
 }
 
 EXPERIENCE_KEYWORDS = {

@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}Assignments - {{ course.title }}{% endblock %}
 {% block content %}
 <div class="container">
@@ -42,10 +42,11 @@
 </div>
 <style>
 .learning-tabs { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 16px; }
-.tab-link { text-decoration:none; padding:7px 12px; border:1px solid #d1d5db; border-radius:8px; color:#111827; background:#fff; }
-.tab-link.active { background:#0f766e; color:#fff; border-color:#0f766e; }
-.assignment-card { background:#fff; border:1px solid #e5e7eb; border-radius:10px; padding:14px; margin-bottom:14px; }
+.tab-link { text-decoration:none; padding:7px 12px; border:1px solid var(--border); border-radius:8px; color:var(--text); background:var(--surface); }
+.tab-link.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.assignment-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:14px; }
 .assignment-card textarea { width:100%; margin-bottom:8px; }
-.submission-status { background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px; margin-bottom:10px; }
+.submission-status { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:10px; }
 </style>
 {% endblock %}
+

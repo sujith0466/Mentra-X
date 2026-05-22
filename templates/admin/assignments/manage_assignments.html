@@ -1,9 +1,24 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 {% block title %}Manage Assignments - {{ course.title }}{% endblock %}
 {% block content %}
 <div class="container">
+    <section class="admin-page-card">
     <h1>Assignments for {{ course.title }}</h1>
-    <p><a href="{{ url_for('admin_assignment.assignments_overview') }}">&larr; Back to Assignment Courses</a></p>
+    <p class="muted">Build assignment workflows, due dates, grading criteria, and submission reviews.</p>
+    <div class="admin-toolbar">
+        <a class="btn btn-secondary" href="{{ url_for('admin_assignment.assignments_overview') }}">&larr; Back to Assignment Courses</a>
+        <a class="btn btn-secondary" href="{{ url_for('admin.manage_courses') }}">Go to Courses</a>
+    </div>
+    <div class="referral-stats">
+        <article class="stat-card">
+            <h3>Total Assignments</h3>
+            <p class="stat-value">{{ assignments.total }}</p>
+        </article>
+        <article class="stat-card">
+            <h3>Page</h3>
+            <p class="stat-value">{{ assignments.page }}/{{ assignments.pages }}</p>
+        </article>
+    </div>
 
     <form method="POST" action="{{ url_for('admin_assignment.add_assignment', course_id=course.id) }}" enctype="multipart/form-data" class="form">
         <h2>Create Assignment</h2>
@@ -26,6 +41,7 @@
         <button class="btn btn-primary" type="submit">Create Assignment</button>
     </form>
 
+    <div class="table-container">
     <table class="admin-table">
         <thead><tr><th>Title</th><th>Due Date</th><th>Marks</th><th>Attachment</th><th>Actions</th></tr></thead>
         <tbody>
@@ -68,15 +84,22 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="pagination-wrap">
-        {% if assignments.has_prev %}
-        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.prev_num) }}">Previous</a>
-        {% endif %}
-        <span>Page {{ assignments.page }} of {{ assignments.pages }}</span>
-        {% if assignments.has_next %}
-        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.next_num) }}">Next</a>
-        {% endif %}
     </div>
+
+    <div class="pagination-wrap">
+        <span class="pagination-meta">Page {{ assignments.page }} of {{ assignments.pages }}</span>
+        <div class="pagination-controls">
+            {% if assignments.has_prev %}
+            <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.prev_num) }}">Previous</a>
+            {% endif %}
+            {% if assignments.has_next %}
+            <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id, page=assignments.next_num) }}">Next</a>
+            {% endif %}
+        </div>
+    </div>
+    </section>
 </div>
 <style>.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }</style>
 {% endblock %}
+
+

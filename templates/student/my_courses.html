@@ -1,6 +1,6 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}My Courses - Education Portal{% endblock %}
+{% block title %}My Courses - Mentra{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -20,13 +20,13 @@
                         <p class="course-description">{{ course.description }}</p>
                         
                         {% if course.instructor %}
-                        <p class="instructor">👨‍🏫 {{ course.instructor }}</p>
+                        <p class="instructor">Instructor: {{ course.instructor }}</p>
                         {% endif %}
                         
                         <div class="course-meta">
-                            <span>📹 {{ course.videos|length }} Videos</span>
-                            <span>📖 {{ course.syllabuses|length }} Topics</span>
-                            <span>📅 Enrolled: {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</span>
+                            <span>{{ course.videos|length }} Videos</span>
+                            <span>{{ course.syllabuses|length }} Topics</span>
+                            <span>Enrolled: {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</span>
                         </div>
                     </div>
                     
@@ -41,7 +41,7 @@
                         
                         {% if enrollment.completed %}
                         <div class="completion-badge">
-                            ✓ Completed
+                            Completed
                         </div>
                         {% endif %}
                         
@@ -54,7 +54,7 @@
             </div>
         {% else %}
             <div class="no-courses">
-                <h2>📚 No Courses Yet</h2>
+                <h2>No Courses Yet</h2>
                 <p>You haven't enrolled in any courses yet. Start learning today!</p>
                 <a href="{{ url_for('public.courses') }}" class="btn btn-primary btn-lg">Browse Courses</a>
             </div>
@@ -67,7 +67,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: white;
+    background: var(--surface);
     padding: 20px;
     margin: 15px 0;
     border-radius: 8px;
@@ -106,3 +106,4 @@
 }
 </style>
 {% endblock %}
+

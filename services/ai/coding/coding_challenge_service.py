@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import Dict, List, Optional, Tuple
 
 from models import CodingChallenge, CodingSubmission, SkillProgress, db
-from services.ai.coding.code_execution_service import execute_python_code
+from services.ai.coding.code_execution_service import execute_code, execute_python_code
 
 
 def get_coding_challenges(topic: Optional[str] = None) -> List[CodingChallenge]:
@@ -86,8 +86,20 @@ def _invoke_submission(code: str, function_name: str, raw_input: str) -> Dict[st
         return {"success": True, "result": output, "error": None}
 
 
-def evaluate_submission(code: str, challenge: CodingChallenge) -> Dict[str, object]:
+def evaluate_submission(code: str, challenge: CodingChallenge, language: str = "python") -> Dict[str, object]:
     code = code or ""
+    normalized_language = (language or "python").strip().lower()
+    if normalized_language not in {"python", "py"}:
+        execution = execute_code(normalized_language, code)
+        return {
+            "passed_tests": 0,
+            "total_tests": len(challenge.get_test_cases()),
+            "score": 0,
+            "execution_output": execution.get("output", ""),
+            "error": execution.get("error") or "Only Python challenges support automated tests right now.",
+            "results": [],
+        }
+
     function_name = _extract_function_name(code)
     test_cases = challenge.get_test_cases()
     results: List[Dict[str, object]] = []

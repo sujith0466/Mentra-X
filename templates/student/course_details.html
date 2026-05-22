@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}{{ course.title }} - Course Details{% endblock %}
 
@@ -44,7 +44,7 @@
     }
 
     .course-header {
-        background: white;
+        background: var(--surface);
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -215,7 +215,7 @@
     }
 
     .course-description-section {
-        background: white;
+        background: var(--surface);
         border-radius: 12px;
         padding: 40px;
         margin-bottom: 40px;
@@ -238,7 +238,7 @@
     }
 
     .demo-video-section {
-        background: white;
+        background: var(--surface);
         border-radius: 12px;
         padding: 40px;
         margin-bottom: 40px;
@@ -273,7 +273,7 @@
     }
 
     .syllabus-section {
-        background: white;
+        background: var(--surface);
         border-radius: 12px;
         padding: 40px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -352,7 +352,7 @@
         border: 1px solid #d1d5db;
         border-radius: 8px;
         color: #111827;
-        background: #fff;
+        background: var(--surface);
         font-weight: 600;
         font-size: 0.9rem;
     }
@@ -414,7 +414,7 @@
                     {% if course.image_url %}
                         <img src="{{ course.image_url }}" alt="{{ course.title }}">
                     {% else %}
-                        📚
+                        Course
                     {% endif %}
                 </div>
 
@@ -425,19 +425,19 @@
                     
                     {% if course.instructor %}
                         <div class="course-instructor-info">
-                            👨‍🏫 <strong>Instructor:</strong> {{ course.instructor }}
+                            <strong>Instructor:</strong> {{ course.instructor }}
                         </div>
                     {% endif %}
 
                     <div class="course-meta-info">
                         <div class="meta-item">
-                            <span class="meta-label">📊 Level</span>
+                            <span class="meta-label">Level</span>
                             <span class="meta-value">Beginner to Advanced</span>
                         </div>
                         <div class="meta-item">
-                            <span class="meta-label">💰 Price</span>
+                            <span class="meta-label">Price</span>
                             {% if course.price > 0 %}
-                                <span class="course-price-large">₹{{ "%.0f"|format(course.price) }}</span>
+                                <span class="course-price-large">Rs.{{ "%.0f"|format(course.price) }}</span>
                             {% else %}
                                 <span class="course-price-large free">FREE</span>
                             {% endif %}
@@ -447,11 +447,11 @@
                     <!-- Enrollment Actions -->
                     {% if is_enrolled %}
                         <div class="success-message">
-                            ✅ You are already enrolled in this course!
+                            You are already enrolled in this course.
                         </div>
                         <div class="enrollment-actions">
                             <a href="{{ url_for('student.course_videos', course_id=course.id) }}" class="btn-continue">
-                                Continue Learning →
+                                Continue Learning
                             </a>
                         </div>
                         <div class="learning-tabs">
@@ -464,13 +464,13 @@
                             <form method="POST" action="{{ url_for('student.enroll_course', course_id=course.id) }}" style="width: 100%;">
                                 <div class="enrollment-actions">
                                     <button type="submit" class="btn-enroll">
-                                        📝 Enroll Now
+                                        Enroll Now
                                     </button>
                                 </div>
                             </form>
                         {% else %}
                             <div class="login-needed">
-                                <p>🔐 Please <a href="{{ url_for('auth.login') }}">login</a> or <a href="{{ url_for('auth.register') }}">sign up</a> to enroll in this course.</p>
+                                <p>Please <a href="{{ url_for('auth.login') }}">login</a> or <a href="{{ url_for('auth.register') }}">sign up</a> to enroll in this course.</p>
                             </div>
                         {% endif %}
                     {% endif %}
@@ -481,14 +481,14 @@
         <!-- Course Description -->
         {% if course.description %}
             <div class="course-description-section">
-                <h2 class="section-title">📖 About This Course</h2>
+                <h2 class="section-title">About This Course</h2>
                 <p class="course-description-text">{{ course.description }}</p>
             </div>
         {% endif %}
 
         <!-- Demo Video Section -->
         <div class="demo-video-section">
-            <h2 class="section-title">🎥 Demo Video Preview</h2>
+            <h2 class="section-title">Demo Video Preview</h2>
             {% if course.demo_video_url %}
                 <div class="video-frame">
                     <iframe src="{{ course.demo_video_url }}" allowfullscreen></iframe>
@@ -503,7 +503,7 @@
 
         <!-- Syllabus Section -->
         <div class="syllabus-section">
-            <h2 class="section-title">📚 Course Syllabus</h2>
+            <h2 class="section-title">Course Syllabus</h2>
             {% if syllabus %}
                 <ul class="syllabus-list">
                     {% for item in syllabus %}
@@ -576,4 +576,5 @@
 }
 </style>
 {% endblock %}
+
 

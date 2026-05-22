@@ -1,100 +1,241 @@
 {% extends "base.html" %}
 
-{% block title %}About Us - Education Portal{% endblock %}
+{% block title %}About Us - Mentra{% endblock %}
+
+{% block styles %}
+<style>
+.about-product {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 24px 8px 10px;
+}
+.about-hero {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: linear-gradient(140deg, rgba(29, 78, 216, 0.12), rgba(15, 118, 110, 0.1));
+    padding: 28px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+}
+.about-hero h1 {
+    margin: 0 0 10px;
+    font-size: clamp(1.7rem, 2.8vw, 2.6rem);
+}
+.about-hero p {
+    margin: 0;
+    max-width: 900px;
+    color: var(--secondary);
+    line-height: 1.7;
+    font-size: 1.03rem;
+}
+.about-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+.about-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+.about-card h2 {
+    margin: 0 0 10px;
+    font-size: 1.15rem;
+}
+.about-card p {
+    margin: 0;
+    color: var(--secondary);
+    line-height: 1.65;
+}
+.feature-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+.feature-list li {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 10px;
+    padding: 9px 10px;
+    font-weight: 600;
+}
+.domains-grid,
+.value-grid {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+.domain-pill,
+.value-card {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    font-weight: 700;
+}
+.value-card p {
+    margin: 8px 0 0;
+    color: var(--secondary);
+    font-size: 0.86rem;
+    font-weight: 500;
+}
+.flow {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+.flow-step {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 14px;
+}
+.flow-step span {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    font-weight: 800;
+    background: linear-gradient(135deg, #2d5bba, #f08525);
+    color: #fff;
+}
+.flow-step h3 {
+    margin: 10px 0 6px;
+    font-size: 1rem;
+}
+.flow-step p {
+    margin: 0;
+    color: var(--secondary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+.about-cta {
+    margin-top: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    text-align: center;
+    background: var(--surface);
+}
+.about-cta p {
+    margin: 0 0 10px;
+    color: var(--secondary);
+}
+.about-cta .btn {
+    min-width: 170px;
+}
+@media (max-width: 1100px) {
+    .about-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .domains-grid,
+    .value-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+@media (max-width: 760px) {
+    .about-grid,
+    .flow,
+    .domains-grid,
+    .value-grid {
+        grid-template-columns: 1fr;
+    }
+    .about-hero,
+    .about-card {
+        padding: 14px;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container">
-    <section class="about-section">
-        <h1>About Education Portal</h1>
-        
-        <div class="about-content">
-            <div class="about-card">
-                <h2>Our Mission</h2>
-                <p>
-                    At Education Portal, our mission is to make quality education accessible to everyone, everywhere. 
-                    We believe that learning should be affordable, flexible, and rewarding. Our platform combines 
-                    comprehensive courses with a unique referral system that rewards both learners and their friends.
-                </p>
-            </div>
-            
-            <div class="about-card">
-                <h2>Why Choose Us?</h2>
-                <ul class="features-list">
-                    <li>✓ Courses from industry experts</li>
-                    <li>✓ Flexible learning schedule</li>
-                    <li>✓ Earn rewards through referrals</li>
-                    <li>✓ Community of learners</li>
-                    <li>✓ Affordable or free courses</li>
-                    <li>✓ Track your progress</li>
-                    <li>✓ Learn at your own pace</li>
-                    <li>✓ Lifetime access to content</li>
-                </ul>
-            </div>
-            
-            <div class="about-card">
-                <h2>Our Features</h2>
-                <div class="features-grid">
-                    <div class="feature">
-                        <h3>📚 Diverse Courses</h3>
-                        <p>Courses across multiple domains including Data Science, Web Development, AI, Cloud Computing, and Cyber Security.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>👨‍🏫 Expert Instructors</h3>
-                        <p>Learn from experienced professionals who have worked in their respective fields.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>💰 Referral Program</h3>
-                        <p>Earn ₹100 cashback for every friend who registers using your referral code.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📱 24/7 Access</h3>
-                        <p>Access your courses anytime, anywhere from any device - desktop, tablet, or mobile.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>📊 Progress Tracking</h3>
-                        <p>Monitor your learning progress with detailed statistics and completion tracking.</p>
-                    </div>
-                    <div class="feature">
-                        <h3>🎯 Personalized Learning</h3>
-                        <p>Learn at your own pace with flexible schedules that fit your lifestyle.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-card">
-                <h2>How Our Referral Program Works</h2>
-                <div class="referral-flow">
-                    <div class="flow-step">
-                        <div class="step-number">1</div>
-                        <h4>Sign Up</h4>
-                        <p>Create your account and get a unique referral code</p>
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-step">
-                        <div class="step-number">2</div>
-                        <h4>Share</h4>
-                        <p>Share your referral code or link with friends</p>
-                    </div>
-                    <div class="flow-arrow">→</div>
-                    <div class="flow-step">
-                        <div class="step-number">3</div>
-                        <h4>Earn</h4>
-                        <p>Get ₹100 cashback for every friend who registers</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="about-card">
-                <h2>Our Learning Domains</h2>
-                <ul class="domains-list">
-                    <li>📊 Data Science</li>
-                    <li>🌐 Web Development</li>
-                    <li>🤖 Artificial Intelligence</li>
-                    <li>☁️ Cloud Computing</li>
-                    <li>🛡️ Cyber Security</li>
-                </ul>
-            </div>
-        </div>
+<div class="about-product">
+    <section class="about-hero">
+        <h1>About Mentra</h1>
+        <p>Mentra is a startup-style learning platform built for ambitious students. We combine modern courses, practical projects, and AI-powered guidance so learners can move from theory to real-world skills faster.</p>
+    </section>
+
+    <section class="about-grid">
+        <article class="about-card">
+            <h2>Our Mission</h2>
+            <p>Make high-quality technology education accessible, practical, and outcome-driven for every learner regardless of background.</p>
+        </article>
+        <article class="about-card">
+            <h2>Why Learners Choose Mentra</h2>
+            <ul class="feature-list">
+                <li>Industry-relevant course paths</li>
+                <li>Project-first learning approach</li>
+                <li>Flexible self-paced experience</li>
+                <li>Progress tracking and performance insights</li>
+                <li>Referral rewards and community growth</li>
+            </ul>
+        </article>
+        <article class="about-card">
+            <h2>Built for Career Momentum</h2>
+            <p>From beginner foundations to advanced product workflows, our curriculum is designed to help students become internship-ready and job-ready with confidence.</p>
+        </article>
+    </section>
+
+    <section class="value-grid">
+        <article class="value-card">
+            Outcome Focus
+            <p>Every course maps to practical deliverables.</p>
+        </article>
+        <article class="value-card">
+            Expert Guidance
+            <p>Learn from mentors with real project experience.</p>
+        </article>
+        <article class="value-card">
+            AI Support
+            <p>Get smart recommendations and learning insights.</p>
+        </article>
+        <article class="value-card">
+            Modern UX
+            <p>A smooth product experience across devices.</p>
+        </article>
+        <article class="value-card">
+            Community
+            <p>Grow with peers and referral-driven engagement.</p>
+        </article>
+    </section>
+
+    <section class="flow">
+        <article class="flow-step">
+            <span>1</span>
+            <h3>Join Mentra</h3>
+            <p>Create your account and choose your learning direction.</p>
+        </article>
+        <article class="flow-step">
+            <span>2</span>
+            <h3>Learn by Building</h3>
+            <p>Complete lessons, quizzes, and assignments in structured modules.</p>
+        </article>
+        <article class="flow-step">
+            <span>3</span>
+            <h3>Share and Grow</h3>
+            <p>Invite friends, earn rewards, and keep leveling up your skills.</p>
+        </article>
+    </section>
+
+    <section class="domains-grid">
+        <div class="domain-pill">Data Science</div>
+        <div class="domain-pill">Web Development</div>
+        <div class="domain-pill">Artificial Intelligence</div>
+        <div class="domain-pill">Cloud Computing</div>
+        <div class="domain-pill">Cyber Security</div>
+    </section>
+
+    <section class="about-cta">
+        <p>Build momentum with a learning platform designed like a modern startup product.</p>
+        <a href="{{ url_for('public.courses') }}" class="btn btn-primary">Explore Courses</a>
     </section>
 </div>
 {% endblock %}

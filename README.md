@@ -30,6 +30,87 @@ Mentra is designed as a single platform where students can:
 - community, badges, XP, and levels
 - multi-agent AI system with learning, debug, career, project, interview, and community specialists
 
+## Phase-1 Enhancements - Resume Intelligence Upgrade
+
+- Resume Analyzer: stable PDF/DOCX/TXT parsing with structured extraction saved to `UserResume`
+- Skill Gap Detector: compares resume skills, enrolled course skills, completed course skills, and activity signals
+- Resume-Based Course Recommendations: prioritize missing skills, skip completed courses, fallback to popular courses when resume data is missing
+- AI Career Roadmap: phased roadmap (Core Skills, Intermediate Skills, Projects, Interview Prep) using resume skills, course completion, and coding performance
+- Testing Results: `run_all_tests.py` (40 tests) passed
+
+## Phase-2 Enhancements - AI Learning Intelligence
+
+- Smart Revision: combines quiz scores, repeated misses, assignment performance, incomplete lessons, and coding results with safe fallbacks
+- Portfolio Builder: includes resume skills, completed courses, projects, and coding challenge solutions with starter project fallbacks
+- AI Project Idea Generator: personalized ideas based on resume skills, course history, and learning focus, with difficulty labels
+- AI Learning Insights: improved weak-topic detection and skill/course guidance using resume + performance signals
+- Testing Results: `run_all_tests.py` (40 tests) passed
+
+## Phase-3 Enhancements - Developer Platform Upgrade
+
+- Coding Practice Platform: language selection, run/submit actions, and clearer result panels with sandboxed execution
+- Debugging Assistant: accepts error text, stack trace, and code snippets for structured explanations and fixes
+- Codebase Explainer: supports project structure plus code snippets with purpose, logic flow, and improvement suggestions
+- Developer Tools UI: refreshed cards, code blocks, output panels, and spacing across coding, debugging, and explainer pages
+- Testing Results: `run_all_tests.py` (40 tests) passed
+
+## Phase-4 Enhancements - Platform UX & System Improvements
+
+- AI Learning Feed UI: card layout with tags, action buttons, and safe empty-state messaging
+- Edit Profile: prefilled profile editor with validation, confirmation prompt, and persistent profile metadata
+- Wallet and Rewards: verified wallet balance + reward history rendering with friendly fallbacks
+- Referral System: new /ref/<code> flow with session tracking, bonus protection, and self-referral checks
+- Testing Results: `run_all_tests.py` (40 tests) passed
+
+## MySQL Migration & UI Upgrade
+
+- Global UI theme refresh with modern purple/gold palette and improved card spacing
+- Dark mode / light mode toggle with localStorage persistence
+- Navbar updates with Sign In + Register buttons
+- Learning feed and learning insights UI redesign with card layouts and indicators
+- MySQL configuration support via `MENTRA_USE_MYSQL` and `MENTRA_MYSQL_URL` (SQLite remains default for tests)
+- Data migration guide: export SQLite data, import into MySQL, and verify tables
+
+### MySQL Migration Steps
+
+1. Install the driver: `pip install pymysql`
+2. Create the database: `mentra_db`
+3. Set environment variables:
+   - `MENTRA_USE_MYSQL=true`
+   - `MENTRA_MYSQL_URL=mysql+pymysql://username:password@localhost/mentra_db`
+4. Run the app once to create tables.
+5. Export SQLite data using `sqlite3 portal.db`, then `.mode insert`, `.output mentra_export.sql`, `.dump`.
+6. Import into MySQL with `USE mentra_db;` then `SOURCE mentra_export.sql;`.
+
+### MySQL Migration Steps
+
+
+## Hybrid Database Architecture (MySQL + MongoDB)
+
+Mentra uses a production-level hybrid database architecture to separate structured LMS data from flexible AI logs.
+- **MySQL (Primary)**: Stores all core structured data including users, courses, domains, and enrollments.
+- **MongoDB (Secondary)**: Stores AI interactions, flexible logs, and analytics (e.g., `chat_logs`, `learning_insights`, `project_ideas`, `coding_logs`).
+
+MongoDB integration is strictly additive. If MongoDB goes offline or fails to connect, the application's core functionality will continue to work seamlessly.
+
+## Environment Configuration (.env)
+
+Create a `.env` file in the project root with:
+
+- `MENTRA_USE_MYSQL=true`
+- `MENTRA_MYSQL_HOST=localhost`
+- `MENTRA_MYSQL_PORT=3306`
+- `MENTRA_MYSQL_DB=mentra_db`
+- `MENTRA_MYSQL_USER=root`
+- `MENTRA_MYSQL_PASSWORD=yourpassword`
+- `MENTRA_USE_MONGO=true`
+- `MENTRA_MONGO_URI=mongodb://localhost:27017`
+- `MENTRA_MONGO_DB=mentra_ai`
+- `SECRET_KEY=mentra-secret-key`
+- `FLASK_ENV=development`
+
+If `.env` is missing, Mentra falls back to SQLite and default-safe settings.
+
 ## Architecture Overview
 
 Mentra follows a modular Flask architecture:
@@ -144,6 +225,21 @@ python -m unittest discover tests -v
 - `Docs/`: phase guides and architecture documentation
 - `tests/`: automated test coverage for all major systems
 
+## Startup Catalog Seeding
+
+Use this command to clean QA/test noise, remove duplicate catalog entries, and seed a full startup-style course catalog:
+
+`python scripts/seed_startup_catalog.py`
+
+What it does:
+- removes noisy sample/test catalog rows (for example, `QA Domain ...`, `QA Course ...`)
+- de-duplicates domains/courses/modules/syllabus/videos/quizzes/assignments
+- seeds full course data with modules, syllabus topics, lesson videos, quizzes, quiz questions, and assignments
+
+Guardrails now applied at model level:
+- random/test-like names are blocked
+- duplicate titles are blocked within the same catalog scope (domain or course)
+
 ## Future Improvements
 
 - add background jobs for heavier AI workflows and grading tasks
@@ -154,4 +250,34 @@ python -m unittest discover tests -v
 
 ## Database Note
 
-Mentra uses SQLite. The current project keeps SQLite unchanged and does not require PostgreSQL.
+Mentra defaults to SQLite for local and test runs. MySQL is supported via environment variables, with SQLite kept as a backup.
+
+
+## MySQL Verification
+
+To verify MySQL is active when running `python app.py`:
+
+- Confirm startup logs show `MENTRA_USE_MYSQL = true` and a MySQL URI.
+- Look for `MySQL connection successful` and `Connected to database: mentra_db`.
+- Visit `/db-check` to confirm JSON response includes `{"database": "mentra_db"}`.
+- Inspect tables via MySQL: `SHOW TABLES;` and validate rows with `SELECT COUNT(*) FROM users;`.
+
+If you see `Unknown database 'mentra_db'`, create the database in MySQL before running the app.
+
+## Final MySQL Migration Completion
+
+- MySQL database created: `mentra_db`.
+- `.env` provides MySQL credentials; SQLite (`instance/portal.db`) remains as fallback.
+- SQLite data exported and imported into MySQL using insert-only SQL.
+- Verification steps:
+  - Run `python app.py` and confirm `MySQL connection successful` and `Connected to database: mentra_db`.
+  - Call `/db-check` to confirm active database.
+  - Check table counts (e.g., `SELECT COUNT(*) FROM users;`).
+- Tests executed with MySQL enabled: `python run_all_tests.py`.
+## Documentation Refresh (May 20, 2026)
+
+- `/student/referral` now uses a startup-style layout with cleaner sections, better spacing, copy/share actions, and readable reward history.
+- Resume Analyzer UI was rebuilt to use space more efficiently with a two-panel workflow and clearer insights blocks.
+- Resume Analyzer now auto-loads saved resume text from uploaded files (TXT/PDF/DOCX) when available.
+- Resume analysis now powers targeted course recommendations by matching detected/missing skills against published courses while skipping already enrolled courses.
+- If a new upload cannot be parsed, the system safely falls back to stored structured resume data instead of breaking the user flow.

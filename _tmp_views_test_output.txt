@@ -1,0 +1,6 @@
+Testing /dashboard/overview: Status 200
+Testing /student/learning-path: Status 200
+Testing /student/weekly-report: Status 200
+Testing /student/flashcards: Status 200
+Testing /student/doubt-solver: Status 200
+Testing /student/resume-improver: Status 200

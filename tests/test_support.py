@@ -5,6 +5,8 @@ import sys
 import uuid
 from pathlib import Path
 
+from sqlalchemy import text
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
@@ -44,28 +46,29 @@ class SQLiteFixtureMixin:
 
     @classmethod
     def create_base_fixture(cls):
-        token = uuid.uuid4().hex[:8]
+        raw_token = uuid.uuid4().hex[:8]
+        token = "".join(chr(97 + (int(ch, 16) % 26)) for ch in raw_token)
         cls.fixture_token = token
         with app.app_context():
-            domain = Domain(name=f"QA Domain {token}", description="QA domain")
+            domain = Domain(name=f"Learning Domain {token}", description="Automation learning domain")
             db.session.add(domain)
             db.session.flush()
 
             course = Course(
-                title=f"QA Course {token}",
+                title=f"Learning Course {token}",
                 description="Python basics. Flask patterns. SQL practice.",
                 domain_id=domain.id,
                 price=0.0,
-                instructor="QA Mentor",
+                instructor="Mentra Instructor",
                 status="published",
                 demo_video_url="https://example.com/demo",
             )
             recommended_course = Course(
-                title=f"QA Advanced Course {token}",
+                title=f"Advanced Learning Course {token}",
                 description="Advanced Python and Flask architecture patterns.",
                 domain_id=domain.id,
                 price=0.0,
-                instructor="QA Mentor",
+                instructor="Mentra Instructor",
                 status="published",
             )
             db.session.add_all([course, recommended_course])
@@ -73,7 +76,7 @@ class SQLiteFixtureMixin:
 
             video = Video(
                 course_id=course.id,
-                title=f"QA Lesson {token}",
+                title=f"Learning Lesson {token}",
                 video_url="https://example.com/video",
                 description="Introduction to Python. Functions and Flask routing. SQL joins.",
                 duration="10:00",
@@ -84,8 +87,8 @@ class SQLiteFixtureMixin:
 
             quiz = Quiz(
                 course_id=course.id,
-                title=f"QA Quiz {token}",
-                description="Quiz for QA course",
+                title=f"Learning Quiz {token}",
+                description="Quiz for learning course",
                 question_count_target=1,
                 passing_percentage=60.0,
                 time_limit_minutes=10,
@@ -109,7 +112,7 @@ class SQLiteFixtureMixin:
             )
             assignment = Assignment(
                 course_id=course.id,
-                title=f"QA Assignment {token}",
+                title=f"Learning Assignment {token}",
                 instructions="Submit a short explanation of Flask routing.",
                 marks=100.0,
             )
@@ -175,6 +178,9 @@ class SQLiteFixtureMixin:
     @classmethod
     def cleanup_fixture(cls):
         with app.app_context():
+            if db.engine.dialect.name == 'mysql':
+                db.session.execute(text('SET FOREIGN_KEY_CHECKS=0'))
+                db.session.commit()
             student_id = cls.fixture_ids.get("student_id")
             attempt_ids = [row.id for row in QuizAttempt.query.filter_by(user_id=student_id).all()] if student_id else []
             if attempt_ids:
@@ -210,7 +216,9 @@ class SQLiteFixtureMixin:
                 record_id = cls.fixture_ids.get(key)
                 if record_id:
                     model.query.filter_by(id=record_id).delete(synchronize_session=False)
-            db.session.commit()
+            if db.engine.dialect.name == 'mysql':
+                db.session.execute(text('SET FOREIGN_KEY_CHECKS=1'))
+                db.session.commit()
 
     @staticmethod
     def text_upload(content: str, filename: str = "resume.txt"):

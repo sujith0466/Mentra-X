@@ -1,9 +1,13 @@
-from __future__ import annotations
+﻿from __future__ import annotations
 
 from collections import Counter
 from typing import Dict, List
 
-from models import Course, Enrollment
+import json
+
+from models import Course, Enrollment, UserResume
+from services.ai.career.resume_service import CAREER_SKILL_MAP
+from services.ai.career.skill_gap_service import detect_skill_gap
 from services.ai.ml.recommendation_model import recommend_courses_ml
 
 
@@ -82,7 +86,71 @@ def _fallback_recommendations(user_id: int) -> List[Dict[str, object]]:
     return recommendations
 
 
+def _infer_primary_career(resume_skills: List[str]) -> str:
+    if not resume_skills:
+        return "Full Stack Developer"
+    career_scores = []
+    for career, required_skills in CAREER_SKILL_MAP.items():
+        score = sum(1 for skill in required_skills if skill in resume_skills)
+        if score > 0:
+            career_scores.append((career, score))
+    career_scores.sort(key=lambda item: item[1], reverse=True)
+    return career_scores[0][0] if career_scores else "Full Stack Developer"
+
+
+def _gap_based_recommendations(user_id: int) -> List[Dict[str, object]]:
+    resume_row = UserResume.query.filter_by(user_id=user_id).first()
+    if not resume_row:
+        return []
+    resume_skills = json.loads(resume_row.skills_json or "[]")
+    if not resume_skills:
+        return []
+
+    career_goal = _infer_primary_career(resume_skills)
+    gap_report = detect_skill_gap(user_id, career_goal)
+    missing_skills = gap_report.get("skills_missing", [])
+    suggested_skills = gap_report.get("suggested_skills", [])
+
+    enrollments = Enrollment.query.filter_by(user_id=user_id).all()
+    completed_course_ids = {
+        row.course_id for row in enrollments
+        if row.completed or (row.progress_percentage or row.progress or 0) >= 100
+    }
+    enrolled_course_ids = {row.course_id for row in enrollments}
+
+    courses = Course.query.filter(Course.status == "published").all()
+    scored: List[tuple[int, Course, List[str], List[str]]] = []
+
+    for course in courses:
+        if course.id in completed_course_ids or course.id in enrolled_course_ids:
+            continue
+        course_text = f"{course.title or ''} {course.description or ''}".lower()
+        matched_missing = [skill for skill in missing_skills if skill.lower() in course_text]
+        matched_suggested = [skill for skill in suggested_skills if skill.lower() in course_text]
+        score = (len(matched_missing) * 3) + len(matched_suggested)
+        if score > 0:
+            scored.append((score, course, matched_missing, matched_suggested))
+
+    scored.sort(key=lambda item: (item[0], item[1].created_at), reverse=True)
+    recommendations: List[Dict[str, object]] = []
+
+    for score, course, matched_missing, matched_suggested in scored[:6]:
+        if matched_missing:
+            reason = f"Targets missing skills: {', '.join(matched_missing[:3])}."
+        elif matched_suggested:
+            reason = f"Supports skills you are building: {', '.join(matched_suggested[:3])}."
+        else:
+            reason = "Matches your current skill gap priorities."
+        recommendations.append(_course_payload(course, reason, min(0.9, 0.55 + (score * 0.05))))
+
+    return recommendations
+
+
 def recommend_courses(user_id: int) -> List[Dict[str, object]]:
+    gap_recommendations = _gap_based_recommendations(user_id)
+    if gap_recommendations:
+        return gap_recommendations
+
     try:
         ml_payload = recommend_courses_ml(user_id)
         recommended_courses = ml_payload.get("recommended_courses", [])

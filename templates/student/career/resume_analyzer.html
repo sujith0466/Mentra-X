@@ -3,86 +3,463 @@
 {% block title %}Resume Analyzer - Mentra{% endblock %}
 
 {% block content %}
-<section class="ai-page-shell">
-    <div class="ai-hero-card">
+<section class="resume-shell">
+    <header class="resume-hero">
         <div>
             <p class="eyebrow">AI Career Tools</p>
             <h1>Resume Analyzer</h1>
-            <p>Paste your resume text or upload a simple file to get rule-based skill detection and career guidance.</p>
+            <p>Upload or paste your resume to extract skills, identify gaps, and get targeted course recommendations.</p>
+            {% if resume_uploaded_at %}
+            <p class="resume-meta muted">Last resume sync: {{ resume_uploaded_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+            {% endif %}
         </div>
-    </div>
+    </header>
 
-    <section class="career-grid">
-        <article class="ai-card">
+    <section class="resume-grid">
+        <article class="resume-panel form-panel">
+            <h2>Resume Input</h2>
+            {% if resume_exists %}
+            <div class="resume-note">
+                <strong>Saved resume found.</strong>
+                <span class="muted">Textarea is auto-filled from your stored resume whenever text extraction is available.</span>
+            </div>
+            {% endif %}
             <form method="POST" enctype="multipart/form-data" class="career-form">
-                {% if resume_exists %}
-                <div class="resume-note">
-                    <strong>Stored resume detected.</strong>
-                    <span class="muted">Upload a new file to replace it, or analyze using the stored data.</span>
-                </div>
-                {% endif %}
                 <label for="resume_text">Resume Text</label>
-                <textarea id="resume_text" name="resume_text" rows="12" placeholder="Paste resume text here...">{{ resume_text }}</textarea>
+                <textarea id="resume_text" name="resume_text" rows="14" placeholder="Paste resume text here...">{{ resume_text }}</textarea>
+
                 <label for="resume_file">{{ 'Upload New Resume' if resume_exists else 'Upload Resume' }}</label>
                 <input id="resume_file" type="file" name="resume_file" accept=".txt,.pdf,.docx">
-                <button type="submit" class="action-link">Analyze Resume</button>
+                <p class="muted help-text">Supported files: TXT, PDF, DOCX</p>
+
+                <button type="submit" class="btn btn-primary">Analyze Resume</button>
             </form>
         </article>
 
-        {% if analysis %}
-        <article class="ai-card">
-            <h2>Detected Skills</h2>
-            <div class="tag-row">
-                {% for item in analysis.detected_skills %}
-                <span class="tag">{{ item }}</span>
-                {% else %}
-                <span class="muted">No clear skills detected yet.</span>
-                {% endfor %}
+        <article class="resume-panel insights-panel">
+            {% if analysis %}
+            <div class="panel-head">
+                <h2>Analysis Snapshot</h2>
+                <span class="pill">{{ analysis.career_matches[0] if analysis.career_matches else 'Career Path' }}</span>
             </div>
-            <h2>Career Matches</h2>
-            <ul class="roadmap-list">
-                {% for item in analysis.career_matches %}
-                <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
-            <h2>Missing Skills</h2>
-            <ul class="roadmap-list">
-                {% for item in analysis.missing_skills %}
-                <li>{{ item }}</li>
-                {% else %}
-                <li>Your resume already covers many core skills for the top detected path.</li>
-                {% endfor %}
-            </ul>
-            <h2>Suggestions</h2>
-            <ul class="roadmap-list">
-                {% for item in analysis.suggestions %}
-                <li>{{ item }}</li>
-                {% endfor %}
-            </ul>
+
+            <section class="block">
+                <h3>Detected Skills</h3>
+                <div class="tag-row">
+                    {% for item in analysis.detected_skills %}
+                    <span class="tag">{{ item }}</span>
+                    {% else %}
+                    <span class="muted">No clear skills detected yet.</span>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="mini-grid">
+                <article class="mini-card">
+                    <h4>Career Matches</h4>
+                    <ul>
+                        {% for item in analysis.career_matches %}
+                        <li>{{ item }}</li>
+                        {% else %}
+                        <li>Full Stack Developer</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+                <article class="mini-card">
+                    <h4>Missing Skills</h4>
+                    <ul>
+                        {% for item in analysis.missing_skills %}
+                        <li>{{ item }}</li>
+                        {% else %}
+                        <li>Strong coverage detected for current path.</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+            </section>
+
+            <section class="block">
+                <h3>Suggestions</h3>
+                <ul class="content-list">
+                    {% for item in analysis.suggestions %}
+                    <li>{{ item }}</li>
+                    {% else %}
+                    <li>Add measurable impact statements to your project bullets.</li>
+                    {% endfor %}
+                </ul>
+            </section>
+
+            <section class="mini-grid">
+                <article class="mini-card">
+                    <h4>Projects</h4>
+                    <ul>
+                        {% for item in analysis.projects %}
+                        <li>{{ item }}</li>
+                        {% else %}
+                        <li>No project entries detected yet.</li>
+                        {% endfor %}
+                    </ul>
+                </article>
+                <article class="mini-card">
+                    <h4>Education & Experience</h4>
+                    <ul>
+                        {% for item in analysis.education[:3] %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                        {% for item in analysis.experience[:3] %}
+                        <li>{{ item }}</li>
+                        {% endfor %}
+                        {% if not analysis.education and not analysis.experience %}
+                        <li>No education or experience details detected yet.</li>
+                        {% endif %}
+                    </ul>
+                </article>
+            </section>
+            {% else %}
+            <div class="empty-state">
+                <h2>No analysis yet</h2>
+                <p class="muted">Upload or paste resume content to generate skill extraction and recommendations.</p>
+            </div>
+            {% endif %}
         </article>
-        {% endif %}
     </section>
+
+    {% if recommended_courses %}
+    <section class="resume-panel recommendations-panel">
+        <div class="panel-head">
+            <h2>Recommended Courses from Resume</h2>
+            <a href="{{ url_for('ai.recommendations') }}">View all</a>
+        </div>
+        <div class="recommended-grid">
+            {% for item in recommended_courses %}
+            <article class="recommend-card" onclick="window.location.href='{{ url_for('student.course_details', course_id=item.course.id) }}'">
+                <div class="recommend-image">
+                    {% if item.image_src %}
+                    <img src="{{ item.image_src }}" alt="{{ item.course.title }}">
+                    {% else %}
+                    <div class="recommend-image-fallback">Course</div>
+                    {% endif %}
+                </div>
+                <div class="recommend-body">
+                    <span class="recommend-domain">{{ item.course.domain.name if item.course.domain else 'General' }}</span>
+                    <h3>{{ item.course.title }}</h3>
+                    {% if item.course.description %}
+                    <p>{{ item.course.description[:110] }}{% if item.course.description|length > 110 %}...{% endif %}</p>
+                    {% else %}
+                    <p>{{ item.reason }}</p>
+                    {% endif %}
+                    <p class="reason">{{ item.reason }}</p>
+                </div>
+                <div class="recommend-footer">
+                    <span class="price">{{ 'Rs.' ~ ('%.0f'|format(item.course.price)) if item.course.price and item.course.price > 0 else 'FREE' }}</span>
+                    <a class="btn btn-primary" href="{{ url_for('student.course_details', course_id=item.course.id) }}">View Details</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 </section>
 
 <style>
-.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
-.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
-.ai-hero-card { padding: 18px; }
-.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
-.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
-.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
-.career-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
-.career-form { display: grid; gap: 10px; }
-.career-form label { font-weight: 600; color: #334155; }
-.career-form textarea, .career-form input[type=file] { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font: inherit; }
-.resume-note { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px; padding: 10px 12px; color: #334155; }
-.ai-card h2 { margin: 0 0 10px; color: #0f172a; font-size: 1.05rem; }
-.roadmap-list { margin: 0 0 14px; padding-left: 18px; color: #334155; line-height: 1.7; }
-.tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-.tag { background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; border-radius: 999px; padding: 5px 10px; font-size: 0.78rem; }
-.muted { color: #64748b; }
-.action-link { display: inline-block; text-decoration: none; border-radius: 8px; background: #0f766e; color: #fff; padding: 10px 12px; font-weight: 600; border: none; cursor: pointer; }
-@media (max-width: 920px) { .career-grid { grid-template-columns: 1fr; } }
+.resume-shell {
+    display: grid;
+    gap: 14px;
+    margin: 14px 0 24px;
+}
+
+.resume-hero,
+.resume-panel {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background:
+        radial-gradient(560px 170px at -12% -25%, rgba(29, 78, 216, 0.11), transparent 72%),
+        radial-gradient(460px 160px at 110% -25%, rgba(15, 118, 110, 0.1), transparent 70%),
+        var(--surface);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+}
+
+.resume-hero {
+    padding: 18px;
+}
+
+.resume-hero h1 {
+    margin: 0 0 6px;
+    color: var(--text);
+}
+
+.resume-hero p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.resume-meta {
+    margin-top: 8px !important;
+    font-size: 0.85rem;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #0f766e;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.resume-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.35fr;
+    gap: 12px;
+    align-items: start;
+}
+
+.resume-panel {
+    padding: 16px;
+}
+
+.form-panel h2,
+.insights-panel h2,
+.recommendations-panel h2 {
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.resume-note {
+    border-radius: 10px;
+    border: 1px dashed var(--border);
+    background: var(--surface);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    display: grid;
+    gap: 4px;
+}
+
+.career-form {
+    display: grid;
+    gap: 10px;
+}
+
+.career-form label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.career-form textarea,
+.career-form input[type=file] {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text);
+    padding: 10px 12px;
+    font: inherit;
+}
+
+.help-text {
+    margin: -2px 0 0;
+    font-size: 0.82rem;
+}
+
+.panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pill {
+    display: inline-flex;
+    border-radius: 999px;
+    border: 1px solid rgba(29, 78, 216, 0.3);
+    background: rgba(29, 78, 216, 0.12);
+    color: #1d4ed8;
+    font-size: 0.76rem;
+    font-weight: 700;
+    padding: 4px 10px;
+}
+
+.block {
+    margin-bottom: 12px;
+}
+
+.block h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: var(--text);
+}
+
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    display: inline-flex;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 5px 10px;
+}
+
+.mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.mini-card {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 12px;
+}
+
+.mini-card h4 {
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+.mini-card ul,
+.content-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.empty-state {
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    background: var(--surface);
+    padding: 22px;
+    text-align: center;
+}
+
+.empty-state h2 {
+    margin: 0 0 6px;
+}
+
+.recommended-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.recommend-card {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.recommend-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 28px rgba(15, 23, 42, 0.16);
+}
+
+.recommend-image {
+    height: 130px;
+    overflow: hidden;
+    background: var(--surface-light);
+}
+
+.recommend-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.recommend-image-fallback {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.recommend-body {
+    padding: 12px;
+    display: grid;
+    gap: 7px;
+    flex: 1;
+}
+
+.recommend-domain {
+    display: inline-flex;
+    width: fit-content;
+    border-radius: 999px;
+    border: 1px solid rgba(99, 102, 241, 0.24);
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366f1;
+    padding: 3px 9px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.recommend-body h3 {
+    margin: 0;
+    font-size: 1.02rem;
+    color: var(--text);
+}
+
+.recommend-body p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.recommend-body .reason {
+    border-top: 1px dashed var(--border);
+    padding-top: 8px;
+    color: var(--text);
+}
+
+.recommend-footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 10px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.recommend-footer .price {
+    color: #10b981;
+    font-weight: 800;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+@media (max-width: 1100px) {
+    .resume-grid {
+        grid-template-columns: 1fr;
+    }
+    .recommended-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .mini-grid,
+    .recommended-grid {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 {% endblock %}

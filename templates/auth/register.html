@@ -2,71 +2,147 @@
 
 {% block title %}Register - Mentra{% endblock %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/auth-startup.css') }}">
+{% endblock %}
+
 {% block content %}
-<div class="container">
-    <section class="auth-section">
-        <div class="auth-card">
-            <h1 class="auth-brand">Mentra</h1>
-            <p class="auth-tagline">Learn Smarter. Build Your Future.</p>
-            <h2>Student Registration</h2>
-            
-            <form method="POST" class="form" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="name">Full Name:</label>
-                    <input type="text" id="name" name="name" required placeholder="Enter your full name" minlength="2" maxlength="100">
+<section class="auth-shell auth-shell-register">
+    <div class="auth-grid">
+        <aside class="auth-showcase">
+            <div class="auth-showcase-content">
+                <span class="auth-chip">Mentra Starter Track</span>
+                <h1>Start learning with a platform built for students first.</h1>
+                <p>Create your account to unlock curated courses, practical assignments, AI-guided revision, and a complete progress journey.</p>
+                <ul class="auth-highlights">
+                    <li>Structured syllabus with videos and quizzes</li>
+                    <li>Hands-on assignment flow with feedback loops</li>
+                    <li>Career tools for resume and project growth</li>
+                </ul>
+            </div>
+            <div class="auth-stats">
+                <div class="auth-stat">
+                    <strong>8+</strong>
+                    <span>Learning Domains</span>
                 </div>
-                
-                <div class="form-group">
-                    <label for="email">Email Address:</label>
-                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                <div class="auth-stat">
+                    <strong>500+</strong>
+                    <span>Practice Tasks</span>
                 </div>
-                
-                <div class="form-group">
-                    <label for="password">Password:</label>
-                    <input type="password" id="password" name="password" required placeholder="Enter password (min 6 characters)" minlength="6">
+                <div class="auth-stat">
+                    <strong>1:1</strong>
+                    <span>Progress Tracking</span>
                 </div>
-                
-                <div class="form-group">
-                    <label for="confirm_password">Confirm Password:</label>
-                    <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password" minlength="6">
+            </div>
+        </aside>
+
+        <article class="auth-panel">
+            <div class="auth-topbar">
+                <a href="{{ url_for('public.index') }}" class="auth-brand-link">Mentra</a>
+                <a href="{{ url_for('auth.login') }}" class="auth-top-link">Sign in</a>
+            </div>
+
+            <h2>Create your account</h2>
+            <p class="auth-subtext">Join as a student and begin your guided learning roadmap.</p>
+
+            <form method="POST" class="auth-form" enctype="multipart/form-data" id="registerForm">
+                <div class="auth-form-row">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" required placeholder="Your full name" minlength="2" maxlength="100" autocomplete="name">
                 </div>
-                
-                <div class="form-group">
-                    <label for="referral_code">Referral Code (Optional):</label>
-                    <input type="text" id="referral_code" name="referral_code" 
-                           placeholder="Enter referral code to earn ₹100 bonus" 
-                           value="{{ referral_code }}">
-                    <small>Get ₹100 cashback when you enter a valid referral code!</small>
+
+                <div class="auth-form-row">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required placeholder="you@example.com" autocomplete="email">
                 </div>
-                
-                <div class="form-group">
+
+                <div class="auth-form-row">
+                    <label for="password">Password</label>
+                    <div class="auth-password">
+                        <input type="password" id="password" name="password" required placeholder="Minimum 6 characters" minlength="6" autocomplete="new-password">
+                        <button type="button" class="auth-password-toggle" data-target="password" aria-label="Show password" aria-pressed="false">
+                            <span class="auth-eye auth-eye-open" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </span>
+                            <span class="auth-eye auth-eye-closed" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.9 10.9 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94"></path>
+                                    <path d="M9.9 4.24A10.9 10.9 0 0 1 12 4c7 0 11 8 11 8a21.7 21.7 0 0 1-3.16 4.19"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="auth-form-row">
+                    <label for="confirm_password">Confirm Password</label>
+                    <div class="auth-password">
+                        <input type="password" id="confirm_password" name="confirm_password" required placeholder="Re-enter your password" minlength="6" autocomplete="new-password">
+                        <button type="button" class="auth-password-toggle" data-target="confirm_password" aria-label="Show password" aria-pressed="false">
+                            <span class="auth-eye auth-eye-open" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </span>
+                            <span class="auth-eye auth-eye-closed" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.9 10.9 0 0 1 12 19c-7 0-11-7-11-7a21.8 21.8 0 0 1 5.06-5.94"></path>
+                                    <path d="M9.9 4.24A10.9 10.9 0 0 1 12 4c7 0 11 8 11 8a21.7 21.7 0 0 1-3.16 4.19"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="auth-form-row">
+                    <label for="referral_code">Referral Code (Optional)</label>
+                    <input type="text" id="referral_code" name="referral_code" placeholder="Enter referral code for INR 100 bonus" value="{{ referral_code }}">
+                    <small>Enter a valid referral code to receive your cashback bonus.</small>
+                </div>
+
+                <div class="auth-form-row">
                     <label for="resume">Upload Resume (Optional)</label>
                     <input type="file" id="resume" name="resume" accept=".pdf,.docx">
-                    <small>PDF or DOCX only. You can upload later from Resume Analyzer.</small>
+                    <small>PDF or DOCX only. You can also upload this later from Resume Analyzer.</small>
                 </div>
 
-                <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+                <button type="submit" class="btn btn-primary auth-submit">Create Account</button>
+                <p class="auth-small-note">By continuing, you agree to learning-focused usage of your account on Mentra.</p>
             </form>
-            
-            <p class="auth-footer">
-                Already have an account? <a href="{{ url_for('auth.login') }}">Login here</a>
-            </p>
-        </div>
-    </section>
-</div>
 
-<style>
-.auth-brand { margin: 0 0 6px; text-align: center; font-size: 1.7rem; color: #0f172a; }
-.auth-tagline { margin: 0 0 12px; text-align: center; color: #0f766e; font-weight: 600; }
-</style>
+            <p class="auth-footer">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in here</a></p>
+        </article>
+    </div>
+</section>
 
 <script>
-document.querySelector('form').addEventListener('submit', function(e) {
-    var password = document.getElementById('password').value;
-    var confirm = document.getElementById('confirm_password').value;
+document.body.classList.add("auth-page");
+
+document.querySelectorAll(".auth-password-toggle").forEach((button) => {
+    button.addEventListener("click", () => {
+        const targetId = button.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        button.classList.toggle("is-visible", isPassword);
+        button.setAttribute("aria-pressed", isPassword ? "true" : "false");
+        button.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+    });
+});
+
+document.getElementById("registerForm").addEventListener("submit", function(event) {
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
     if (password !== confirm) {
-        e.preventDefault();
-        alert('Passwords do not match!');
+        event.preventDefault();
+        alert("Passwords do not match.");
     }
 });
 </script>

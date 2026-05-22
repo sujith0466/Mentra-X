@@ -1,11 +1,33 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
-{% block title %}Manage Courses - Education Portal{% endblock %}
+{% block title %}Manage Courses - Mentra{% endblock %}
 
 {% block content %}
 <div class="container">
     <section class="admin-courses">
         <h1>Course Management</h1>
+        <p class="muted">Manage lifecycle, content readiness, pricing, and publishing from one place.</p>
+
+        {% if has_status %}
+        <div class="referral-stats dashboard-stats">
+            <article class="stat-card">
+                <h3>Draft</h3>
+                <p class="stat-value">{{ lifecycle_counts.get('draft', 0) }}</p>
+            </article>
+            <article class="stat-card">
+                <h3>Review</h3>
+                <p class="stat-value">{{ lifecycle_counts.get('review', 0) }}</p>
+            </article>
+            <article class="stat-card">
+                <h3>Published</h3>
+                <p class="stat-value">{{ lifecycle_counts.get('published', 0) }}</p>
+            </article>
+            <article class="stat-card">
+                <h3>Archived</h3>
+                <p class="stat-value">{{ lifecycle_counts.get('archived', 0) }}</p>
+            </article>
+        </div>
+        {% endif %}
 
         <div class="admin-toolbar">
             <button class="btn btn-primary" onclick="document.getElementById('addCourseForm').style.display='block'">+ Add New Course</button>
@@ -15,7 +37,7 @@
             <a class="btn btn-secondary" href="{{ url_for('admin.export_courses_csv') }}">Export Courses CSV</a>
         </div>
 
-        <form method="GET" action="{{ url_for('admin.manage_courses') }}" class="filter-panel">
+        <form method="GET" action="{{ url_for('admin.manage_courses') }}" class="filter-panel filter-box">
             <div class="filter-grid">
                 <div class="form-group">
                     <label for="search">Search</label>
@@ -147,7 +169,8 @@
             <button type="submit" class="btn btn-primary">Apply to Selected</button>
         </form>
 
-        <table class="admin-table">
+        <div class="table-container wide-table">
+        <table class="table admin-table">
             <thead>
                 <tr>
                     <th><input type="checkbox" id="select_all_courses"></th>
@@ -216,6 +239,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        </div>
 
         <div class="pagination-wrap">
             <span class="pagination-meta">Showing page {{ pagination.page }} of {{ pagination.pages }} ({{ pagination.total }} courses)</span>
@@ -235,22 +259,15 @@
 </div>
 
 <style>
-.filter-panel { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 16px; margin: 16px 0 20px; }
 .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 .filter-actions { display: flex; gap: 8px; margin-top: 8px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .bulk-panel { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
-.admin-table thead th { position: sticky; top: 0; z-index: 2; background: #f9fafb; }
-.admin-table thead th a { color: #111827; text-decoration: none; }
-.admin-table tbody tr:hover { background: #f5f9ff; }
 .table-actions { display: inline-flex; gap: 6px; margin: 6px 6px 0 0; flex-wrap: wrap; }
 .inline-edit-form { display: contents; }
-.inline-edit-form input, .inline-edit-form select { width: 100%; min-width: 92px; padding: 6px; border: 1px solid #d1d5db; border-radius: 5px; }
-.btn-success { background: #059669; color: #fff; }
-.btn-success:hover { background: #047857; }
-.pagination-wrap { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; gap: 10px; flex-wrap: wrap; }
-.pagination-meta { color: #4b5563; font-size: 0.92rem; }
-.pagination-controls { display: flex; gap: 8px; }
+.inline-edit-form input, .inline-edit-form select { width: 100%; min-width: 92px; padding: 6px; border: 1px solid var(--border); border-radius: 5px; }
+.btn-success { background: var(--primary); color: #fff; }
+.btn-success:hover { background: var(--primary-hover); }
+.admin-table { min-width: 0; table-layout: auto; }
 @media (max-width: 900px) { .form-row { grid-template-columns: 1fr; } .bulk-panel { flex-wrap: wrap; } }
 </style>
 
@@ -299,3 +316,4 @@ if (bulkForm) {
 }
 </script>
 {% endblock %}
+

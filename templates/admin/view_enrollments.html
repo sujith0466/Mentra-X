@@ -1,52 +1,68 @@
 {% extends "base.html" %}
 
-{% block title %}View Enrollments - Education Portal{% endblock %}
+{% block title %}View Enrollments - Mentra{% endblock %}
 
 {% block content %}
 <div class="container">
     <section class="admin-enrollments">
         <h1>Course Enrollments</h1>
-        <p><a class="btn btn-sm btn-secondary" href="{{ url_for('admin.export_enrollments_csv') }}">Export CSV</a></p>
+        <p class="muted">Monitor learner progress and completion state across all active courses.</p>
+        <div class="admin-toolbar">
+            <a class="btn btn-secondary" href="{{ url_for('admin.export_enrollments_csv') }}">Export Enrollments CSV</a>
+            <a class="btn btn-secondary" href="{{ url_for('admin.manage_students') }}">Back to Students</a>
+        </div>
+        <div class="referral-stats">
+            <article class="stat-card">
+                <h3>Total Records</h3>
+                <p class="stat-value">{{ pagination.total }}</p>
+            </article>
+            <article class="stat-card">
+                <h3>Current Page</h3>
+                <p class="stat-value">{{ pagination.page }}/{{ pagination.pages }}</p>
+            </article>
+        </div>
 
         {% if enrollments %}
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    {% set next_student_dir = 'asc' if sort != 'student' or direction == 'desc' else 'desc' %}
-                    {% set next_course_dir = 'asc' if sort != 'course' or direction == 'desc' else 'desc' %}
-                    {% set next_date_dir = 'asc' if sort != 'enrolled_date' or direction == 'desc' else 'desc' %}
-                    {% set next_progress_dir = 'asc' if sort != 'progress' or direction == 'desc' else 'desc' %}
-                    {% set next_status_dir = 'asc' if sort != 'status' or direction == 'desc' else 'desc' %}
-                    <th><a href="{{ url_for('admin.view_enrollments', sort='student', dir=next_student_dir) }}">Student</a></th>
-                    <th><a href="{{ url_for('admin.view_enrollments', sort='course', dir=next_course_dir) }}">Course</a></th>
-                    <th><a href="{{ url_for('admin.view_enrollments', sort='enrolled_date', dir=next_date_dir) }}">Enrolled Date</a></th>
-                    <th><a href="{{ url_for('admin.view_enrollments', sort='progress', dir=next_progress_dir) }}">Progress</a></th>
-                    <th><a href="{{ url_for('admin.view_enrollments', sort='status', dir=next_status_dir) }}">Status</a></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for enrollment in enrollments %}
-                <tr>
-                    <td>{{ enrollment.student.name }}</td>
-                    <td>{{ enrollment.course.title }}</td>
-                    <td>{{ enrollment.enrolled_date.strftime('%Y-%m-%d') if enrollment.enrolled_date else '-' }}</td>
-                    <td>
-                        <div class="progress-bar-simple">
-                            <div class="progress-fill-simple" style="--progress: {{ enrollment.progress }}%;" data-progress="{{ enrollment.progress }}"></div>
-                        </div>
-                        <span class="progress-text">{{ enrollment.progress|int }}%</span>
-                    </td>
-                    <td>
-                        {% if enrollment.completed %}
-                        <span style="color:green; font-weight:bold">Completed</span>
-                        {% else %}
-                        <span style="color:orange">In Progress</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        {% set next_student_dir = 'asc' if sort != 'student' or direction == 'desc' else 'desc' %}
+                        {% set next_course_dir = 'asc' if sort != 'course' or direction == 'desc' else 'desc' %}
+                        {% set next_date_dir = 'asc' if sort != 'enrolled_date' or direction == 'desc' else 'desc' %}
+                        {% set next_progress_dir = 'asc' if sort != 'progress' or direction == 'desc' else 'desc' %}
+                        {% set next_status_dir = 'asc' if sort != 'status' or direction == 'desc' else 'desc' %}
+                        <th><a href="{{ url_for('admin.view_enrollments', sort='student', dir=next_student_dir) }}">Student</a></th>
+                        <th><a href="{{ url_for('admin.view_enrollments', sort='course', dir=next_course_dir) }}">Course</a></th>
+                        <th><a href="{{ url_for('admin.view_enrollments', sort='enrolled_date', dir=next_date_dir) }}">Enrolled Date</a></th>
+                        <th><a href="{{ url_for('admin.view_enrollments', sort='progress', dir=next_progress_dir) }}">Progress</a></th>
+                        <th><a href="{{ url_for('admin.view_enrollments', sort='status', dir=next_status_dir) }}">Status</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enrollment in enrollments %}
+                    <tr>
+                        <td>{{ enrollment.student.name }}</td>
+                        <td>{{ enrollment.course.title }}</td>
+                        <td>{{ enrollment.enrolled_date.strftime('%Y-%m-%d') if enrollment.enrolled_date else '-' }}</td>
+                        <td>
+                            <div class="progress-bar-simple">
+                                <div class="progress-fill-simple" style="--progress: {{ enrollment.progress }}%;" data-progress="{{ enrollment.progress }}"></div>
+                            </div>
+                            <span class="progress-text">{{ enrollment.progress|int }}%</span>
+                        </td>
+                        <td>
+                            {% if enrollment.completed %}
+                            <span class="status-badge status-completed">Completed</span>
+                            {% else %}
+                            <span class="status-badge status-in-progress">In Progress</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         <div class="pagination-wrap">
             <span class="pagination-meta">Showing page {{ pagination.page }} of {{ pagination.pages }}</span>
@@ -64,32 +80,4 @@
         {% endif %}
     </section>
 </div>
-
-<style>
-.admin-table thead th {
-    position: sticky;
-    top: 0;
-    z-index: 2;
-    background: #f9fafb;
-}
-.admin-table thead th a {
-    color: #111827;
-    text-decoration: none;
-}
-.admin-table tbody tr:hover {
-    background: #f5f9ff;
-}
-.pagination-wrap {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 14px;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-.pagination-controls {
-    display: flex;
-    gap: 8px;
-}
-</style>
 {% endblock %}

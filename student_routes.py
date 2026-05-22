@@ -6,22 +6,37 @@ from models import (
 from datetime import datetime
 from functools import wraps
 from sqlalchemy.orm import joinedload
-from sqlalchemy import or_
+from sqlalchemy import or_, and_, func
 import io
 import os
+import re
 from learning_utils import mark_lesson_complete
 from services.ai.recommendation_service import recommend_courses
 from services.ai.ml.learning_difficulty_model import detect_learning_difficulty
 from services.ai.ml.skill_prediction_model import predict_next_skills
 from services.ai.assistant_service import get_available_agents
 from services.ai.learning_feed_service import generate_learning_feed
+from services.ai.learning.learning_insights_service import get_learning_insights
 from services.ai.skills.skill_graph_service import get_dashboard_skill_progress
 from services.ai.career.resume_service import CAREER_SKILL_MAP
 from services.ai.project_idea_service import generate_project_ideas
+from services.profile_service import load_profile, save_profile
+from services.wallet_service import get_wallet_balance
+from services.reward_service import build_reward_history, get_referral_rewards
 import json
 
 student_bp = Blueprint('student', __name__, url_prefix='/student')
 
+
+def _is_valid_email(email: str) -> bool:
+    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    return re.match(pattern, email or "") is not None
+
+
+def _parse_list_input(value: str) -> list:
+    cleaned = (value or "").replace("\n", ",")
+    items = [item.strip() for item in cleaned.split(",") if item.strip()]
+    return items
 
 def _visible_courses_query():
     """Student browse list: published courses only, excluding temp/test titles."""
@@ -34,8 +49,17 @@ def _visible_courses_query():
         Course.title.ilike('% temp course%'),
         Course.title.ilike('test %'),
         Course.title.ilike('% test course%'),
+        Course.title.ilike('qa course%'),
+        Course.title.ilike('qa domain%'),
+        Course.title.ilike('% qa course %'),
+        Course.title.ilike('% qa domain %'),
+        Course.domain.has(Domain.name.ilike('qa domain%')),
     )
     return Course.query.filter(Course.status == 'published').filter(~noise_match)
+
+
+def _visible_domains_query():
+    return Domain.query.filter(~Domain.name.ilike('qa domain%'))
 
 # Authentication decorator for student routes
 def login_required(f):
@@ -65,7 +89,7 @@ def student_required(f):
 def dashboard():
     """Student Dashboard"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -90,15 +114,30 @@ def dashboard():
                 return url_for('static', filename=image_value.replace('static/', '', 1))
             return url_for('static', filename=f'images/courses/{os.path.basename(image_value)}')
 
+        enrolled_ids = [enrollment.course_id for enrollment in enrollments if enrollment.course_id]
+        lesson_count_map = {}
+        if enrolled_ids:
+            lesson_count_rows = (
+                db.session.query(Video.course_id, func.count(Video.id))
+                .filter(Video.course_id.in_(enrolled_ids))
+                .group_by(Video.course_id)
+                .all()
+            )
+            lesson_count_map = {course_id: int(count) for course_id, count in lesson_count_rows}
+
         enrolled_courses = []
+        enrollment_completion_changed = False
         for enrollment in enrollments:
             course = enrollment.course
             if not course:
                 continue
             progress = int(round(enrollment.progress_percentage if enrollment.progress_percentage is not None else (enrollment.progress or 0)))
-            total_lessons = Video.query.filter_by(course_id=course.id).count()
+            total_lessons = lesson_count_map.get(course.id, 0)
             completed_lessons = int(round((progress / 100.0) * total_lessons)) if total_lessons else 0
-            enrollment.completed = progress >= 100
+            desired_completed = progress >= 100
+            if bool(enrollment.completed) != desired_completed:
+                enrollment.completed = desired_completed
+                enrollment_completion_changed = True
             is_completed = bool(enrollment.completed or progress >= 100)
             enrolled_courses.append({
                 'enrollment': enrollment,
@@ -110,27 +149,38 @@ def dashboard():
                 'image_src': course_image_src(course),
                 'short_description': ((course.description or '').strip()[:120] + '...') if course.description and len(course.description.strip()) > 120 else (course.description or 'No description available.'),
             })
-        db.session.commit()
+        if enrollment_completion_changed:
+            db.session.commit()
 
         total_enrolled = len(enrolled_courses)
         completed_courses = sum(1 for row in enrolled_courses if row['completed'])
         in_progress_courses = sum(1 for row in enrolled_courses if row['progress'] > 0 and not row['completed'])
 
+        next_lesson_by_course = {}
+        if enrolled_ids:
+            next_lesson_rows = (
+                Video.query
+                .outerjoin(
+                    LessonProgress,
+                    and_(
+                        LessonProgress.lesson_id == Video.id,
+                        LessonProgress.user_id == user.id,
+                    ),
+                )
+                .filter(Video.course_id.in_(enrolled_ids))
+                .filter(or_(LessonProgress.completed.is_(False), LessonProgress.completed.is_(None)))
+                .order_by(Video.course_id.asc(), Video.order_number.asc(), Video.id.asc())
+                .all()
+            )
+            for video in next_lesson_rows:
+                if video.course_id not in next_lesson_by_course:
+                    next_lesson_by_course[video.course_id] = video
+
         continue_learning = None
         for row in enrolled_courses:
             if row['completed']:
                 continue
-            next_lesson = (
-                Video.query
-                .outerjoin(
-                    LessonProgress,
-                    (LessonProgress.lesson_id == Video.id) & (LessonProgress.user_id == user.id),
-                )
-                .filter(Video.course_id == row['course'].id, or_(LessonProgress.completed == False, LessonProgress.completed == None))
-                .order_by(Video.order_number.asc(), Video.id.asc())
-                .first()
-            )
-            row['next_lesson'] = next_lesson
+            row['next_lesson'] = next_lesson_by_course.get(row['course'].id)
             continue_learning = row
             break
         if continue_learning is None and enrolled_courses:
@@ -139,13 +189,18 @@ def dashboard():
         recommended_payload = []
         service_recommendations = recommend_courses(user.id)
         recommended_courses = []
+        recommended_ids = [item.get('id') for item in service_recommendations if item.get('id')]
+        recommended_map = {}
+        if recommended_ids:
+            recommended_rows = Course.query.filter(Course.id.in_(recommended_ids)).all()
+            recommended_map = {course.id: course for course in recommended_rows}
+
         for item in service_recommendations:
-            course = Course.query.get(item['id'])
+            course = recommended_map.get(item.get('id'))
             if course:
                 recommended_courses.append((course, item.get('reason', 'Recommended for your next step.')))
 
         if not recommended_courses:
-            enrolled_ids = [row['course'].id for row in enrolled_courses]
             fallback_query = Course.query
             if enrolled_ids:
                 fallback_query = fallback_query.filter(~Course.id.in_(enrolled_ids))
@@ -253,11 +308,14 @@ def dashboard():
         span = max(1, next_threshold - current_threshold)
         level_progress_percentage = round(((current_xp - current_threshold) / span) * 100, 2) if next_threshold > current_threshold else 100.0
 
-        ai_learning_insights = {
-            'weak_topics': difficulty_payload.get('weak_topics', [])[:3],
-            'recommended_courses': [item['course'].title for item in recommended_payload[:3]],
-            'suggested_skills': skill_prediction.get('skills_to_learn_next', [])[:3],
-        }
+        try:
+            ai_learning_insights = get_learning_insights(user.id)
+        except Exception:
+            ai_learning_insights = {
+                'weak_topics': difficulty_payload.get('weak_topics', [])[:3],
+                'recommended_courses': [item['course'].title for item in recommended_payload[:3]],
+                'suggested_skills': skill_prediction.get('skills_to_learn_next', [])[:3],
+            }
 
         resume_row = UserResume.query.filter_by(user_id=user.id).first()
         resume_insights = None
@@ -281,7 +339,7 @@ def dashboard():
                 domain = "AI"
             elif any(skill in detected_skills for skill in ["Pandas", "Statistics", "Visualization"]):
                 domain = "Data Science"
-            project_ideas = generate_project_ideas(domain)
+            project_ideas = generate_project_ideas(domain, user_id=user.id)
             resume_insights = {
                 "detected_skills": detected_skills[:6],
                 "recommended_skills": recommended_skills[:6],
@@ -409,7 +467,7 @@ def browse_courses():
     """Browse All Courses (Public - Anyone Can Browse)"""
     try:
         # Get all domains for filter
-        domains = Domain.query.all()
+        domains = _visible_domains_query().all()
         
         # Get filter from query parameters
         domain_filter = request.args.get('domain', type=int)
@@ -569,6 +627,71 @@ def enroll_course(course_id):
         flash('Error enrolling in course. Please try again.', 'danger')
         return redirect(url_for('public.courses'))
 
+
+
+@student_bp.route('/profile/edit', methods=['GET', 'POST'])
+@student_required
+def edit_profile():
+    # Edit student profile details without schema changes.
+    try:
+        user = User.query.get(session['user_id'])
+        if not user:
+            flash('User not found!', 'danger')
+            return redirect(url_for('auth.login'))
+
+        profile_payload = load_profile(user.id)
+        bio = profile_payload.get('bio', '')
+        skills = profile_payload.get('skills', [])
+        learning_goals = profile_payload.get('learning_goals', [])
+
+        if request.method == 'POST':
+            name = (request.form.get('name') or '').strip()
+            email = (request.form.get('email') or '').strip()
+            bio = (request.form.get('bio') or '').strip()
+            skills_input = request.form.get('skills') or ''
+            goals_input = request.form.get('learning_goals') or ''
+
+            if not name:
+                flash('Name cannot be empty.', 'danger')
+                return redirect(url_for('student.edit_profile'))
+
+            if not _is_valid_email(email):
+                flash('Please enter a valid email address.', 'danger')
+                return redirect(url_for('student.edit_profile'))
+
+            existing = User.query.filter(User.email == email, User.id != user.id).first()
+            if existing:
+                flash('This email is already used by another account.', 'danger')
+                return redirect(url_for('student.edit_profile'))
+
+            user.name = name
+            user.email = email
+            db.session.commit()
+
+            skills = _parse_list_input(skills_input)
+            learning_goals = _parse_list_input(goals_input)
+            save_profile(user.id, bio=bio, skills=skills, learning_goals=learning_goals)
+
+            session['user_name'] = user.name
+            session['user_email'] = user.email
+
+            flash('Profile updated successfully.', 'success')
+            return redirect(url_for('student.edit_profile'))
+
+        return render_template(
+            'student/profile/edit_profile.html',
+            user=user,
+            bio=bio,
+            skills_text=", ".join(skills),
+            learning_goals_text="\n".join(learning_goals),
+        )
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating profile: {e}")
+        flash('Error updating profile. Please try again.', 'danger')
+        return redirect(url_for('student.dashboard'))
+
+
 @student_bp.route('/referral')
 @student_required
 def referral():
@@ -578,35 +701,31 @@ def referral():
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
-        
-        # Get referral transactions
-        referrals = ReferralTransaction.query.filter_by(referrer_id=user.id).all()
+
+        referrals = get_referral_rewards(user.id)
         referral_count = len(referrals)
         total_earnings = sum(ref.reward_amount for ref in referrals)
-        
-        # Get referred users
-        referred_users = []
-        for ref in referrals:
-            referred_users.append({
-                'name': ref.new_user.name,
-                'email': ref.new_user.email,
-                'date': ref.date,
-                'reward': ref.reward_amount
-            })
-        
-        referral_link = url_for('auth.register', ref=user.referral_code, _external=True)
-        
-        return render_template('student/referral.html',
-                             user=user,
-                             referral_code=user.referral_code,
-                             referral_link=referral_link,
-                             referral_count=referral_count,
-                             total_earnings=total_earnings,
-                             referred_users=referred_users)
+
+        referred_users = build_reward_history(referrals)
+        wallet_balance = get_wallet_balance(user.id)
+
+        referral_link = url_for('referral.accept_referral', referral_code=user.referral_code, _external=True)
+
+        return render_template(
+            'student/referral.html',
+            user=user,
+            referral_code=user.referral_code,
+            referral_link=referral_link,
+            referral_count=referral_count,
+            total_earnings=total_earnings,
+            referred_users=referred_users,
+            wallet_balance=wallet_balance,
+        )
     except Exception as e:
         print(f"Error loading referral page: {e}")
         flash('Error loading referral page. Please try again.', 'danger')
         return redirect(url_for('student.dashboard'))
+
 
 @student_bp.route('/update-progress/<int:course_id>', methods=['POST'])
 @student_required

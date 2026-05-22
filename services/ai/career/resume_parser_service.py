@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from typing import Dict, List
+from typing import Dict, List, Iterable
 
 from services.ai.career.resume_service import SKILL_KEYWORDS
 
@@ -37,23 +37,47 @@ def extract_text_from_docx(file_path: str) -> str:
         return ""
 
 
+def extract_text_from_txt(file_path: str) -> str:
+    try:
+        with open(file_path, "r", encoding="utf-8", errors="ignore") as handle:
+            return handle.read().strip()
+    except Exception:
+        return ""
+
+
 def _split_lines(text: str) -> List[str]:
-    return [line.strip() for line in (text or "").splitlines() if line.strip()]
+    return [line.strip() for line in (text or "").splitlines() if line and line.strip()]
 
 
-def _extract_section(lines: List[str], header: str) -> List[str]:
-    header_lower = header.lower()
+def _normalize_line(line: str) -> str:
+    cleaned = (line or "").strip()
+    cleaned = re.sub(r"^[\-\u2022\u2013\u2014\*\u00b7]+\s*", "", cleaned)
+    return cleaned.strip()
+
+
+def _header_match(line: str, headers: Iterable[str]) -> bool:
+    lowered = (line or "").strip().lower().rstrip(":")
+    if not lowered:
+        return False
+    return any(lowered == header or lowered.startswith(header + " ") for header in headers)
+
+
+def _extract_section(lines: List[str], headers: Iterable[str]) -> List[str]:
+    header_set = {header.lower() for header in headers}
     collected: List[str] = []
     active = False
-    for line in lines:
-        lower = line.lower()
-        if header_lower in lower and len(lower) <= len(header_lower) + 8:
+    for raw_line in lines:
+        line = _normalize_line(raw_line)
+        if _header_match(line, header_set):
             active = True
             continue
+        if active and _header_match(line, header_set):
+            break
         if active:
             if re.match(r"^[A-Z][A-Za-z\s]{2,}$", line) and len(line) <= 40:
                 break
-            collected.append(line)
+            if line:
+                collected.append(line)
     return collected
 
 
@@ -66,23 +90,55 @@ def _extract_skills(text: str) -> List[str]:
     return sorted(set(detected))
 
 
+def _split_skill_line(line: str) -> List[str]:
+    if not line:
+        return []
+    tokens = re.split(r"[,;/\|]+", line)
+    cleaned = [token.strip(" •\t") for token in tokens if token.strip()]
+    normalized = []
+    for token in cleaned:
+        token = re.sub(r"^skills?\s*:\s*", "", token, flags=re.IGNORECASE)
+        if len(token) > 1:
+            normalized.append(token)
+    return normalized
+
+
+def _unique_list(items: Iterable[str]) -> List[str]:
+    seen = set()
+    output = []
+    for item in items:
+        normalized = item.strip()
+        if not normalized or normalized.lower() in seen:
+            continue
+        seen.add(normalized.lower())
+        output.append(normalized)
+    return output
+
+
 def parse_resume(text: str) -> Dict[str, List[str]]:
     lines = _split_lines(text)
     skills = _extract_skills(text)
 
-    projects = _extract_section(lines, "projects") or [
-        line for line in lines if any(token in line.lower() for token in ["project", "built", "developed"])
+    skill_section = _extract_section(lines, ["skills", "technical skills", "skill summary", "skills summary", "toolbox"])
+    if skill_section:
+        parsed_tokens = []
+        for line in skill_section:
+            parsed_tokens.extend(_split_skill_line(line))
+        skills = _unique_list(skills + parsed_tokens)
+
+    projects = _extract_section(lines, ["projects", "project experience", "project work", "academic projects"]) or [
+        line for line in lines if any(token in line.lower() for token in ["project", "built", "developed", "implemented"])
     ]
-    education = _extract_section(lines, "education") or [
-        line for line in lines if any(token in line.lower() for token in ["b.tech", "bachelor", "master", "degree", "university"])
+    education = _extract_section(lines, ["education", "academics", "academic background"]) or [
+        line for line in lines if any(token in line.lower() for token in ["b.tech", "bachelor", "master", "degree", "university", "college"])
     ]
-    experience = _extract_section(lines, "experience") or [
-        line for line in lines if any(token in line.lower() for token in ["intern", "internship", "experience", "company"])
+    experience = _extract_section(lines, ["experience", "work experience", "professional experience", "employment", "internship"]) or [
+        line for line in lines if any(token in line.lower() for token in ["intern", "internship", "experience", "company", "employment"])
     ]
 
     return {
-        "skills": skills[:20],
-        "projects": projects[:8],
-        "education": education[:6],
-        "experience": experience[:8],
+        "skills": _unique_list(skills)[:24],
+        "projects": _unique_list([_normalize_line(item) for item in projects])[:8],
+        "education": _unique_list([_normalize_line(item) for item in education])[:6],
+        "experience": _unique_list([_normalize_line(item) for item in experience])[:8],
     }

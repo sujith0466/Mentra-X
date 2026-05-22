@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+import re
 from typing import Dict, Iterable, List
 
 
@@ -69,5 +70,52 @@ def analyze_project_structure(files: Iterable[str]) -> Dict[str, object]:
         "backend_components": backend_components,
         "frontend_components": frontend_components,
         "important_files": important_files,
+        "suggestions": suggestions,
+    }
+
+
+def explain_code_snippet(code: str) -> Dict[str, object]:
+    snippet = (code or "").strip()
+    if not snippet:
+        return {
+            "purpose": "No code snippet provided.",
+            "logic_flow": "Paste a snippet to receive a line-by-line explanation.",
+            "functions_used": [],
+            "architecture_summary": "N/A",
+            "suggestions": ["Add a function or class so the explainer can infer structure."],
+        }
+
+    function_matches = re.findall(r"def\\s+([a-zA-Z_][\\w]*)\\s*\\(|function\\s+([a-zA-Z_][\\w]*)\\s*\\(", snippet)
+    functions_used = [match[0] or match[1] for match in function_matches if match[0] or match[1]]
+
+    purpose = "This snippet defines logic to process data and return results."
+    if "class " in snippet:
+        purpose = "This snippet defines a class-based component or model."
+    if "def " in snippet and "return" in snippet:
+        purpose = "This function processes inputs and returns a computed value."
+
+    logic_flow_parts = []
+    if re.search(r"for\\s+|while\\s+", snippet):
+        logic_flow_parts.append("Iterates over data using loops.")
+    if re.search(r"if\\s+|elif\\s+|else:", snippet):
+        logic_flow_parts.append("Uses conditional branches for decision making.")
+    if "try:" in snippet:
+        logic_flow_parts.append("Wraps risky operations in error handling.")
+    if "return" in snippet:
+        logic_flow_parts.append("Returns a final value or response.")
+    if not logic_flow_parts:
+        logic_flow_parts.append("Runs sequentially from top to bottom.")
+
+    suggestions = ["Consider adding input validation to guard against unexpected values."]
+    if "print(" in snippet:
+        suggestions.append("Replace print statements with logging when moving to production.")
+    if not functions_used:
+        suggestions.append("Wrap repeated logic into a reusable function for clarity.")
+
+    return {
+        "purpose": purpose,
+        "logic_flow": " ".join(logic_flow_parts),
+        "functions_used": functions_used,
+        "architecture_summary": "Single-file utility snippet with focused logic.",
         "suggestions": suggestions,
     }

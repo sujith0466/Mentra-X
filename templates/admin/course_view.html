@@ -6,22 +6,21 @@
 <div class="container">
     <section class="admin-course-preview">
         <h1>Course Preview: {{ course.title }}</h1>
-        <p class="breadcrumb"><a href="{{ url_for('admin.manage_courses') }}">← Back to Courses</a></p>
+        <p class="breadcrumb"><a href="{{ url_for('admin.manage_courses') }}">&larr; Back to Courses</a></p>
 
-        <!-- Course Info Card -->
         <div class="course-info-card">
-            <div class="row">
-                <div class="col-md-5">
+            <div class="preview-grid">
+                <div>
                     <h2>{{ course.title or 'Untitled Course' }}</h2>
                     <p><strong>Instructor:</strong> {{ course.instructor or 'N/A' }}</p>
                     <p><strong>Domain:</strong> {% if course.domain and course.domain.name %}{{ course.domain.name }}{% else %}N/A{% endif %}</p>
-                    <p><strong>Price:</strong> ₹{{ course.price if course.price is not none else 'N/A' }}</p>
+                    <p><strong>Price:</strong> &#8377;{{ course.price if course.price is not none else 'N/A' }}</p>
                     <p><strong>Created:</strong> {% if course.created_at %}{{ course.created_at.strftime('%Y-%m-%d') }}{% else %}N/A{% endif %}</p>
                 </div>
-                <div class="col-md-7">
+                <div>
                     <h3>Course Image</h3>
                     {% if course.image_url %}
-                        <img src="{{ url_for('static', filename='images/courses/' + course.image_url) }}" alt="{{ course.title }}" style="max-width: 100%; max-height: 250px; border-radius: 8px;">
+                        <img src="{{ url_for('static', filename='images/courses/' + course.image_url) }}" alt="{{ course.title }}" class="current-course-image">
                     {% else %}
                         <p>No course image available.</p>
                     {% endif %}
@@ -32,8 +31,7 @@
             <p>{{ course.description or 'No description available.' }}</p>
         </div>
 
-        <!-- Demo Video -->
-        <div class="demo-video-section" style="margin: 30px 0;">
+        <div class="demo-video-section management-panel">
             <h2>Demo Video</h2>
             {% set demo_url = course.demo_video_url %}
             {% if demo_url %}
@@ -53,8 +51,7 @@
             {% endif %}
         </div>
 
-        <!-- Syllabus -->
-        <div class="syllabus-section" style="margin: 30px 0;">
+        <div class="syllabus-section management-panel">
             <h2>Course Syllabus</h2>
             {% set syllabus_list = syllabuses if syllabuses is defined else course.syllabuses %}
             {% if syllabus_list and syllabus_list|length > 0 %}
@@ -71,8 +68,7 @@
             {% endif %}
         </div>
 
-        <!-- Course Videos -->
-        <div class="videos-section" style="margin: 30px 0;">
+        <div class="videos-section management-panel">
             <h2>Course Videos</h2>
             {% set video_list = videos if videos is defined else course.videos %}
             {% if video_list and video_list|length > 0 %}
@@ -90,4 +86,22 @@
         </div>
     </section>
 </div>
+
+<style>
+.preview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+.demo-video-section,
+.syllabus-section,
+.videos-section {
+    margin-top: 20px;
+}
+@media (max-width: 900px) {
+    .preview-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 {% endblock %}

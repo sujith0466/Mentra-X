@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}AI Project Ideas - Mentra{% endblock %}
 
@@ -44,6 +44,12 @@
                     {% endfor %}
                 </div>
             </div>
+            {% if idea.difficulty %}
+            <div class="ai-list-block">
+                <h3>Difficulty</h3>
+                <p class="muted">{{ idea.difficulty }}</p>
+            </div>
+            {% endif %}
         </article>
         {% endfor %}
     </section>
@@ -51,7 +57,7 @@
 
 <style>
 .ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
-.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card, .ai-card { background: var(--surface); border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
 .ai-hero-card { padding: 18px; display: flex; justify-content: space-between; gap: 16px; align-items: end; }
 .eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
 .ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }

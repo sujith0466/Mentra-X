@@ -49,3 +49,25 @@ def execute_python_code(code: str) -> Dict[str, object]:
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
 
+
+def execute_code(language: str, code: str) -> Dict[str, object]:
+    normalized = (language or "python").strip().lower()
+    if normalized in {"python", "py"}:
+        return execute_python_code(code)
+    if normalized in {"javascript", "js"}:
+        return {
+            "success": False,
+            "output": "",
+            "error": "JavaScript execution is not available in this environment yet. Please use Python for now.",
+        }
+    if normalized in {"sql"}:
+        return {
+            "success": False,
+            "output": "",
+            "error": "SQL execution is not available in this environment yet. Please use Python for now.",
+        }
+    return {
+        "success": False,
+        "output": "",
+        "error": "Unsupported language selected. Please use Python.",
+    }

@@ -95,7 +95,9 @@ def register():
         email = request.form.get('email', '').strip()
         password = request.form.get('password', '').strip()
         confirm_password = request.form.get('confirm_password', '').strip()
-        referral_code = request.form.get('referral_code', '').strip()
+        referral_code = (request.form.get('referral_code') or '').strip()
+        if not referral_code:
+            referral_code = (session.get('referral_code') or '').strip()
         
         # Validation
         if not all([name, email, password, confirm_password]):
@@ -128,7 +130,12 @@ def register():
             if referral_code:
                 referred_by_user = User.query.filter_by(referral_code=referral_code).first()
                 if not referred_by_user:
+                    session.pop('referral_code', None)
                     flash('Invalid referral code!', 'danger')
+                    return redirect(url_for('auth.register'))
+                if referred_by_user.email == email:
+                    session.pop('referral_code', None)
+                    flash('You cannot use your own referral code.', 'danger')
                     return redirect(url_for('auth.register'))
             
             # Create new user
@@ -184,7 +191,7 @@ def register():
             return redirect(url_for('auth.register'))
     
     # GET request - get referral code from URL if provided
-    referral_code = request.args.get('ref', '')
+    referral_code = request.args.get('ref', '') or session.get('referral_code', '')
     return render_template('auth/register.html', referral_code=referral_code)
 
 

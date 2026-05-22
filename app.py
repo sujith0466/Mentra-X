@@ -1,5 +1,8 @@
-from flask import Flask, render_template, session, request, jsonify, send_from_directory, abort
+from flask import Flask, render_template, session, request, jsonify, send_from_directory, abort, current_app, redirect, url_for
 from models import db, User, AdminUser
+from dotenv import load_dotenv
+from pymongo import MongoClient
+from sqlalchemy import text
 import os
 import sqlite3
 import re
@@ -7,13 +10,78 @@ import glob
 import unicodedata
 import secrets
 
+# Initialize environment
+load_dotenv(override=True)
+
 # Initialize Flask app
 app = Flask(__name__)
 
+# Debug environment flags (safe values only)
+print('MENTRA_USE_MYSQL =', os.getenv('MENTRA_USE_MYSQL'))
+print('MENTRA_MYSQL_HOST =', os.getenv('MENTRA_MYSQL_HOST'))
+print('MENTRA_MYSQL_DB =', os.getenv('MENTRA_MYSQL_DB'))
+print("MENTRA_USE_MONGO =", os.getenv("MENTRA_USE_MONGO"))
+print("MENTRA_MONGO_DB =", os.getenv("MENTRA_MONGO_DB"))
+
+
 # Configuration
-app.config['SECRET_KEY'] = 'your_secret_key_here_change_in_production'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///portal.db'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'mentra-dev-secret-key')
+default_sqlite_uri = 'sqlite:///portal.db'
+use_mysql = os.getenv('MENTRA_USE_MYSQL', 'false').lower() == 'true'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = default_sqlite_uri
+if use_mysql:
+    db_user = os.getenv('MENTRA_MYSQL_USER')
+    db_pass = os.getenv('MENTRA_MYSQL_PASSWORD')
+    db_host = os.getenv('MENTRA_MYSQL_HOST', 'localhost')
+    db_port = os.getenv('MENTRA_MYSQL_PORT', '3306')
+    db_name = os.getenv('MENTRA_MYSQL_DB')
+
+    if all([db_user, db_pass, db_name]):
+        app.config['SQLALCHEMY_DATABASE_URI'] = (
+            f"mysql+pymysql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+        )
+    else:
+        use_mysql = False
+        print('MySQL env vars missing; falling back to SQLite.')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# Debug active DB URI (mask password if present)
+active_uri = app.config['SQLALCHEMY_DATABASE_URI']
+if active_uri and '@' in active_uri and '://' in active_uri:
+    prefix, rest = active_uri.split('://', 1)
+    if '@' in rest and ':' in rest.split('@')[0]:
+        creds, hostpart = rest.split('@', 1)
+        user = creds.split(':', 1)[0]
+        active_uri = f"{prefix}://{user}:***@{hostpart}"
+print('Active Database URI:', active_uri)
+
+
+# Initialize MongoDB
+mongo_client = None
+mongo_db = None
+
+if os.getenv("MENTRA_USE_MONGO", "false").lower() == "true":
+    try:
+        mongo_uri = os.getenv("MENTRA_MONGO_URI")
+        mongo_db_name = os.getenv("MENTRA_MONGO_DB")
+
+        mongo_client = MongoClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        mongo_client.server_info()  # forces connection
+
+        mongo_db = mongo_client[mongo_db_name]
+
+        print(f"[PID {os.getpid()}] MongoDB connected successfully: {mongo_db_name}")
+
+    except Exception as e:
+        print(f"[PID {os.getpid()}] MongoDB connection failed: {e}")
+        mongo_db = None
+
+# Register mongo_db in app context
+app.mongo_db = mongo_db
+app.config['MONGO_DB'] = mongo_db
+print(f"[PID {os.getpid()}] App object ID: {id(app)}, mongo_db present: {mongo_db is not None}")
 
 # Initialize Database
 db.init_app(app)
@@ -21,6 +89,7 @@ db.init_app(app)
 # Import and register blueprints
 from auth_routes import auth_bp
 from student_routes import student_bp
+from referral_routes import referral_bp
 from admin_routes import admin_bp
 from public_routes import public_bp
 from admin_quiz_routes import admin_quiz_bp
@@ -29,9 +98,18 @@ from student_quiz_routes import student_quiz_bp
 from student_assignment_routes import student_assignment_bp
 from ai_routes import ai_bp, career_bp, coding_bp, devtools_bp, interview_bp, project_bp, skills_bp
 from community_routes import community_bp
+from routes.coding_api_routes import coding_api_bp
+from routes.orchestrator_api_routes import orchestrator_api_bp
+from routes.interview_routes import interview_api_bp
+from routes.ai_enhancements import ai_enhancements_bp
+from routes.learning_routes import learning_routes_bp
+from routes.experience_routes import experience_routes_bp
+
+
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(student_bp)
+app.register_blueprint(referral_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(public_bp)
 app.register_blueprint(admin_quiz_bp)
@@ -46,6 +124,13 @@ app.register_blueprint(coding_bp)
 app.register_blueprint(interview_bp)
 app.register_blueprint(project_bp)
 app.register_blueprint(community_bp)
+app.register_blueprint(coding_api_bp)
+app.register_blueprint(orchestrator_api_bp)
+app.register_blueprint(interview_api_bp)
+app.register_blueprint(ai_enhancements_bp)
+app.register_blueprint(learning_routes_bp)
+app.register_blueprint(experience_routes_bp)
+
 
 
 @app.route('/uploads/<path:filename>')
@@ -59,6 +144,151 @@ def uploaded_file(filename):
     rel_dir = os.path.dirname(filename)
     rel_name = os.path.basename(filename)
     return send_from_directory(os.path.join(safe_root, rel_dir), rel_name, as_attachment=False)
+
+
+@app.route('/dashboard/job-score')
+def job_score_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('dashboard/job_score.html')
+
+@app.route('/dashboard/overview')
+def dashboard_overview_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return redirect(url_for('student_overview_page'))
+
+
+@app.route('/student/overview')
+def student_overview_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('dashboard/overview.html')
+
+@app.route('/student/learning-path')
+def learning_path_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('learning/path.html')
+
+@app.route('/student/weekly-report')
+def weekly_report_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('learning/weekly_report.html')
+
+@app.route('/student/flashcards')
+def flashcards_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('learning/flashcards.html')
+
+@app.route('/student/doubt-solver')
+def doubt_solver_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('learning/doubt_solver.html')
+
+@app.route('/student/resume-improver')
+def resume_improver_page():
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    return render_template('career/resume_improver.html')
+
+@app.route('/db-check')
+def db_check():
+    role = session.get('role') or session.get('user_role')
+    if role != 'admin':
+        return jsonify({"error": "Forbidden"}), 403
+    try:
+        if use_mysql:
+            result = db.session.execute(text('SELECT DATABASE()'))
+            row = result.fetchone()
+            return jsonify({'success': True, 'data': {'database': (row[0] if row else None), 'driver': 'mysql'}})
+        return jsonify({'success': True, 'data': {'database': 'sqlite', 'driver': 'sqlite'}})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route("/mongo-check")
+def mongo_check():
+    role = session.get('role') or session.get('user_role')
+    if role != 'admin':
+        return jsonify({"error": "Forbidden"}), 403
+    pid = os.getpid()
+    use_mongo = os.getenv("MENTRA_USE_MONGO", "false").lower() == "true"
+    
+    # Try to get existing or connect on-demand for verification
+    m_db = getattr(current_app, 'mongo_db', None)
+    if m_db is None:
+        m_db = current_app.config.get('MONGO_DB')
+    
+    print(f"[PID {pid}] mongo_check hit. App ID: {id(current_app._get_current_object())}, m_db present: {m_db is not None}")
+
+    if m_db is None and use_mongo:
+        try:
+            from pymongo import MongoClient
+            uri = os.getenv("MENTRA_MONGO_URI")
+            db_name = os.getenv("MENTRA_MONGO_DB")
+            client = MongoClient(uri, serverSelectionTimeoutMS=5000)
+            client.server_info()
+            m_db = client[db_name]
+            # Update app context
+            current_app.mongo_db = m_db
+            current_app.config['MONGO_DB'] = m_db
+        except Exception as e:
+            return jsonify({"error": f"On-demand connection failed: {e}", "pid": pid}), 500
+
+    if m_db is None:
+        return jsonify({
+            "success": True,
+            "data": {
+                "status": "failed",
+                "message": "MongoDB not connected (MENTRA_USE_MONGO is false or connection failed)",
+                "debug": {"pid": pid, "use_mongo": use_mongo}
+            }
+        }), 200
+
+    try:
+        collections = m_db.list_collection_names()
+        return jsonify({
+            "success": True,
+            "data": {
+                "status": "connected",
+                "database": m_db.name,
+                "collections": collections,
+                "debug": {"pid": pid}
+            }
+        })
+    except Exception as e:
+        return jsonify({"error": str(e), "debug": {"pid": pid}}), 500
+
+from datetime import datetime
+
+@app.route("/mongo-test-insert")
+def mongo_test_insert():
+    role = session.get('role') or session.get('user_role')
+    if role != 'admin':
+        return jsonify({"error": "Forbidden"}), 403
+    m_db = getattr(current_app, 'mongo_db', None)
+    if m_db is None:
+        m_db = current_app.config.get('MONGO_DB')
+    if m_db is None:
+        # Try one-time connect for test
+        try:
+            from pymongo import MongoClient
+            client = MongoClient(os.getenv("MENTRA_MONGO_URI"), serverSelectionTimeoutMS=5000)
+            m_db = client[os.getenv("MENTRA_MONGO_DB")]
+        except:
+            return jsonify({"error": "Mongo not connected"}), 500
+
+    try:
+        m_db["test_collection"].insert_one({
+            "test": "connection_check",
+            "created_at": datetime.utcnow()
+        })
+        return jsonify({"success": True, "data": {"message": "Insert successful"}})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def _table_exists(conn, table_name):
     row = conn.execute(
@@ -552,7 +782,7 @@ def inject_user():
     """Make user available in templates"""
     user = None
     if 'user_id' in session:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
     csrf_token = session.get('csrf_token')
     if not csrf_token:
         csrf_token = secrets.token_urlsafe(32)
@@ -566,8 +796,8 @@ def inject_user():
 @app.route("/api/chatbot/ask", methods=["POST"])
 def chatbot_ask():
     """
-    Hardcoded Chatbot API Endpoint
-    Handles student questions with predefined responses.
+    Rule-based Chatbot API Endpoint
+    Handles student questions with page-aware, offline logic.
     
     Request body:
     {
@@ -586,7 +816,7 @@ def chatbot_ask():
     }
     """
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         
         if not data:
             return jsonify({
@@ -603,15 +833,36 @@ def chatbot_ask():
                 "error": "Question cannot be empty"
             }), 400
         
-        # Import and use the hardcoded chatbot service
-        from chatbot_service_hardcoded import get_chatbot_response
-        
-        if isinstance(context, dict) and 'user_id' not in context and 'user_id' in session:
+        if not isinstance(context, dict):
+            context = {}
+        if 'user_id' not in context and 'user_id' in session:
             context['user_id'] = session.get('user_id')
-        
-        # Get the hardcoded response
-        response_data = get_chatbot_response(question, context)
-        
+
+        from services.ai.rulebased_chatbot_service import build_rulebased_chatbot_payload
+        payload = build_rulebased_chatbot_payload(
+            question,
+            context=context,
+            user_id=session.get('user_id'),
+        )
+        answer = payload.get("answer", "")
+        options = payload.get("options", [])
+        response_data = {
+            "success": True,
+            "data": {
+                "answer": answer,
+                "agent": payload.get("agent", "rulebased_mentor"),
+                "options": options,
+                "suggestions": options,
+            },
+            "answer": answer,
+            "response": answer,
+            "options": options,
+            "agent": payload.get("agent", "rulebased_mentor"),
+            "suggestions": options,
+            "deprecated": True,
+            "deprecated_in_favor_of": "/api/chat",
+        }
+
         return jsonify(response_data)
     
     except Exception as e:
@@ -638,24 +889,51 @@ def bad_request_error(error):
 
 # Create application context and initialize database
 with app.app_context():
-    db_path = os.path.join(app.instance_path, "portal.db")
-    _repair_legacy_schema(db_path)
+    if app.config['SQLALCHEMY_DATABASE_URI'].startswith('sqlite'):
+        db_path = os.path.join(app.instance_path, 'portal.db')
+        _repair_legacy_schema(db_path)
     db.create_all()
     _sync_course_image_references()
-    
+
+    try:
+        db.session.execute(text('SELECT 1'))
+        if use_mysql:
+            print('MySQL connection successful')
+        else:
+            print('SQLite connection successful')
+    except Exception as e:
+        print('Database connection failed:', e)
+
+    try:
+        if use_mysql:
+            db_name_row = db.session.execute(text('SELECT DATABASE()')).fetchone()
+            db_name = db_name_row[0] if db_name_row else None
+            print('Connected to database:', db_name)
+
+            print('Tables in database:')
+            for table in db.session.execute(text('SHOW TABLES')):
+                print('-', table[0])
+
+            user_count_row = db.session.execute(text('SELECT COUNT(*) FROM users')).fetchone()
+            user_count = user_count_row[0] if user_count_row else 0
+            print('Total users:', user_count)
+    except Exception as e:
+        print('Database inspection failed:', e)
+
     # Create default admin user if it doesn't exist
     admin_user = User.query.filter_by(email='admin@eduportal.com').first()
     if not admin_user:
         admin = User(
             name='Admin User',
             email='admin@eduportal.com',
-            role='admin'
+            role='admin',
+            referral_code=f"TEMP{secrets.token_hex(4).upper()}"
         )
         admin.set_password('admin123')
         db.session.add(admin)
         db.session.flush()
         admin.referral_code = admin.generate_referral_code()
-        
+
         # Create AdminUser profile
         admin_profile = AdminUser(
             user_id=admin.id,
@@ -667,10 +945,25 @@ with app.app_context():
         admin_profile.set_password('admin123')
         db.session.add(admin_profile)
         db.session.commit()
-        print("Default admin user created: admin@eduportal.com / admin123 (username: admin)")
+        print('Default admin user created: admin@eduportal.com (username: admin)')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    import os
+    if os.environ.get('MENTRA_ENV') == 'development':
+        app.run(debug=True, host='127.0.0.1', port=5000)
+    else:
+        try:
+            from waitress import serve
+            print("\n=======================================================")
+            print("Starting Mentra Platform with Waitress WSGI server")
+            print("Listening on http://127.0.0.1:5000")
+            print("Press CTRL+C to quit (Note: Dev-mode auto-reload is off)")
+            print("=======================================================\n")
+            serve(app, host='127.0.0.1', port=5000)
+        except ImportError:
+            print("Waitress not installed. Falling back to development server...")
+            app.run(debug=True, host='127.0.0.1', port=5000)
+
 
 
 

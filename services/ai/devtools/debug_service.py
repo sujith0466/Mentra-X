@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict
+from typing import Dict, Optional
 
 
 ERROR_KNOWLEDGE = {
@@ -47,20 +47,50 @@ ERROR_KNOWLEDGE = {
 }
 
 
-def explain_error(error_text: str) -> Dict[str, str]:
+def _build_correction(error_type: str, code_snippet: Optional[str]) -> str:
+    if not code_snippet:
+        return ""
+    if error_type == "TypeError":
+        return "value = int(raw_value)\nresult = value + 5"
+    if error_type == "ValueError":
+        return "if raw_value.isdigit():\n    count = int(raw_value)"
+    if error_type == "SyntaxError":
+        return "if score > 50:\n    print('Pass')"
+    if error_type == "IndexError":
+        return "if index < len(items):\n    print(items[index])"
+    if error_type == "KeyError":
+        return "value = payload.get('key', 'default')"
+    return "Add input validation, type checks, and guard clauses around risky operations."
+
+
+def _extract_trace_hint(stack_trace: Optional[str]) -> str:
+    if not stack_trace:
+        return ""
+    lines = [line.strip() for line in stack_trace.splitlines() if line.strip()]
+    for line in reversed(lines):
+        if "File" in line and ", line" in line:
+            return line
+    return ""
+
+
+def explain_error(error_text: str, stack_trace: Optional[str] = None, code_snippet: Optional[str] = None) -> Dict[str, str]:
     normalized = (error_text or "").strip()
-    lowered = normalized.lower()
+    combined = "\n".join([normalized, (stack_trace or "").strip()]).strip()
+    lowered = combined.lower()
 
     for error_name, payload in ERROR_KNOWLEDGE.items():
         if error_name in lowered:
+            correction = _build_correction(payload["error_type"], code_snippet)
+            trace_hint = _extract_trace_hint(stack_trace)
             return {
                 "error": normalized or payload["error_type"],
                 "error_type": payload["error_type"],
                 "explanation": payload["explanation"],
                 "cause": payload["cause"],
                 "possible_fix": payload["possible_fix"],
-                "corrected_example": payload["corrected_example"],
+                "corrected_example": correction or payload["corrected_example"],
                 "example": payload["example"],
+                "trace_hint": trace_hint,
             }
 
     return {
@@ -69,6 +99,7 @@ def explain_error(error_text: str) -> Dict[str, str]:
         "explanation": "This error type is not in the current rule-based catalog, but it still looks like a coding or runtime issue.",
         "cause": "The traceback likely points to a failing line, variable, or invalid assumption in the code path.",
         "possible_fix": "Read the traceback from bottom to top, identify the failing file and line, then inspect the variables used there.",
-        "corrected_example": "Add logging or print statements around the failing line to inspect variable values before the exception occurs.",
+        "corrected_example": _build_correction("Runtime Error", code_snippet) or "Add logging or print statements around the failing line to inspect variable values before the exception occurs.",
         "example": "Look for the exception name, the file path, and the exact failing line before making a fix.",
+        "trace_hint": _extract_trace_hint(stack_trace),
     }

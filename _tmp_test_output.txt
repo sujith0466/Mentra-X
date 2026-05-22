@@ -1,0 +1,19 @@
+--- Testing POST /api/flashcards ---
+Status: 200
+JSON: {"flashcards": [{"answer": "level programming language. Variable - A container that stores data.", "question": "What is meant by 'Python is a high'?"}, {"answer": "Is a high-level programming language", "question": "What is 'Python'?"}], "success": true}
+
+--- Testing POST /api/doubt-solver ---
+Status: 200
+JSON: {"explanation": "Loops are used to repeat a block of code automatically. A 'for' loop runs a set number of times, while a 'while' loop runs as long as a condition is true.", "success": true, "topic": "Loop"}
+
+--- Testing GET /api/study-plan ---
+Status: 200
+JSON: {"daily_tasks": ["Enroll in your recommended course: 'Python'."], "estimated_hours": 3, "success": true, "weekly_goals": ["Complete the first module of 'Python'."]}
+
+--- Testing GET /api/streak ---
+Status: 200
+JSON: {"streak": {"current_streak": 1, "last_learning_date": "2026-04-02", "longest_streak": 1}, "success": true}
+
+--- Testing GET /api/xp ---
+Status: 200
+JSON: {"success": true, "xp_data": {"breakdown": {"coding": 0, "courses": 0, "lessons": 0, "quizzes": 0}, "level": 1, "xp_points": 0}}

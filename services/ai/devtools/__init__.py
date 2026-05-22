@@ -1,3 +1,3 @@
 from .coding_practice_service import SUPPORTED_TOPICS, generate_coding_problem
 from .debug_service import explain_error
-from .codebase_service import analyze_project_structure
+from .codebase_service import analyze_project_structure, explain_code_snippet

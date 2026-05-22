@@ -10,41 +10,53 @@
         <!-- Search and Filter -->
         <div class="search-filter">
             <form method="GET" class="search-form">
-                <input type="text" name="search" placeholder="Search courses..." value="{{ search_query }}" class="search-input">
-                <button type="submit" class="btn btn-primary">Search</button>
+                <label for="courseSearch" class="search-label">Find your next course</label>
+                <div class="search-input-wrap">
+                    <input type="text" id="courseSearch" name="search" placeholder="Search by skill, title, or topic..." value="{{ search_query }}" class="search-input">
+                    <button type="submit" class="btn btn-primary search-btn">Search</button>
+                </div>
+                <input type="hidden" name="domain" id="selectedDomainInput" value="{{ selected_domain }}">
+                <a href="{{ url_for('public.courses') }}" class="search-reset">Reset</a>
             </form>
             
-            <div class="domain-filter">
-                <a href="{{ url_for('public.courses') }}" class="filter-btn {% if not selected_domain %}active{% endif %}">All Domains</a>
+            <div class="domain-filters" id="domainFilters">
+                <button type="button" class="filter-btn {% if not selected_domain %}active{% endif %}" data-domain="all">All</button>
                 {% for domain in domains %}
-                <a href="{{ url_for('public.courses', domain=domain.id) }}" 
+                <button
+                   type="button"
+                   data-domain="{{ domain.id }}"
                    class="filter-btn {% if selected_domain|string == domain.id|string %}active{% endif %}">
                     {{ domain.name }}
-                </a>
+                </button>
                 {% endfor %}
             </div>
         </div>
         
         <!-- Courses Grid -->
         {% if courses %}
-            <div class="courses-grid">
+            <div class="course-grid" id="courseGrid">
                 {% for course in courses %}
-                <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="course-card-link">
-                    <div class="course-card-simple tutedude-tile">
-                        <div class="course-image">
-                            <img src="{{ course.resolved_image_url or url_for('static', filename='images/courses/default_course.png') }}" alt="{{ course.title }}">
-                        </div>
-                        <h3 class="course-title-simple">{{ course.title }}</h3>
+                <article class="course-card" data-domain="{{ course.domain_id }}">
+                    <div class="course-card-media">
+                        {% set resolved_image = course.resolved_image or course.resolved_image_url or url_for('static', filename='images/courses/default_course.png') %}
+                        <img src="{{ resolved_image }}" alt="{{ course.title }}" class="course-img">
                     </div>
-                </a>
+                    <div class="course-card-body">
+                        <h3>{{ course.title }}</h3>
+                        <p class="muted">
+                            {{ course.description[:140] ~ '...' if course.description and course.description|length > 140 else (course.description or 'No description available.') }}
+                        </p>
+                        <a href="{{ url_for('public.course_detail', course_id=course.id) }}" class="btn-ai-tool start-course-btn">Start Course</a>
+                    </div>
+                </article>
                 {% endfor %}
             </div>
         {% else %}
             <div class="no-results">
-                <p>No courses found. Try a different search or filter.</p>
+                <p>No courses available yet.</p>
             </div>
         {% endif %}
-    </section>
+</section>
 
     <section class="motivation-courses">
         <p>Every expert was once a beginner.</p>
@@ -52,24 +64,215 @@
     </section>
 </div>
 <style>
+body,
+main,
+.container {
+    background: var(--bg);
+}
 .motivation-courses {
     text-align: center;
     margin: 24px auto 6px;
     padding: 18px 16px;
     border-radius: 12px;
     max-width: 760px;
-    background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-    border: 1px solid #cbd5e1;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--bg)) 0%, var(--surface-light) 100%);
+    border: 1px solid var(--border);
 }
 .motivation-courses p {
     margin: 0;
     font-size: 1.08rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--text);
 }
 .motivation-courses p + p {
     margin-top: 4px;
-    color: #0f766e;
+    color: var(--primary);
+}
+.search-filter {
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 88%, #eef5ff) 100%);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.08);
+}
+.search-form {
+    display: grid;
+    gap: 10px;
+}
+.search-label {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+}
+.search-input-wrap {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px;
+    align-items: center;
+}
+.search-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-height: 46px;
+    padding: 0 14px;
+    font-size: 0.95rem;
+    background: var(--surface);
+    color: var(--text);
+}
+.search-btn {
+    min-height: 46px;
+    min-width: 122px;
+    border-radius: 12px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+.search-reset {
+    width: fit-content;
+    text-decoration: none;
+    color: var(--secondary);
+    font-size: 0.86rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 12px;
+    background: var(--surface);
+}
+.search-reset:hover {
+    color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+.domain-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 12px;
+}
+.filter-btn {
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    cursor: pointer;
+    transition: 0.3s;
+}
+.filter-btn.active,
+.filter-btn:hover {
+    background: var(--primary);
+    color: #fff;
+}
+
+.course-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    margin-top: 20px;
+}
+.course-card {
+    position: relative;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--surface) 0%, color-mix(in srgb, var(--surface) 90%, #eef5ff) 100%);
+    box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+.course-card::before,
+.course-card::after {
+    content: none !important;
+    display: none !important;
+}
+.course-card:hover {
+    transform: translateY(-5px);
+    border-color: color-mix(in srgb, var(--primary) 38%, var(--border));
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.14);
+}
+.course-card-media img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+.course-img {
+    width: 100%;
+    height: 170px;
+    object-fit: cover;
+    border-radius: 12px 12px 0 0;
+}
+.course-card-body {
+    position: relative;
+    z-index: 1;
+    padding: 18px;
+    display: grid;
+    gap: 10px;
+}
+.course-card-body h3 {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.35;
+}
+.start-course-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 42px;
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+    border-radius: 12px;
+    text-transform: uppercase;
+    box-shadow: 0 12px 24px rgba(29, 78, 216, 0.24);
+}
+.start-course-btn:hover {
+    box-shadow: 0 16px 28px rgba(29, 78, 216, 0.33);
+}
+@media (max-width: 1024px) {
+    .course-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+    .course-grid { grid-template-columns: 1fr; }
+    .search-input-wrap {
+        grid-template-columns: 1fr;
+    }
+    .search-btn {
+        width: 100%;
+    }
 }
 </style>
+<script>
+(() => {
+    const filterWrap = document.getElementById('domainFilters');
+    const cards = Array.from(document.querySelectorAll('#courseGrid .course-card'));
+    const domainInput = document.getElementById('selectedDomainInput');
+    if (!filterWrap || cards.length === 0) return;
+
+    const buttons = Array.from(filterWrap.querySelectorAll('.filter-btn'));
+
+    function applyFilter(domain) {
+        const selected = (domain || 'all').toString();
+        buttons.forEach((btn) => {
+            btn.classList.toggle('active', btn.dataset.domain === selected);
+        });
+        cards.forEach((card) => {
+            const cardDomain = (card.dataset.domain || '').toString();
+            card.style.display = (selected === 'all' || cardDomain === selected) ? '' : 'none';
+        });
+        if (domainInput) {
+            domainInput.value = selected === 'all' ? '' : selected;
+        }
+    }
+
+    buttons.forEach((btn) => {
+        btn.addEventListener('click', () => applyFilter(btn.dataset.domain));
+    });
+
+    const selectedFromServer = (domainInput && domainInput.value) ? domainInput.value : 'all';
+    applyFilter(selectedFromServer);
+})();
+</script>
 {% endblock %}
+

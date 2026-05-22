@@ -35,7 +35,26 @@
             <a class="btn-primary-soft" href="{{ url_for('coding.coding_challenge_detail', id=challenge.id) }}">Open Challenge</a>
         </article>
         {% else %}
-        <p>No coding challenges are available for this topic yet.</p>
+        <article class="challenge-card">
+            <p class="eyebrow">Sample</p>
+            <h3>Two Sum</h3>
+            <p>Find two numbers in a list that add up to a target and return their indices.</p>
+            <div class="meta-row">
+                <span>Easy</span>
+                <span>2 tests</span>
+            </div>
+            <span class="muted">Add real challenges to unlock submissions.</span>
+        </article>
+        <article class="challenge-card">
+            <p class="eyebrow">Sample</p>
+            <h3>Longest Word</h3>
+            <p>Return the longest word from a sentence and handle ties predictably.</p>
+            <div class="meta-row">
+                <span>Easy</span>
+                <span>3 tests</span>
+            </div>
+            <span class="muted">Use this as a template for new problems.</span>
+        </article>
         {% endfor %}
     </div>
 </section>
@@ -50,4 +69,3 @@
 @media (max-width: 700px) { .inline-form { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
-

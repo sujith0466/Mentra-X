@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}{{ course.title }} - Watch Videos{% endblock %}
 
@@ -38,7 +38,7 @@
                         <div class="video-info">
                             <h2>{{ first_video.title }}</h2>
                             {% if first_video.duration %}
-                                <p class="duration">⏱️ Duration: {{ first_video.duration }}</p>
+                                <p class="duration">Duration: {{ first_video.duration }}</p>
                             {% endif %}
                             {% if first_video.description %}
                                 <p class="description">{{ first_video.description }}</p>
@@ -87,7 +87,7 @@
                 <!-- Syllabus -->
                 {% if syllabuses %}
                 <div class="sidebar-card">
-                    <h3>📚 Course Syllabus</h3>
+                    <h3>Course Syllabus</h3>
                     <div class="syllabus-topics">
                         {% for syllabus in syllabuses %}
                         <div class="topic-item">
@@ -123,7 +123,7 @@
                 
                 <!-- Progress Update -->
                 <div class="sidebar-card">
-                    <h3>📊 Your Progress</h3>
+                    <h3>Your Progress</h3>
                     <div class="progress-widget">
                         <div class="progress-bar">
                             <div class="progress-fill" id="progressDisplay" style="--progress: {{ enrollment.progress }}%;" data-progress="{{ enrollment.progress }}"></div>
@@ -142,15 +142,15 @@
                 
                 <!-- Course Info -->
                 <div class="sidebar-card">
-                    <h3>ℹ️ Course Info</h3>
+                    <h3>Course Info</h3>
                     <div class="info-list">
-                        <p><strong>📁 Domain:</strong> {{ course.domain.name }}</p>
-                        <p><strong>📹 Total Videos:</strong> {{ videos|length }}</p>
-                        <p><strong>📖 Topics:</strong> {{ syllabuses|length }}</p>
+                        <p><strong>Domain:</strong> {{ course.domain.name }}</p>
+                        <p><strong>Total Videos:</strong> {{ videos|length }}</p>
+                        <p><strong>Topics:</strong> {{ syllabuses|length }}</p>
                         {% if course.instructor %}
-                            <p><strong>👨‍🏫 Instructor:</strong> {{ course.instructor }}</p>
+                            <p><strong>Instructor:</strong> {{ course.instructor }}</p>
                         {% endif %}
-                        <p><strong>📅 Enrolled:</strong> {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</p>
+                        <p><strong>Enrolled:</strong> {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</p>
                     </div>
                 </div>
             </div>
@@ -231,13 +231,13 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .video-info {
-    background: white;
+    background: var(--surface);
     padding: 20px;
     border-radius: 0 0 8px 8px;
 }
 
 .videos-playlist {
-    background: white;
+    background: var(--surface);
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
@@ -296,7 +296,7 @@ document.addEventListener('DOMContentLoaded', function() {
     padding: 6px 10px;
     border-radius: 8px;
     border: 1px solid #d1d5db;
-    background: #fff;
+    background: var(--surface);
     color: #111827;
 }
 .tab-link.active {
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .sidebar-card {
-    background: white;
+    background: var(--surface);
     padding: 20px;
     border-radius: 8px;
     margin-bottom: 20px;
@@ -341,4 +341,5 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 </style>
 {% endblock %}
+
 

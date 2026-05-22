@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}Portfolio Builder - Mentra{% endblock %}
 
@@ -15,7 +15,9 @@
     <section class="career-grid">
         <article class="ai-card">
             <h2>{{ portfolio.name }}</h2>
-            <p class="muted">Mentra learner portfolio snapshot</p>
+            <p class="muted">{{ portfolio.profile_summary }}</p>
+        </article>
+        <article class="ai-card">
             <h3>Skills</h3>
             <div class="tag-row">
                 {% for item in portfolio.skills %}
@@ -36,10 +38,22 @@
             </ul>
         </article>
         <article class="ai-card">
-            <h2>Suggested Projects</h2>
+            <h2>Projects</h2>
             <ul class="roadmap-list">
                 {% for item in portfolio.projects %}
                 <li>{{ item }}</li>
+                {% else %}
+                <li>No project entries yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Coding Challenges</h2>
+            <ul class="roadmap-list">
+                {% for item in portfolio.coding_challenges %}
+                <li>{{ item.title }}{% if item.score %} - {{ item.score | round(0) }}%{% endif %}</li>
+                {% else %}
+                <li>No coding challenges completed yet.</li>
                 {% endfor %}
             </ul>
         </article>
@@ -56,7 +70,7 @@
 
 <style>
 .ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
-.ai-hero-card, .ai-card { background: #fff; border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card, .ai-card { background: var(--surface); border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
 .ai-hero-card { padding: 18px; }
 .eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
 .ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
@@ -71,3 +85,4 @@
 @media (max-width: 920px) { .career-grid { grid-template-columns: 1fr; } }
 </style>
 {% endblock %}
+

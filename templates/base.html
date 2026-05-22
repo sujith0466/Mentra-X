@@ -6,10 +6,19 @@
     <meta name="csrf-token" content="{{ csrf_token if csrf_token is defined else '' }}">
     <title>{% block title %}Mentra{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <!-- Full UI Theme Upgrade (Pumpkin + Charcoal) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mentra-theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin-modern.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/startup-product-theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/startup-admin-student-upgrade.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/startup-student-upgrade.css') }}">
+    {% block styles %}{% endblock %}
 </head>
-<body>
+<body class="{% if request.path.startswith('/admin') and session.get('user_role') == 'admin' %}page-admin{% elif session.get('user_role') == 'student' %}page-student{% endif %}">
     <nav class="navbar">
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-4 {{ 'admin-layout-fluid' if request.path.startswith('/admin') and session.get('user_role') == 'admin' else '' }}">
             <div class="nav-brand">
                 <h1>Mentra</h1>
                 <p class="brand-tagline">Learn Smarter. Build Your Future.</p>
@@ -19,22 +28,53 @@
                 <li><a href="{{ url_for('public.courses') }}" class="nav-link">Courses</a></li>
                 <li><a href="{{ url_for('public.about') }}" class="nav-link">About Us</a></li>
                 <li><a href="{{ url_for('public.contact') }}" class="nav-link">Contact</a></li>
-                {% if session.get('user_id') and session.get('user_role') == 'student' %}
-                <li><a href="{{ url_for('student.dashboard') }}" class="nav-link">Dashboard</a></li>
-                {% elif session.get('user_id') and session.get('user_role') == 'admin' %}
-                <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Dashboard</a></li>
-                {% endif %}
                 {% if session.get('user_id') %}
+                {% if session.get('user_role') == 'admin' %}
+                <li><a href="{{ url_for('admin.dashboard') }}" class="nav-link">Admin Panel</a></li>
                 <li><a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a></li>
                 {% else %}
-                <li><a href="{{ url_for('auth.login') }}" class="nav-link">Login</a></li>
+                <li><a href="{{ url_for('student.dashboard') }}" class="nav-link">Dashboard</a></li>
+                <li><a href="{{ url_for('job_score_page') }}" class="nav-link">My Progress</a></li>
+                <li><a href="{{ url_for('student_overview_page') }}" class="nav-link">Overview</a></li>
+                <li class="nav-dropdown">
+                    <button type="button" class="nav-dropdown-toggle" id="featuresMenuBtn" aria-expanded="false" aria-controls="featuresMenu">Features</button>
+                    <div class="nav-dropdown-menu features-dropdown" id="featuresMenu">
+                        <a href="{{ url_for('learning_path_page') }}" class="nav-link">Learning Path</a>
+                        <a href="{{ url_for('weekly_report_page') }}" class="nav-link">Weekly Report</a>
+                        <a href="{{ url_for('flashcards_page') }}" class="nav-link">Flashcards</a>
+                        <a href="{{ url_for('doubt_solver_page') }}" class="nav-link">Doubt Solver</a>
+                        <a href="{{ url_for('resume_improver_page') }}" class="nav-link">Resume Improver</a>
+                        <a href="{{ url_for('career_ai.portfolio') }}" class="nav-link">Portfolio Builder</a>
+                        <div class="theme-toggle theme-toggle-inline">
+                            <span aria-hidden="true">☀️</span>
+                            <input type="checkbox" id="themeSwitchStudent" class="theme-switch-input" aria-label="Toggle dark mode">
+                            <span aria-hidden="true">🌙</span>
+                        </div>
+                    </div>
+                </li>
+                <li><a href="{{ url_for('auth.logout') }}" class="nav-link">Logout</a></li>
+                {% endif %}
+                {% else %}
+                <li class="nav-actions">
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-ghost nav-btn">Sign In</a>
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary nav-btn">Register</a>
+                </li>
+                {% endif %}
+                {% if not (session.get('user_id') and session.get('user_role') != 'admin') %}
+                <li>
+                    <div class="theme-toggle">
+                        <span aria-hidden="true">☀️</span>
+                        <input type="checkbox" id="themeSwitch" class="theme-switch-input" aria-label="Toggle dark mode">
+                        <span aria-hidden="true">🌙</span>
+                    </div>
+                </li>
                 {% endif %}
             </ul>
         </div>
     </nav>
 
     <main>
-        <div class="container-fluid px-4">
+        <div class="container-fluid px-4 {{ 'admin-layout-fluid' if request.path.startswith('/admin') and session.get('user_role') == 'admin' else '' }}">
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -60,10 +100,36 @@
         </div>
     </main>
 
-    <footer>
-        <div class="container-fluid px-4">
-            <p>&copy; 2026 Mentra. All rights reserved.</p>
-            <p class="footer-motivation">Invest in your mind. It's the most powerful asset you own.</p>
+    <footer class="app-footer footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Mentra</h3>
+                <p>Learn Smarter. Build Your Future.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <div class="footer-links">
+                    <a href="{{ url_for('public.index') }}">Home</a>
+                    <a href="{{ url_for('public.courses') }}">Courses</a>
+                    <a href="{{ url_for('public.about') }}">About</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>AI Tools</h4>
+                <div class="footer-links">
+                    <a href="{{ url_for('ai.recommendations') }}">Recommendations</a>
+                    <a href="{{ url_for('ai.study_planner') }}">Study Planner</a>
+                    <a href="{{ url_for('ai.revision') }}">Smart Revision</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Contact</h4>
+                <div class="footer-links">
+                    <a href="{{ url_for('public.contact') }}">Support</a>
+                    <a href="mailto:support@mentra.com">support@mentra.com</a>
+                </div>
+            </div>
+            <p class="copyright">&copy; 2026 Mentra</p>
         </div>
     </footer>
 
@@ -126,7 +192,49 @@
             });
         });
 
-        window.confirmDeleteButton = function(buttonEl) {
+        const themeSwitches = Array.from(document.querySelectorAll('.theme-switch-input'));
+
+        function setTheme(theme) {
+            const normalizedTheme = theme === 'dark' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', normalizedTheme);
+            localStorage.setItem('theme', normalizedTheme);
+            const isDark = normalizedTheme === 'dark';
+            themeSwitches.forEach((themeSwitch) => {
+                themeSwitch.checked = isDark;
+            });
+            window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: normalizedTheme } }));
+        }
+
+        function loadTheme() {
+            const saved = localStorage.getItem('theme') || 'light';
+            setTheme(saved);
+        }
+
+        themeSwitches.forEach((themeSwitch) => {
+            themeSwitch.addEventListener('change', () => {
+                setTheme(themeSwitch.checked ? 'dark' : 'light');
+            });
+        });
+
+        const featuresMenuBtn = document.getElementById('featuresMenuBtn');
+        const featuresMenu = document.getElementById('featuresMenu');
+        if (featuresMenuBtn && featuresMenu) {
+            featuresMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isOpen = featuresMenu.classList.toggle('open');
+                featuresMenuBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+            });
+            document.addEventListener('click', (e) => {
+                if (!featuresMenu.contains(e.target) && e.target !== featuresMenuBtn) {
+                    featuresMenu.classList.remove('open');
+                    featuresMenuBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        loadTheme();
+
+window.confirmDeleteButton = function(buttonEl) {
             const ok = window.confirm('This action is destructive. Click OK to continue.');
             if (!ok) return false;
             const phrase = window.prompt('Type DELETE to confirm this operation.');
@@ -149,21 +257,163 @@
         };
     </script>
     <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; }
+    main { flex: 1 0 auto; min-height: 0; }
     .nav-brand h1 { margin: 0; line-height: 1.1; letter-spacing: 0.2px; }
-    .brand-tagline { margin: 2px 0 0; font-size: 0.72rem; color: rgba(255,255,255,0.88); }
-    .footer-motivation { margin-top: 6px; font-style: italic; opacity: 0.95; }
-    .admin-shell { display: grid; grid-template-columns: 240px 1fr; gap: 16px; align-items: start; }
-    .admin-sidebar { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; position: sticky; top: 12px; }
-    .admin-sidebar h3 { margin: 0 0 8px; }
-    .admin-role { font-size: 0.84rem; color: #6b7280; margin-bottom: 8px; }
-    .admin-sidebar nav { display: flex; flex-direction: column; gap: 6px; }
-    .admin-sidebar nav a { text-decoration: none; color: #111827; padding: 7px 8px; border-radius: 6px; }
-    .admin-sidebar nav a:hover { background: #f3f4f6; }
+    .brand-tagline { margin: 2px 0 0; font-size: 0.72rem; color: var(--secondary); }
+    .app-footer {
+        background: #0f172a;
+        color: var(--text);
+        padding: 40px 20px;
+        text-align: left;
+        border-top: 1px solid var(--border);
+        margin-top: auto;
+    }
+    .footer-content {
+        max-width: 1200px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    .footer-section h3,
+    .footer-section h4 { margin: 0 0 6px; color: #e2e8f0; }
+    .footer-section p { margin: 0; color: var(--muted); }
+    .footer-links { display: grid; gap: 6px; }
+    .footer-links a { color: var(--muted); text-decoration: none; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer a { color: var(--muted); }
+    .footer a:hover { color: var(--primary); }
+    .copyright {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.9rem;
+        align-self: end;
+    }
+    .admin-shell { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+    .admin-sidebar {
+        background: linear-gradient(180deg, rgba(52, 96, 196, 0.08), rgba(240, 133, 37, 0.06));
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 14px;
+        position: sticky;
+        top: 12px;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+    .admin-sidebar h3 { margin: 0; }
+    .admin-role { font-size: 0.84rem; color: var(--secondary); margin: 8px 0 10px; }
+    .admin-sidebar nav { display: flex; flex-direction: column; gap: 8px; }
+    .admin-sidebar nav a {
+        text-decoration: none;
+        color: var(--text);
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid transparent;
+        font-weight: 600;
+    }
+    .admin-sidebar nav a:hover {
+        background: rgba(15, 23, 42, 0.04);
+        border-color: var(--border);
+        color: var(--primary);
+    }
     .admin-main { min-width: 0; }
+    .nav-dropdown { position: relative; }
+    .nav-dropdown-toggle {
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+    }
+    .nav-dropdown-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        display: none;
+        min-width: 220px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+        z-index: 2000;
+        padding: 6px;
+    }
+    .nav-dropdown-menu.open { display: grid; gap: 4px; }
+    .features-dropdown {
+        right: 0;
+        left: auto;
+        min-width: 220px;
+        animation: fadeIn 0.2s ease;
+    }
+    .nav-dropdown-menu .nav-link {
+        color: var(--text);
+        border-radius: 8px;
+        padding: 8px 10px;
+        text-decoration: none;
+    }
+    .nav-dropdown-menu .nav-link:hover { background: var(--bg); }
+    .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.16);
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 999px;
+        padding: 6px 10px;
+    }
+    .theme-toggle-inline {
+        margin-top: 6px;
+        justify-content: center;
+        border: 1px solid var(--border);
+        background: var(--bg);
+    }
+    .theme-switch-input {
+        appearance: none;
+        width: 38px;
+        height: 20px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.35);
+        position: relative;
+        cursor: pointer;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .theme-switch-input::after {
+        content: "";
+        position: absolute;
+        top: 1px;
+        left: 1px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #ffffff;
+        transition: transform 0.25s ease;
+    }
+    .theme-switch-input:checked {
+        background: #6366f1;
+    }
+    .theme-switch-input:checked::after {
+        transform: translateX(18px);
+    }
+    [data-theme="dark"] .theme-toggle {
+        border-color: rgba(255, 255, 255, 0.2);
+        background: rgba(15, 23, 42, 0.45);
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-6px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     @media (max-width: 980px) {
         .admin-shell { grid-template-columns: 1fr; }
         .admin-sidebar { position: static; }
         .brand-tagline { font-size: 0.68rem; }
+        .nav-dropdown-menu {
+            left: auto;
+            right: 0;
+        }
     }
     </style>
 </body>

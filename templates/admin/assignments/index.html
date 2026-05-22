@@ -2,20 +2,34 @@
 {% block title %}Assignment Management - Mentra{% endblock %}
 {% block content %}
 <div class="container">
-    <h1>Assignment Management</h1>
-    <p>Select a course to manage assignments.</p>
-    <table class="admin-table">
-        <thead><tr><th>Course</th><th>Action</th></tr></thead>
-        <tbody>
-        {% for course in courses %}
-            <tr>
-                <td>{{ course.title }}</td>
-                <td><a class="btn btn-primary btn-sm" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id) }}">Manage Assignments</a></td>
-            </tr>
-        {% else %}
-            <tr><td colspan="2">No courses found.</td></tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <section class="admin-page-card">
+        <h1>Assignment Management</h1>
+        <p class="muted">Choose a course to create, edit, grade, and track assignment performance.</p>
+        <div class="referral-stats">
+            <article class="stat-card">
+                <h3>Total Courses</h3>
+                <p class="stat-value">{{ courses|length }}</p>
+            </article>
+            <article class="stat-card">
+                <h3>Assignment Workspaces</h3>
+                <p class="stat-value">{{ courses|length }}</p>
+            </article>
+        </div>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead><tr><th>Course</th><th>Action</th></tr></thead>
+                <tbody>
+                {% for course in courses %}
+                    <tr>
+                        <td>{{ course.title }}</td>
+                        <td><a class="btn btn-primary btn-sm" href="{{ url_for('admin_assignment.manage_course_assignments', course_id=course.id) }}">Manage Assignments</a></td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="2">No courses found.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
 </div>
 {% endblock %}

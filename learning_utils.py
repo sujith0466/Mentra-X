@@ -1,36 +1,11 @@
 from datetime import datetime, date, timedelta
 from models import db, LearningStreak, LessonProgress, Enrollment, Video
+from services.learning.streak_xp import update_streak
 
 
 def update_learning_streak(user_id, activity_date=None):
-    activity_date = activity_date or date.today()
-    streak = LearningStreak.query.filter_by(user_id=user_id).first()
-    if not streak:
-        streak = LearningStreak(
-            user_id=user_id,
-            last_learning_date=activity_date,
-            current_streak=1,
-            longest_streak=1,
-            updated_at=datetime.utcnow(),
-        )
-        db.session.add(streak)
-        return streak
-
-    last_date = streak.last_learning_date
-    if last_date == activity_date:
-        streak.updated_at = datetime.utcnow()
-        return streak
-
-    if last_date == activity_date - timedelta(days=1):
-        streak.current_streak += 1
-    else:
-        streak.current_streak = 1
-
-    if streak.current_streak > streak.longest_streak:
-        streak.longest_streak = streak.current_streak
-    streak.last_learning_date = activity_date
-    streak.updated_at = datetime.utcnow()
-    return streak
+    # Keep compatibility for existing callers while using the unified streak service.
+    return update_streak(user_id)
 
 
 def recalculate_course_progress(user_id, course_id):

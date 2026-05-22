@@ -26,7 +26,7 @@ class ProjectAgent(BaseAgent):
 
     def handle(self, user_id: Optional[int], message: str, **kwargs):
         selected_domain = infer_domain(message, kwargs.get("domain"))
-        ideas = generate_project_ideas(selected_domain)
+        ideas = generate_project_ideas(selected_domain, user_id=user_id)
         answer = f"Project ideas for {selected_domain}: " + "; ".join(item["title"] for item in ideas[:3]) + "."
         answer += " Open /student/projects to browse saved ideas or /student/projects/generate to create a new guided project."
         payload = {"ideas": ideas, "hub_link": "/student/projects", "generate_link": "/student/projects/generate"}

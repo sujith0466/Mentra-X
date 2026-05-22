@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from models import db, Domain, Course, Video, ContactMessage, Enrollment, User, ChatbotConversation
-from chatbot_service import chatbot
+from services.ai.rulebased_chatbot_service import build_rulebased_chatbot_payload
 from datetime import datetime
 import re
 import os
@@ -27,6 +27,20 @@ COURSE_IMAGE_MAP = {
     "react js": "react_js.png",
     "react native": "react_native.png",
 }
+
+DOMAIN_IMAGE_MAP = {
+    "Web Development": "https://images.unsplash.com/photo-1498050108023-c5249f4df085",
+    "Data Science": "https://images.unsplash.com/photo-1551288049-bebda4e38f71",
+    "Artificial Intelligence": "https://images.unsplash.com/photo-1677442136019-21780ecad995",
+    "Cyber Security": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
+    "Cybersecurity": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
+    "Cloud Computing": "https://images.unsplash.com/photo-1451187580459-43490279c0fa",
+    "Mobile Development": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c",
+}
+
+
+def _visible_domains_query():
+    return Domain.query.filter(~Domain.name.ilike('qa domain%'))
 
 
 def _normalize_slug(text):
@@ -84,71 +98,95 @@ def _course_image_candidates(course):
     return deduped
 
 
+def _local_image_index():
+    """Index local images from static/images recursively."""
+    images_root = os.path.join(os.getcwd(), 'static', 'images')
+    if not os.path.isdir(images_root):
+        return {}
+
+    index = {}
+    valid_ext = {'.png', '.jpg', '.jpeg', '.webp', '.gif'}
+    for path in glob.glob(os.path.join(images_root, '**', '*.*'), recursive=True):
+        ext = os.path.splitext(path)[1].lower()
+        if ext not in valid_ext:
+            continue
+        key = _normalize_slug(os.path.splitext(os.path.basename(path))[0])
+        if not key:
+            continue
+        rel = os.path.relpath(path, os.path.join(os.getcwd(), 'static')).replace('\\', '/')
+        index.setdefault(key, rel)
+    return index
+
+
+def _domain_image_candidates(course):
+    domain_name = ((getattr(course, 'domain', None) and course.domain.name) or '').strip()
+    if not domain_name:
+        return []
+    slug = _normalize_slug(domain_name)
+    return [slug, slug.replace('-', ''), slug.replace('-', '_')]
+
 def resolve_course_image_url(course):
-    """Resolve final public URL for course image from static/images/courses."""
+    """Resolve final public URL for course image using local-first strategy."""
 
     image_url = (course.image_url or '').strip()
     images_dir = os.path.join(os.getcwd(), 'static', 'images', 'courses')
+    local_images = _local_image_index()
 
-    # Debug info
-    print("\n--- IMAGE RESOLUTION DEBUG ---")
-    print("Course:", course.title)
-    print("DB image_url:", image_url)
-    print("Image folder path:", images_dir)
-
-    # Ensure image directory exists
     if not os.path.isdir(images_dir):
-        print("Image directory missing. Using default image.")
+        domain_name = ((getattr(course, 'domain', None) and course.domain.name) or '').strip()
+        if domain_name and domain_name in DOMAIN_IMAGE_MAP:
+            return DOMAIN_IMAGE_MAP[domain_name]
         return url_for('static', filename='images/courses/default_course.png')
 
-    # List available images
     try:
         files = os.listdir(images_dir)
-        print("Files in image folder:", files)
-    except Exception as e:
-        print("Error reading image folder:", e)
+    except Exception:
+        domain_name = ((getattr(course, 'domain', None) and course.domain.name) or '').strip()
+        if domain_name and domain_name in DOMAIN_IMAGE_MAP:
+            return DOMAIN_IMAGE_MAP[domain_name]
         return url_for('static', filename='images/courses/default_course.png')
 
-    # 1️⃣ If DB has external image URL
     if image_url.startswith(('http://', 'https://')):
-        print("Using external image URL")
         return image_url
 
-    # 2️⃣ If DB has exact local filename
     if image_url:
         exact_file_name = os.path.basename(image_url)
         exact_path = os.path.join(images_dir, exact_file_name)
-
         if os.path.isfile(exact_path):
-            resolved = url_for('static', filename=f'images/courses/{exact_file_name}')
-            print("Resolved exact match:", resolved)
-            return resolved
+            return url_for('static', filename=f'images/courses/{exact_file_name}')
 
-    # 3️⃣ Build lookup table of available images
     files_by_name = {}
     for file_name in files:
-        name_no_ext = os.path.splitext(file_name)[0].lower()
+        name_no_ext = _normalize_slug(os.path.splitext(file_name)[0])
         files_by_name[name_no_ext] = file_name
 
-    # 4️⃣ Try candidate names generated from course title
     candidates = _course_image_candidates(course)
+    for candidate in candidates:
+        matched = files_by_name.get(_normalize_slug(candidate))
+        if matched:
+            return url_for('static', filename=f'images/courses/{matched}')
 
     for candidate in candidates:
-        matched = files_by_name.get(candidate.lower())
-        if matched:
-            resolved = url_for('static', filename=f'images/courses/{matched}')
-            print("Resolved by candidate:", resolved)
-            return resolved
+        rel = local_images.get(_normalize_slug(candidate))
+        if rel:
+            return url_for('static', filename=rel)
 
-    # 5️⃣ If nothing found → fallback
-    fallback = url_for('static', filename='images/courses/default_course.png')
-    print("No image found. Using fallback:", fallback)
+    for candidate in _domain_image_candidates(course):
+        rel = local_images.get(_normalize_slug(candidate))
+        if rel:
+            return url_for('static', filename=rel)
 
-    return fallback
+    domain_name = ((getattr(course, 'domain', None) and course.domain.name) or '').strip()
+    if domain_name and domain_name in DOMAIN_IMAGE_MAP:
+        return DOMAIN_IMAGE_MAP[domain_name]
+
+    return url_for('static', filename='images/courses/default_course.png')
+
 
 def attach_course_image_urls(courses):
     for course in courses:
         course.resolved_image_url = resolve_course_image_url(course)
+        course.resolved_image = course.resolved_image_url
     return courses
 
 
@@ -163,6 +201,11 @@ def _visible_courses_query():
         Course.title.ilike('% temp course%'),
         Course.title.ilike('test %'),
         Course.title.ilike('% test course%'),
+        Course.title.ilike('qa course%'),
+        Course.title.ilike('qa domain%'),
+        Course.title.ilike('% qa course %'),
+        Course.title.ilike('% qa domain %'),
+        Course.domain.has(Domain.name.ilike('qa domain%')),
     )
     return Course.query.filter(Course.status == 'published').filter(~noise_match)
 
@@ -177,7 +220,7 @@ def index():
     try:
         # Get statistics for homepage
         total_courses = _visible_courses_query().count()
-        total_domains = Domain.query.count()
+        total_domains = _visible_domains_query().count()
         total_students = User.query.filter_by(role='student').count()
         total_enrollments = Enrollment.query.count()
         
@@ -211,7 +254,7 @@ def courses():
     """Courses Page (Domain Based)"""
     try:
         # Get all domains with their courses
-        domains = Domain.query.all()
+        domains = _visible_domains_query().all()
         
         # Option to filter by domain
         domain_filter = request.args.get('domain', '')
@@ -323,12 +366,12 @@ def about():
 
 @public_bp.route('/api/chatbot', methods=['POST'])
 def chatbot_api():
-    """AI Learning Assistant API Endpoint for handling student questions"""
+    """Deprecated chatbot endpoint kept for backward compatibility."""
     try:
-        data = request.get_json()
+        data = request.get_json(silent=True) or {}
         
         if not data or 'message' not in data:
-            return jsonify({'error': 'Message is required'}), 400
+            return jsonify({'success': False, 'error': 'Message is required'}), 400
         
         user_message = data.get('message', '').strip()
         course_id = data.get('course_id')
@@ -337,20 +380,23 @@ def chatbot_api():
         course_name = data.get('course_name')
         
         if not user_message:
-            return jsonify({'error': 'Message cannot be empty'}), 400
+            return jsonify({'success': False, 'error': 'Message cannot be empty'}), 400
         
         if len(user_message) > 500:
-            return jsonify({'error': 'Message is too long (max 500 characters)'}), 400
+            return jsonify({'success': False, 'error': 'Message is too long (max 500 characters)'}), 400
         
-        # Get bot response using AI Learning Assistant service
-        bot_response = chatbot.get_response(
-            user_message, 
-            course_id=course_id, 
-            domain=domain,
-            current_page=current_page,
-            course_name=course_name,
-            user_id=session.get('user_id')
+        payload = build_rulebased_chatbot_payload(
+            user_message,
+            context={
+                'page': current_page,
+                'course': course_name,
+                'domain': domain,
+                'course_id': course_id,
+            },
+            user_id=session.get('user_id'),
         )
+        bot_response = payload.get('answer') or payload.get('response') or ''
+        options = payload.get('options') or []
         
         # Store conversation in database (optional - for analytics)
         try:
@@ -370,16 +416,28 @@ def chatbot_api():
         
         return jsonify({
             'success': True,
+            'data': {
+                'answer': bot_response,
+                'agent': payload.get('agent', 'rulebased_mentor'),
+                'options': options,
+                'suggestions': options,
+            },
             'message': user_message,
             'response': bot_response,
+            'answer': bot_response,
+            'options': options,
+            'agent': payload.get('agent', 'rulebased_mentor'),
+            'suggestions': options,
+            'deprecated': True,
+            'deprecated_in_favor_of': '/api/chat',
             'timestamp': datetime.utcnow().isoformat()
         }), 200
     
     except Exception as e:
         print(f"AI Learning Assistant Error: {e}")
         return jsonify({
-            'error': 'An error occurred while processing your question',
-            'details': str(e)
+            'success': False,
+            'error': 'An error occurred while processing your question'
         }), 500
 
 # Error Handlers
@@ -394,4 +452,5 @@ def internal_error(error):
 @public_bp.errorhandler(400)
 def bad_request_error(error):
     return render_template('errors/400.html'), 400
+
 

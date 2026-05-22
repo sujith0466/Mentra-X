@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Manage Domains - Education Portal{% endblock %}
+{% block title %}Manage Domains - Mentra{% endblock %}
 
 {% block content %}
 <div class="container">
@@ -26,34 +26,36 @@
 
         <h2>Existing Domains ({{ domains|length }})</h2>
         {% if domains %}
-        <table class="admin-table">
-            <thead>
-                <tr>
-                    <th>Domain Name</th>
-                    <th>Courses</th>
-                    <th>Distinct Enrolled Students</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for domain in domains %}
-                {% set metrics = domain_metrics.get(domain.id, {'course_count': 0, 'student_count': 0}) %}
-                <tr>
-                    <td>
-                        <strong>{{ domain.name }}</strong>
-                        {% if domain.description %}<p>{{ domain.description }}</p>{% endif %}
-                    </td>
-                    <td>{{ metrics.course_count }}</td>
-                    <td>{{ metrics.student_count }}</td>
-                    <td>
-                        <form method="POST" action="{{ url_for('admin.delete_domain', domain_id=domain.id) }}" data-confirm-delete="true">
-                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                        </form>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Domain Name</th>
+                        <th>Courses</th>
+                        <th>Distinct Enrolled Students</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for domain in domains %}
+                    {% set metrics = domain_metrics.get(domain.id, {'course_count': 0, 'student_count': 0}) %}
+                    <tr>
+                        <td>
+                            <strong>{{ domain.name }}</strong>
+                            {% if domain.description %}<p>{{ domain.description }}</p>{% endif %}
+                        </td>
+                        <td>{{ metrics.course_count }}</td>
+                        <td>{{ metrics.student_count }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin.delete_domain', domain_id=domain.id) }}" data-confirm-delete="true">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
         {% else %}
         <p>No domains created yet!</p>
         {% endif %}

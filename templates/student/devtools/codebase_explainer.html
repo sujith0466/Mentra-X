@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+﻿{% extends "base.html" %}
 
 {% block title %}Codebase Explainer - Mentra{% endblock %}
 
@@ -16,7 +16,13 @@
             <input id="project_file" type="file" name="project_file" accept=".zip,.txt,.py,.js,.json,.md">
 
             <label for="files_text">Project Structure</label>
-            <textarea id="files_text" name="files_text" rows="12" class="code-editor" placeholder="project/&#10;|- app.py&#10;|- models.py&#10;|- routes/&#10;`- templates/">{{ pasted_files }}</textarea>
+            <textarea id="files_text" name="files_text" rows="10" class="code-editor" placeholder="project/&#10;|- app.py&#10;|- models.py&#10;|- routes/&#10;`- templates/">{{ pasted_files }}</textarea>
+
+            <label for="code_file">Code File (optional)</label>
+            <input id="code_file" type="file" name="code_file" accept=".txt,.py,.js,.json,.md">
+
+            <label for="code_snippet">Code Snippet (optional)</label>
+            <textarea id="code_snippet" name="code_snippet" rows="10" class="code-editor" placeholder="Paste the function or class you want explained...">{{ code_snippet }}</textarea>
 
             <div class="button-row">
                 <button type="submit" class="btn-primary-soft">Explain Project</button>
@@ -68,11 +74,49 @@
         </article>
     </section>
     {% endif %}
+
+    {% if snippet_analysis %}
+    <h3 class="panel-section-title">Snippet Explanation</h3>
+    <section class="analysis-grid">
+        <article class="card-shell info-card">
+            <h3>Purpose</h3>
+            <p>{{ snippet_analysis.purpose }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Logic Flow</h3>
+            <p>{{ snippet_analysis.logic_flow }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Functions Used</h3>
+            <ul>
+                {% for item in snippet_analysis.functions_used or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No explicit function declarations detected.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Architecture Summary</h3>
+            <p>{{ snippet_analysis.architecture_summary }}</p>
+        </article>
+        <article class="card-shell info-card wide">
+            <h3>Improvement Suggestions</h3>
+            <ul>
+                {% for item in snippet_analysis.suggestions or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No suggestions were generated for this snippet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+    {% endif %}
 </section>
 
 <style>
 .tool-shell { display: grid; gap: 18px; }
-.card-shell { background: #ffffff; border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
+.card-shell { background: var(--surface); border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
 .hero-card h1 { margin: 0 0 8px; }
 .eyebrow { margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: #0f766e; font-weight: 700; }
 .muted { color: #64748b; }
@@ -89,3 +133,4 @@
 }
 </style>
 {% endblock %}
+

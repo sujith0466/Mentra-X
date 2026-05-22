@@ -13,6 +13,7 @@ import os
 import secrets
 import uuid
 import json
+import re
 
 from services.ai.career.resume_service import CAREER_SKILL_MAP
 
@@ -189,10 +190,93 @@ def _normalize_course_status(value):
     return status if status in COURSE_STATUSES else 'draft'
 
 
+def _normalized_name(value):
+    return ' '.join((value or '').strip().split()).lower()
+
+
+def _looks_like_test_or_random_name(value):
+    text = (value or '').strip()
+    lowered = text.lower()
+    if not text:
+        return True
+    if lowered.startswith(('qa domain', 'qa course', 'test ', 'temp ')):
+        return True
+    if re.search(r'\b[0-9a-f]{8,}\b', lowered):
+        return True
+    return False
+
+
+def _validate_domain_name(name):
+    cleaned = (name or '').strip()
+    if len(cleaned) < 3 or len(cleaned) > 100:
+        return False, 'Domain name must be between 3 and 100 characters.'
+    if not re.match(r'^[A-Za-z][A-Za-z0-9 &()\-+/]{2,99}$', cleaned):
+        return False, 'Domain name can contain letters, numbers, spaces, and &() - + /.'
+    if _looks_like_test_or_random_name(cleaned):
+        return False, 'Domain name looks like temporary/test data. Please use a real domain name.'
+    return True, ''
+
+
+def _validate_course_title(title):
+    cleaned = (title or '').strip()
+    if len(cleaned) < 3 or len(cleaned) > 100:
+        return False, 'Course title must be between 3 and 100 characters.'
+    if not re.match(r'^[A-Za-z][A-Za-z0-9 &()\-+:/.]{2,99}$', cleaned):
+        return False, 'Course title contains invalid characters.'
+    if _looks_like_test_or_random_name(cleaned):
+        return False, 'Course title looks like temporary/test data. Please use a real course title.'
+    return True, ''
+
+
+def _domain_exists_by_normalized_name(name, exclude_domain_id=None):
+    normalized = _normalized_name(name)
+    if not normalized:
+        return False
+    query = Domain.query.with_entities(Domain.id, Domain.name)
+    if exclude_domain_id is not None:
+        query = query.filter(Domain.id != exclude_domain_id)
+    for row in query.all():
+        if _normalized_name(row.name) == normalized:
+            return True
+    return False
+
+
+def _course_exists_in_domain(title, domain_id, exclude_course_id=None):
+    normalized = _normalized_name(title)
+    if not normalized:
+        return False
+    query = Course.query.with_entities(Course.id, Course.title).filter(Course.domain_id == domain_id)
+    if exclude_course_id is not None:
+        query = query.filter(Course.id != exclude_course_id)
+    for row in query.all():
+        if _normalized_name(row.title) == normalized:
+            return True
+    return False
+
+
+def _course_noise_match_expression():
+    return or_(
+        Course.title.ilike('%phase2 temp%'),
+        Course.title.ilike('%phase2 empty%'),
+        Course.title.ilike('stability %'),
+        Course.title.ilike('% stability %'),
+        Course.title.ilike('temp %'),
+        Course.title.ilike('% temp course%'),
+        Course.title.ilike('test %'),
+        Course.title.ilike('% test course%'),
+        Course.title.ilike('qa course%'),
+        Course.title.ilike('qa domain%'),
+        Course.title.ilike('% qa course %'),
+        Course.title.ilike('% qa domain %'),
+        Course.domain.has(Domain.name.ilike('qa domain%')),
+    )
+
+
 def _validate_course_payload(title, description, instructor, price_value, demo_video_url):
     errors = []
-    if not title or len(title) < 3 or len(title) > 100:
-        errors.append('Course title must be between 3 and 100 characters.')
+    title_ok, title_error = _validate_course_title(title)
+    if not title_ok:
+        errors.append(title_error)
     if description and len(description) > 1000:
         errors.append('Course description cannot exceed 1000 characters.')
     if instructor and (len(instructor) < 2 or len(instructor) > 100):
@@ -427,7 +511,7 @@ def dashboard():
         # Get statistics
         total_users = User.query.filter_by(role='student').count()
         total_courses = Course.query.count()
-        total_domains = Domain.query.count()
+        total_domains = Domain.query.filter(~Domain.name.ilike('qa domain%')).count()
         total_enrollments = Enrollment.query.count()
 
         # Get recent enrollments
@@ -646,6 +730,7 @@ def manage_domains():
         domains = (
             Domain.query
             .options(selectinload(Domain.courses))
+            .filter(~Domain.name.ilike('qa domain%'))
             .order_by(Domain.name.asc())
             .all()
         )
@@ -684,9 +769,14 @@ def add_domain():
         if not name:
             flash('Domain name is required!', 'danger')
             return redirect(url_for('admin.manage_domains'))
-        
-        if Domain.query.filter_by(name=name).first():
-            flash('Domain already exists!', 'danger')
+
+        is_valid_name, validation_error = _validate_domain_name(name)
+        if not is_valid_name:
+            flash(validation_error, 'danger')
+            return redirect(url_for('admin.manage_domains'))
+
+        if _domain_exists_by_normalized_name(name):
+            flash('Domain already exists (same name with different casing/spaces).', 'danger')
             return redirect(url_for('admin.manage_domains'))
         
         domain = Domain(name=name, description=description)
@@ -780,6 +870,7 @@ def manage_courses():
             .outerjoin(enrollment_counts, enrollment_counts.c.course_id == Course.id)
             .options(joinedload(Course.domain))
         )
+        query = query.filter(~_course_noise_match_expression())
 
         if search:
             query = query.filter(
@@ -843,7 +934,7 @@ def manage_courses():
         query = query.order_by(order_expr, Course.id.desc())
 
         pagination = _paginate_query(query, page=page, per_page=per_page)
-        domains = Domain.query.order_by(Domain.name.asc()).all()
+        domains = Domain.query.filter(~Domain.name.ilike('qa domain%')).order_by(Domain.name.asc()).all()
         status_options = []
         if has_status:
             status_options = [
@@ -1102,6 +1193,10 @@ def add_course():
             return redirect(url_for('admin.manage_courses'))
         
         domain = Domain.query.get_or_404(domain_id)
+        if _course_exists_in_domain(title, domain.id):
+            flash('Course already exists in this domain (same name with different casing/spaces).', 'danger')
+            return redirect(url_for('admin.manage_courses'))
+
         price_value = _parse_float(price)
         validation_errors = _validate_course_payload(title, description, instructor, price_value, demo_video_url)
         if status == 'published':
@@ -1159,13 +1254,16 @@ def edit_course(course_id):
             old_image_value = course.image_url
             course.title = request.form.get('title', '').strip()
             course.description = request.form.get('description', '').strip()
-            course.domain_id = request.form.get('domain_id', course.domain_id)
+            requested_domain_raw = request.form.get('domain_id', course.domain_id)
             requested_price = _parse_float(request.form.get('price', 0))
             course.instructor = request.form.get('instructor', '').strip()
             image_url_input = request.form.get('image_url', '').strip()
             image_file = request.files.get('course_image')
             requested_status = _normalize_course_status(request.form.get('status', course.status or 'draft'))
             demo_video_url = request.form.get('demo_video_url', '').strip()
+            requested_domain_id = None
+            if str(requested_domain_raw).isdigit():
+                requested_domain_id = int(requested_domain_raw)
 
             validation_errors = _validate_course_payload(
                 course.title,
@@ -1174,6 +1272,17 @@ def edit_course(course_id):
                 requested_price,
                 demo_video_url,
             )
+            if requested_domain_id is None:
+                validation_errors.append('Please select a valid domain.')
+            elif not Domain.query.get(requested_domain_id):
+                validation_errors.append('Selected domain does not exist.')
+
+            if requested_domain_id is not None and _course_exists_in_domain(
+                course.title,
+                requested_domain_id,
+                exclude_course_id=course.id,
+            ):
+                validation_errors.append('Another course with the same title already exists in this domain.')
             if requested_status == 'published' and not _can_publish_course(course):
                 validation_errors.append('Cannot publish course without at least one syllabus topic and one video.')
             if validation_errors:
@@ -1181,6 +1290,7 @@ def edit_course(course_id):
                     flash(err, 'danger')
                 return redirect(url_for('admin.edit_course', course_id=course_id))
 
+            course.domain_id = requested_domain_id
             course.price = requested_price or 0
             course.status = requested_status
 
@@ -1702,6 +1812,13 @@ def view_enrollments():
         print(f"Error loading enrollments: {e}")
         flash('Error loading enrollments. Please try again.', 'danger')
         return redirect(url_for('admin.dashboard'))
+
+
+@admin_bp.route('/enrolls')
+@admin_required
+def view_enrollments_alias():
+    """Legacy alias for enrollment list."""
+    return redirect(url_for('admin.view_enrollments'))
 
 @admin_bp.route('/referrals')
 @admin_required

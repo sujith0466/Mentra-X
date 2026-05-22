@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
-from typing import Dict
+from typing import Dict, Optional
 
-from models import ProjectIdea, db
+import json
+
+from models import Enrollment, ProjectIdea, UserResume, db
 from services.ai.projects.project_blueprint_service import generate_project_blueprint
 
 
@@ -36,8 +38,32 @@ PROJECT_CATALOG = {
 }
 
 
-def generate_project(domain: str, difficulty: str) -> ProjectIdea:
-    selected_domain = domain if domain in PROJECT_CATALOG else "AI"
+def _infer_domain_from_user(user_id: int) -> str:
+    enrollments = Enrollment.query.filter_by(user_id=user_id).all()
+    for enrollment in enrollments:
+        if enrollment.course and enrollment.course.domain:
+            return enrollment.course.domain.name
+    resume_row = UserResume.query.filter_by(user_id=user_id).first()
+    if resume_row:
+        try:
+            skills = json.loads(resume_row.skills_json or "[]")
+        except (TypeError, ValueError, json.JSONDecodeError):
+            skills = []
+        if any(skill in skills for skill in ["React", "JavaScript", "HTML", "CSS"]):
+            return "Web Development"
+        if any(skill in skills for skill in ["Machine Learning", "Deep Learning", "Neural Networks"]):
+            return "AI"
+        if any(skill in skills for skill in ["Pandas", "Statistics", "Visualization"]):
+            return "Data Science"
+    return "AI"
+
+
+def generate_project(domain: str, difficulty: str, user_id: Optional[int] = None) -> ProjectIdea:
+    selected_domain = domain if domain in PROJECT_CATALOG else ""
+    if not selected_domain and user_id:
+        selected_domain = _infer_domain_from_user(user_id)
+    if not selected_domain:
+        selected_domain = "AI"
     base = PROJECT_CATALOG[selected_domain]
     blueprint = generate_project_blueprint(base["title"], selected_domain, difficulty)
 
@@ -52,4 +78,3 @@ def generate_project(domain: str, difficulty: str) -> ProjectIdea:
     db.session.add(project)
     db.session.commit()
     return project
-

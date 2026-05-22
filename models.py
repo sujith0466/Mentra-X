@@ -5,6 +5,9 @@ import uuid
 import string
 import random
 import json
+import re
+from sqlalchemy import event
+from sqlalchemy.orm import object_session
 
 db = SQLAlchemy()
 
@@ -630,5 +633,133 @@ class CourseModule(db.Model):
 
     def __repr__(self):
         return f'<CourseModule {self.course_id}:{self.title}>'
+
+
+def _normalize_catalog_text(value: str) -> str:
+    return " ".join((value or "").strip().split()).lower()
+
+
+def _looks_like_random_or_test_text(value: str) -> bool:
+    cleaned = (value or "").strip()
+    lowered = cleaned.lower()
+    if not cleaned:
+        return True
+    if lowered.startswith(("qa domain", "qa course", "test ", "temp ", "dummy ")):
+        return True
+    if re.search(r"\b[0-9a-f]{8,}\b", lowered):
+        return True
+    return False
+
+
+def _validate_human_friendly_text(value: str, field_label: str, min_len: int = 3, max_len: int = 200) -> str:
+    cleaned = (value or "").strip()
+    if len(cleaned) < min_len or len(cleaned) > max_len:
+        raise ValueError(f"{field_label} must be between {min_len} and {max_len} characters.")
+    if _looks_like_random_or_test_text(cleaned):
+        raise ValueError(f"{field_label} looks like temporary/test data. Please use meaningful text.")
+    return cleaned
+
+
+def _session_for_instance(instance):
+    return object_session(instance) or db.session
+
+
+def _has_duplicate_domain_name(instance: Domain, normalized_name: str) -> bool:
+    session = _session_for_instance(instance)
+    rows = session.query(Domain.id, Domain.name).all()
+    for row_id, row_name in rows:
+        if instance.id is not None and row_id == instance.id:
+            continue
+        if _normalize_catalog_text(row_name) == normalized_name:
+            return True
+    return False
+
+
+def _has_duplicate_course_title(instance: Course, normalized_title: str) -> bool:
+    session = _session_for_instance(instance)
+    rows = session.query(Course.id, Course.title).filter(Course.domain_id == instance.domain_id).all()
+    for row_id, row_title in rows:
+        if instance.id is not None and row_id == instance.id:
+            continue
+        if _normalize_catalog_text(row_title) == normalized_title:
+            return True
+    return False
+
+
+def _has_duplicate_child_title(model_cls, instance, title_attr: str, owner_attr: str, normalized_title: str) -> bool:
+    session = _session_for_instance(instance)
+    owner_id = getattr(instance, owner_attr)
+    rows = session.query(model_cls.id, getattr(model_cls, title_attr)).filter(getattr(model_cls, owner_attr) == owner_id).all()
+    for row_id, row_title in rows:
+        if instance.id is not None and row_id == instance.id:
+            continue
+        if _normalize_catalog_text(row_title) == normalized_title:
+            return True
+    return False
+
+
+@event.listens_for(Domain, "before_insert")
+@event.listens_for(Domain, "before_update")
+def _validate_domain_name_before_write(mapper, connection, target):
+    target.name = _validate_human_friendly_text(target.name, "Domain name", min_len=3, max_len=100)
+    normalized_name = _normalize_catalog_text(target.name)
+    if _has_duplicate_domain_name(target, normalized_name):
+        raise ValueError("Domain already exists with the same name.")
+
+
+@event.listens_for(Course, "before_insert")
+@event.listens_for(Course, "before_update")
+def _validate_course_before_write(mapper, connection, target):
+    target.title = _validate_human_friendly_text(target.title, "Course title", min_len=3, max_len=100)
+    if target.domain_id is None:
+        raise ValueError("Course must belong to a valid domain.")
+    normalized_title = _normalize_catalog_text(target.title)
+    if _has_duplicate_course_title(target, normalized_title):
+        raise ValueError("Course title already exists in this domain.")
+
+
+@event.listens_for(Syllabus, "before_insert")
+@event.listens_for(Syllabus, "before_update")
+def _validate_syllabus_before_write(mapper, connection, target):
+    target.topic_title = _validate_human_friendly_text(target.topic_title, "Syllabus topic title", min_len=3, max_len=200)
+    normalized_title = _normalize_catalog_text(target.topic_title)
+    if _has_duplicate_child_title(Syllabus, target, "topic_title", "course_id", normalized_title):
+        raise ValueError("Syllabus topic title already exists in this course.")
+
+
+@event.listens_for(Video, "before_insert")
+@event.listens_for(Video, "before_update")
+def _validate_video_before_write(mapper, connection, target):
+    target.title = _validate_human_friendly_text(target.title, "Video title", min_len=3, max_len=100)
+    normalized_title = _normalize_catalog_text(target.title)
+    if _has_duplicate_child_title(Video, target, "title", "course_id", normalized_title):
+        raise ValueError("Video title already exists in this course.")
+
+
+@event.listens_for(Quiz, "before_insert")
+@event.listens_for(Quiz, "before_update")
+def _validate_quiz_before_write(mapper, connection, target):
+    target.title = _validate_human_friendly_text(target.title, "Quiz title", min_len=3, max_len=200)
+    normalized_title = _normalize_catalog_text(target.title)
+    if _has_duplicate_child_title(Quiz, target, "title", "course_id", normalized_title):
+        raise ValueError("Quiz title already exists in this course.")
+
+
+@event.listens_for(Assignment, "before_insert")
+@event.listens_for(Assignment, "before_update")
+def _validate_assignment_before_write(mapper, connection, target):
+    target.title = _validate_human_friendly_text(target.title, "Assignment title", min_len=3, max_len=200)
+    normalized_title = _normalize_catalog_text(target.title)
+    if _has_duplicate_child_title(Assignment, target, "title", "course_id", normalized_title):
+        raise ValueError("Assignment title already exists in this course.")
+
+
+@event.listens_for(CourseModule, "before_insert")
+@event.listens_for(CourseModule, "before_update")
+def _validate_course_module_before_write(mapper, connection, target):
+    target.title = _validate_human_friendly_text(target.title, "Module title", min_len=3, max_len=200)
+    normalized_title = _normalize_catalog_text(target.title)
+    if _has_duplicate_child_title(CourseModule, target, "title", "course_id", normalized_title):
+        raise ValueError("Module title already exists in this course.")
 
 
