@@ -932,7 +932,11 @@ with app.app_context():
             role='admin',
             referral_code=f"TEMP{secrets.token_hex(4).upper()}"
         )
-        admin.set_password('admin123')
+        default_admin_password = os.environ.get("DEFAULT_ADMIN_PASSWORD")
+        if not default_admin_password:
+            raise RuntimeError("DEFAULT_ADMIN_PASSWORD environment variable is required")
+            
+        admin.set_password(default_admin_password)
         db.session.add(admin)
         db.session.flush()
         admin.referral_code = admin.generate_referral_code()
@@ -945,10 +949,10 @@ with app.app_context():
             email='admin@eduportal.com',
             role='super_admin',
         )
-        admin_profile.set_password('admin123')
+        admin_profile.set_password(default_admin_password)
         db.session.add(admin_profile)
         db.session.commit()
-        print('Default admin user created: admin@eduportal.com (username: admin)')
+        print('Default admin user created successfully')
 
 if __name__ == '__main__':
     import os
