@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Mentra{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboards-startup-v3.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-dashboard-v3">
+        <header class="dash-hero">
+            <div>
+                <span class="dash-eyebrow">Admin Command Center</span>
+                <h1>Platform Operations Dashboard</h1>
+                <p>Real-time view of growth, quality, enrollment health, and course lifecycle readiness.</p>
+                <div class="dash-hero-actions">
+                    <a href="{{ url_for('admin.manage_courses') }}" class="btn btn-primary-soft">Course Operations</a>
+                    <a href="{{ url_for('admin.manage_students') }}" class="btn btn-secondary-soft">Student Operations</a>
+                    <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-secondary-soft">Audit Logs</a>
+                </div>
+            </div>
+            <div class="dash-side-stack" style="min-width: 260px;">
+                <a class="dash-card-link" href="{{ url_for('admin.manage_courses', status='draft') }}"><strong>Draft Courses</strong><span>{{ lifecycle_counts.get('draft', 0) }} waiting for content</span></a>
+                <a class="dash-card-link" href="{{ url_for('admin.manage_courses', status='review') }}"><strong>In Review</strong><span>{{ lifecycle_counts.get('review', 0) }} pending approvals</span></a>
+                <a class="dash-card-link" href="{{ url_for('admin.manage_courses', status='published') }}"><strong>Published</strong><span>{{ lifecycle_counts.get('published', 0) }} live courses</span></a>
+            </div>
+        </header>
+
+        <section class="dash-kpi-grid" style="grid-template-columns: repeat(4, minmax(0, 1fr));">
+            <article class="dash-kpi-card"><p class="dash-kpi-label">Total Students</p><p class="dash-kpi-value">{{ total_users }}</p><p class="dash-kpi-sub">Active learner accounts</p></article>
+            <article class="dash-kpi-card"><p class="dash-kpi-label">Total Courses</p><p class="dash-kpi-value">{{ total_courses }}</p><p class="dash-kpi-sub">Across all lifecycle states</p></article>
+            <article class="dash-kpi-card"><p class="dash-kpi-label">Total Enrollments</p><p class="dash-kpi-value">{{ total_enrollments }}</p><p class="dash-kpi-sub">Platform registrations</p></article>
+            <article class="dash-kpi-card"><p class="dash-kpi-label">Total Domains</p><p class="dash-kpi-value">{{ total_domains }}</p><p class="dash-kpi-sub">Learning categories</p></article>
+        </section>
+
+        <section class="dash-grid-3">
+            <a href="{{ url_for('admin.manage_courses', content='none') }}" class="dash-card-link"><strong>Needs Content</strong><span>Identify courses missing syllabus or videos</span></a>
+            <a href="{{ url_for('admin.view_enrollments') }}" class="dash-card-link"><strong>Enrollment Health</strong><span>Track progress and completion</span></a>
+            <a href="{{ url_for('admin.view_referrals') }}" class="dash-card-link"><strong>Referral Analytics</strong><span>Review rewards and conversion quality</span></a>
+            <a href="{{ url_for('admin.export_courses_csv') }}" class="dash-card-link"><strong>Export Courses CSV</strong><span>Download full catalog report</span></a>
+            <a href="{{ url_for('admin.export_enrollments_csv') }}" class="dash-card-link"><strong>Export Enrollments CSV</strong><span>Download enrollment report</span></a>
+            <a href="{{ url_for('admin.export_referrals_csv') }}" class="dash-card-link"><strong>Export Referrals CSV</strong><span>Download referral report</span></a>
+        </section>
+
+        {% if quality_alerts.alerts %}
+        <section class="dash-alert">
+            <h3>Content Quality Alerts</h3>
+            <ul>
+                {% for alert in quality_alerts.alerts %}
+                <li>{{ alert.message }}</li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+
+        <section class="dash-grid-2">
+            <article class="dash-panel">
+                <div class="dash-panel-head"><h2>Resume Intelligence</h2></div>
+                <section class="dash-kpi-grid" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+                    <article class="dash-kpi-card"><p class="dash-kpi-label">Resume Uploads</p><p class="dash-kpi-value">{{ resume_upload_count }}</p><p class="dash-kpi-sub">Total learner submissions</p></article>
+                    <article class="dash-kpi-card"><p class="dash-kpi-label">Upload Rate</p><p class="dash-kpi-value">{{ resume_upload_rate }}%</p><p class="dash-kpi-sub">Participation percentage</p></article>
+                </section>
+                <div class="dash-grid-2" style="margin-top: 10px;">
+                    <div class="dash-panel" style="padding: 10px;">
+                        <h3>Top Skills Across Students</h3>
+                        <ul class="dash-list" style="margin-top: 8px;">
+                            {% for item in top_resume_skills %}
+                            <li>{{ item.skill }} - {{ item.percent }}%</li>
+                            {% else %}
+                            <li class="muted">No resume skills collected yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <div class="dash-panel" style="padding: 10px;">
+                        <h3>Most Missing Skills</h3>
+                        <ul class="dash-list" style="margin-top: 8px;">
+                            {% for skill in top_missing_skills %}
+                            <li>{{ skill }}</li>
+                            {% else %}
+                            <li class="muted">No missing-skill trend yet.</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </article>
+
+            <article class="dash-panel">
+                <div class="dash-panel-head">
+                    <h2>Recent Enrollments</h2>
+                    <a href="{{ url_for('admin.view_enrollments') }}">View all</a>
+                </div>
+                {% if recent_enrollments %}
+                <div class="dash-table-wrap">
+                    <table class="dash-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Enrolled</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in recent_enrollments %}
+                            <tr>
+                                <td>{{ enrollment.student.name }}</td>
+                                <td>{{ enrollment.course.title }}</td>
+                                <td>{{ enrollment.enrolled_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="dash-empty">No recent enrollments found.</div>
+                {% endif %}
+            </article>
+        </section>
+    </section>
+</div>
+{% endblock %}

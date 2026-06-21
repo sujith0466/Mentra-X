@@ -202,6 +202,7 @@ Start the Flask app from the workspace root:
 
 ```powershell
 python run.py
+
 ```
 
 The application uses SQLite and stores data in `portal.db` under the instance directory.

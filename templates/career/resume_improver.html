@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Resume Improver | Mentra{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center mb-4">
+            <h2 class="mb-2">AI Resume Improver</h2>
+            <p class="text-secondary">Paste your raw resume text. Our Career AI will rewrite weak phrasing into strong action verbs and suggest missing sections.</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Input Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title text-muted mb-3">Your Resume</h5>
+                    <textarea id="resumeInput" class="form-control flex-grow-1" style="min-height: 400px; resize: none;" placeholder="Paste text here... (Example: I worked on different projects and helped out the team. I used python and javascript)."></textarea>
+                    <button class="btn btn-primary mt-3 w-100" id="improveBtn" onclick="improveResume()">Analyze & Improve</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Output Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm border-0 h-100" id="outputCard" style="display: none;">
+                <div class="card-body">
+                    <h5 class="card-title text-primary mb-3">AI Suggestions</h5>
+                    
+                    <ul class="list-group list-group-flush mb-4" id="suggestionsList" style="max-height: 180px; overflow-y: auto;">
+                        <!-- Generated Suggestions -->
+                    </ul>
+                    
+                    <h5 class="card-title text-success mb-3">Improved Phrasing (<span id="replacedCount">0</span> fixes)</h5>
+                    <div class="p-3 rounded border improved-text-wrapper" style="min-height: 200px; max-height: 300px; overflow-y: auto;">
+                        <code id="improvedText" class="improved-text-code"></code>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card shadow-sm border-0 h-100 text-center d-flex align-items-center justify-content-center" id="emptyCard">
+                <p class="text-muted mb-0">Fill out your text and click <strong>Analyze</strong> to see magical results ✨</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.form-control { background: var(--bg); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 12px; }
+.form-control:focus { outline: none; border-color: var(--primary); }
+.btn-primary { background: var(--primary); border: none; color: white; border-radius: 8px; padding: 12px; cursor: pointer; }
+.card { background-color: var(--surface); border-radius: 12px; }
+.list-group-item { background: transparent; border-color: var(--border); color: var(--text); padding-left: 0; padding-right: 0; font-size: 0.9rem;}
+.improved-text-wrapper { background: var(--bg); color: var(--text); }
+.improved-text-code { color: inherit; white-space: pre-wrap; word-break: break-word; }
+</style>
+
+<script>
+async function improveResume() {
+    const rText = document.getElementById("resumeInput").value;
+    if (!rText.trim()) return alert("Please paste your resume first.");
+    
+    const btn = document.getElementById("improveBtn");
+    btn.innerText = "Analyzing...";
+    btn.disabled = true;
+    
+    try {
+        const res = await fetch("/api/improve-resume", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({resume_text: rText})
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            document.getElementById("emptyCard").style.display = "none";
+            document.getElementById("outputCard").style.display = "block";
+            
+            document.getElementById("replacedCount").innerText = data.weak_phrases_replaced || 0;
+            document.getElementById("improvedText").innerText = data.improved_text;
+            
+            const ul = document.getElementById("suggestionsList");
+            ul.innerHTML = "";
+            (data.suggestions || []).forEach(s => {
+                ul.innerHTML += `<li class="list-group-item">💡 ${s}</li>`;
+            });
+        }
+    } catch(e) {
+        console.error(e);
+        alert("Failed to contact the career AI.");
+    } finally {
+        btn.innerText = "Analyze & Improve";
+        btn.disabled = false;
+    }
+}
+</script>
+{% endblock %}

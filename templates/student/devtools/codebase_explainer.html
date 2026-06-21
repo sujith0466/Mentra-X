@@ -1,0 +1,136 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Codebase Explainer - Mentra{% endblock %}
+
+{% block content %}
+<section class="tool-shell">
+    <header class="card-shell hero-card">
+        <p class="eyebrow">Developer Tools</p>
+        <h1>Codebase Explainer</h1>
+        <p class="muted">Paste a project structure or upload a small file list to get a cleaner architectural summary and next-step suggestions.</p>
+    </header>
+
+    <section class="card-shell form-card">
+        <form method="POST" enctype="multipart/form-data" class="stack-form">
+            <label for="project_file">Project File</label>
+            <input id="project_file" type="file" name="project_file" accept=".zip,.txt,.py,.js,.json,.md">
+
+            <label for="files_text">Project Structure</label>
+            <textarea id="files_text" name="files_text" rows="10" class="code-editor" placeholder="project/&#10;|- app.py&#10;|- models.py&#10;|- routes/&#10;`- templates/">{{ pasted_files }}</textarea>
+
+            <label for="code_file">Code File (optional)</label>
+            <input id="code_file" type="file" name="code_file" accept=".txt,.py,.js,.json,.md">
+
+            <label for="code_snippet">Code Snippet (optional)</label>
+            <textarea id="code_snippet" name="code_snippet" rows="10" class="code-editor" placeholder="Paste the function or class you want explained...">{{ code_snippet }}</textarea>
+
+            <div class="button-row">
+                <button type="submit" class="btn-primary-soft">Explain Project</button>
+            </div>
+        </form>
+    </section>
+
+    {% if analysis %}
+    <h3 class="panel-section-title">Analysis Output</h3>
+    <section class="analysis-grid">
+        <article class="card-shell info-card">
+            <h3>Project Type</h3>
+            <p>{{ analysis.project_type }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Architecture Summary</h3>
+            <p>{{ analysis.architecture_summary or analysis.description }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Backend Components</h3>
+            <ul>
+                {% for item in analysis.backend_components or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No clear backend component list was detected.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Frontend Components</h3>
+            <ul>
+                {% for item in analysis.frontend_components or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No clear frontend component list was detected.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="card-shell info-card wide">
+            <h3>Suggestions</h3>
+            <p class="muted">Detected files: {{ file_count }}</p>
+            <ul>
+                {% for item in analysis.suggestions or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No improvement suggestions were generated.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+    {% endif %}
+
+    {% if snippet_analysis %}
+    <h3 class="panel-section-title">Snippet Explanation</h3>
+    <section class="analysis-grid">
+        <article class="card-shell info-card">
+            <h3>Purpose</h3>
+            <p>{{ snippet_analysis.purpose }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Logic Flow</h3>
+            <p>{{ snippet_analysis.logic_flow }}</p>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Functions Used</h3>
+            <ul>
+                {% for item in snippet_analysis.functions_used or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No explicit function declarations detected.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="card-shell info-card">
+            <h3>Architecture Summary</h3>
+            <p>{{ snippet_analysis.architecture_summary }}</p>
+        </article>
+        <article class="card-shell info-card wide">
+            <h3>Improvement Suggestions</h3>
+            <ul>
+                {% for item in snippet_analysis.suggestions or [] %}
+                <li>{{ item }}</li>
+                {% else %}
+                <li>No suggestions were generated for this snippet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+    {% endif %}
+</section>
+
+<style>
+.tool-shell { display: grid; gap: 18px; }
+.card-shell { background: var(--surface); border: 1px solid #dbe4ee; border-radius: 18px; padding: 18px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06); }
+.hero-card h1 { margin: 0 0 8px; }
+.eyebrow { margin: 0 0 4px; text-transform: uppercase; letter-spacing: .08em; font-size: .75rem; color: #0f766e; font-weight: 700; }
+.muted { color: #64748b; }
+.stack-form { display: grid; gap: 10px; }
+.button-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.code-editor { width: 100%; border: 1px solid #1e293b; border-radius: 16px; padding: 14px; background: #0f172a; color: #e2e8f0; font-family: Consolas, 'Courier New', monospace; line-height: 1.55; }
+.analysis-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.info-card h3 { margin: 0 0 8px; }
+.info-card ul { margin: 0; padding-left: 18px; }
+.info-card.wide { grid-column: 1 / -1; }
+.panel-section-title { margin: 4px 0 8px; font-size: 0.95rem; color: #0f172a; }
+@media (max-width: 760px) {
+    .analysis-grid { grid-template-columns: 1fr; }
+}
+</style>
+{% endblock %}
+

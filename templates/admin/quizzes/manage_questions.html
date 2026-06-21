@@ -1,0 +1,162 @@
+﻿{% extends "base.html" %}
+{% block title %}Manage Questions - {{ quiz.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="admin-page-card">
+    <h1>Questions: {{ quiz.title }}</h1>
+    <p class="breadcrumb"><a href="{{ url_for('admin_quiz.manage_course_quizzes', course_id=quiz.course_id) }}">&larr; Back to Quizzes</a></p>
+
+    <section class="form">
+        <h2>Add Question (Manual)</h2>
+        <form method="POST" action="{{ url_for('admin_quiz.add_quiz_question', quiz_id=quiz.id) }}">
+            <div class="form-group"><label>Question</label><textarea name="question_text" rows="2" required></textarea></div>
+            <div class="form-group">
+                <label>Type</label>
+                <select name="question_type" id="questionType">
+                    <option value="mcq">MCQ</option>
+                    <option value="true_false">True/False</option>
+                    <option value="short_answer">Short Answer</option>
+                    <option value="long_answer">Long Answer</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <input name="option_a" placeholder="Option A">
+                <input name="option_b" placeholder="Option B">
+                <input name="option_c" placeholder="Option C">
+                <input name="option_d" placeholder="Option D">
+            </div>
+            <div class="form-group"><label>Correct Answer</label><input name="correct_answer" required placeholder="A / True / def"></div>
+            <div class="form-group"><label>Order Index</label><input type="number" name="order_index" min="1"></div>
+            <button class="btn btn-primary" type="submit">Add Question</button>
+        </form>
+    </section>
+
+    <section class="form">
+        <h2>Generate Quiz from Lesson</h2>
+        <form method="POST" action="{{ url_for('admin_quiz.generate_quiz_from_lesson', quiz_id=quiz.id) }}">
+            <div class="form-group">
+                <label>Lesson</label>
+                <select name="lesson_id" required>
+                    <option value="">Select lesson...</option>
+                    {% for lesson in lessons %}
+                    <option value="{{ lesson.id }}">{{ lesson.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button class="btn btn-secondary" type="submit">Generate Quiz from Lesson</button>
+        </form>
+    </section>
+
+    <section class="form">
+        <h2>Import Questions (Copy-Paste)</h2>
+        <form method="POST" action="{{ url_for('admin_quiz.import_quiz_questions_from_paste', quiz_id=quiz.id) }}">
+            <textarea name="bulk_text" rows="8" placeholder="1. Question&#10;A. Option&#10;B. Option&#10;C. Option&#10;D. Option&#10;Answer: A"></textarea>
+            <button class="btn btn-secondary" type="submit">Import Text</button>
+        </form>
+    </section>
+
+    <section class="form">
+        <h2>Import Questions (File Upload)</h2>
+        <form method="POST" action="{{ url_for('admin_quiz.import_quiz_questions_from_file', quiz_id=quiz.id) }}" enctype="multipart/form-data">
+            <input type="file" name="question_file" accept=".txt,.pdf,.docx" required>
+            <button class="btn btn-secondary" type="submit">Import File</button>
+        </form>
+    </section>
+
+    <h2>Question Bank</h2>
+    <p>Drag to reorder then click Save Question Order.</p>
+    <ul id="questionList" class="question-list">
+    {% for question in questions.items %}
+        <li data-id="{{ question.id }}" class="question-item">
+            <div class="question-head">
+                <strong>#{{ question.order_index or question.order_number }} {{ question.question_text }}</strong>
+                <span class="badge">{{ question.question_type }}</span>
+            </div>
+            {% if question.question_type == 'mcq' %}
+            <div class="question-options">
+                <div>A. {{ question.option_a }}</div>
+                <div>B. {{ question.option_b }}</div>
+                <div>C. {{ question.option_c }}</div>
+                <div>D. {{ question.option_d }}</div>
+            </div>
+            {% endif %}
+            <p><strong>Correct:</strong> {{ question.correct_answer }}</p>
+            <details>
+                <summary>Edit Question</summary>
+                <form method="POST" action="{{ url_for('admin_quiz.edit_quiz_question', question_id=question.id) }}">
+                    <textarea name="question_text" rows="2" required>{{ question.question_text }}</textarea>
+                    <select name="question_type">
+                        <option value="mcq" {% if question.question_type == 'mcq' %}selected{% endif %}>MCQ</option>
+                        <option value="true_false" {% if question.question_type == 'true_false' %}selected{% endif %}>True/False</option>
+                        <option value="short_answer" {% if question.question_type == 'short_answer' %}selected{% endif %}>Short Answer</option>
+                        <option value="long_answer" {% if question.question_type == 'long_answer' %}selected{% endif %}>Long Answer</option>
+                    </select>
+                    <input name="option_a" value="{{ question.option_a or '' }}" placeholder="Option A">
+                    <input name="option_b" value="{{ question.option_b or '' }}" placeholder="Option B">
+                    <input name="option_c" value="{{ question.option_c or '' }}" placeholder="Option C">
+                    <input name="option_d" value="{{ question.option_d or '' }}" placeholder="Option D">
+                    <input name="correct_answer" value="{{ question.correct_answer }}" required>
+                    <input type="number" name="order_index" value="{{ question.order_index or question.order_number }}" min="1">
+                    <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                </form>
+            </details>
+            <form method="POST" action="{{ url_for('admin_quiz.delete_quiz_question', question_id=question.id) }}" data-confirm-delete="true">
+                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+            </form>
+        </li>
+    {% else %}
+        <li>No questions yet.</li>
+    {% endfor %}
+    </ul>
+    <button class="btn btn-primary" id="saveOrderBtn">Save Question Order</button>
+    <div class="pagination-wrap">
+        {% if questions.has_prev %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_quiz.manage_quiz_questions', quiz_id=quiz.id, page=questions.prev_num) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ questions.page }} of {{ questions.pages }}</span>
+        {% if questions.has_next %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_quiz.manage_quiz_questions', quiz_id=quiz.id, page=questions.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+    </section>
+</div>
+
+<style>
+.question-list { list-style:none; padding:0; display:grid; gap:10px; }
+.question-item { border:1px solid var(--border); border-radius:8px; padding:10px; background:var(--surface); cursor:move; }
+.question-head { display:flex; justify-content:space-between; gap:8px; }
+.badge { background:var(--bg); color:var(--secondary); border-radius:999px; padding:2px 8px; font-size:.8rem; }
+.question-options { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin:8px 0; }
+</style>
+<script>
+let draggedItem = null;
+const list = document.getElementById('questionList');
+if (list) {
+  Array.from(list.children).forEach(item => {
+    item.draggable = true;
+    item.addEventListener('dragstart', () => { draggedItem = item; });
+    item.addEventListener('dragover', (e) => { e.preventDefault(); });
+    item.addEventListener('drop', (e) => {
+      e.preventDefault();
+      if (draggedItem && draggedItem !== item) {
+        const rect = item.getBoundingClientRect();
+        const after = e.clientY > rect.top + rect.height / 2;
+        if (after) item.after(draggedItem); else item.before(draggedItem);
+      }
+    });
+  });
+}
+document.getElementById('saveOrderBtn').addEventListener('click', async () => {
+  const ids = Array.from(document.querySelectorAll('#questionList .question-item')).map(x => parseInt(x.dataset.id));
+  const res = await fetch('{{ url_for("admin_quiz.reorder_quiz_questions", quiz_id=quiz.id) }}', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ordered_ids: ids})
+  });
+  const json = await res.json();
+  if (json.success) location.reload();
+  else alert(json.error || 'Failed to reorder');
+});
+</script>
+{% endblock %}
+

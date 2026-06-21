@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Community - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>Community Questions</h2>
+        <a class="btn-primary-soft" href="{{ url_for('community.post_question') }}">Ask Question</a>
+    </div>
+    <p class="muted">Learn with peers, answer questions, and earn XP as you contribute.</p>
+</section>
+
+<section class="dashboard-section">
+    <div class="results-summary">
+        <div class="summary-card"><span>XP Points</span><strong>{{ xp_profile.xp_points if xp_profile else 0 }}</strong></div>
+        <div class="summary-card"><span>Level</span><strong>{{ xp_profile.level if xp_profile else 1 }}</strong></div>
+        <div class="summary-card"><span>Badges</span><strong>{{ badges|length }}</strong></div>
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <div class="project-grid">
+        {% for post in posts %}
+        <article class="project-card">
+            <h4>{{ post.title }}</h4>
+            <p>{{ post.content }}</p>
+            <p class="muted">Answers: {{ post.answers|length }}</p>
+            <a href="{{ url_for('community.question_page', id=post.id) }}">Open Question</a>
+        </article>
+        {% else %}
+        <p class="muted">No community posts yet. Start the first discussion.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+.results-summary { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.summary-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; background: #f8fafc; }
+.summary-card span { display: block; color: #64748b; margin-bottom: 8px; }
+.summary-card strong { font-size: 1.15rem; }
+.project-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.project-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; background: #f8fafc; }
+</style>
+{% endblock %}
+

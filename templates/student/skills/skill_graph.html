@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Skill Graph - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>Skill Graph</h2>
+    </div>
+    <p class="muted">Track your knowledge map across courses, modules, and current skill progress.</p>
+    <div class="course-grid recommended-grid">
+        {% for skill in skill_graph %}
+        <article class="course-card">
+            <div class="course-content">
+                <h3>{{ skill.skill_name }}</h3>
+                <p><strong>{{ "%.0f"|format(skill.progress_percentage or 0) }}%</strong></p>
+                <p class="muted">Courses: {{ skill.courses|join(', ') if skill.courses else 'No linked courses yet' }}</p>
+                <p class="muted">Modules: {{ skill.modules[:3]|join(', ') if skill.modules else 'No modules yet' }}</p>
+            </div>
+        </article>
+        {% else %}
+        <p class="muted">No skills mapped yet. Enroll in a course to begin building your knowledge map.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

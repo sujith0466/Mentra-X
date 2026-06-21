@@ -1,0 +1,52 @@
+﻿{% extends "base.html" %}
+{% block title %}Assignments - {{ course.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>{{ course.title }} - Assignments</h1>
+    <div class="learning-tabs">
+        <a class="tab-link" href="{{ url_for('student.course_videos', course_id=course.id) }}">Lessons</a>
+        <a class="tab-link" href="{{ url_for('student_quiz.course_quizzes', course_id=course.id) }}">Quizzes</a>
+        <a class="tab-link active" href="{{ url_for('student_assignment.course_assignments', course_id=course.id) }}">Assignments</a>
+    </div>
+
+    {% for assignment in assignments %}
+    {% set submission = submission_map.get(assignment.id) %}
+    <section class="assignment-card">
+        <h3>{{ assignment.title }}</h3>
+        <p>{{ assignment.instructions }}</p>
+        <p><strong>Due:</strong> {{ assignment.due_date.strftime('%Y-%m-%d %H:%M') if assignment.due_date else 'No due date' }}</p>
+        <p><strong>Marks:</strong> {{ assignment.marks }}</p>
+        {% if assignment.attachment_path %}
+        <p><a href="/{{ assignment.attachment_path }}" target="_blank">Download Assignment File</a></p>
+        {% endif %}
+
+        {% if submission %}
+        <div class="submission-status">
+            <p><strong>Submitted:</strong> {{ submission.submitted_at.strftime('%Y-%m-%d %H:%M') }}</p>
+            <p><strong>Marks:</strong> {{ submission.marks_awarded if submission.marks_awarded is not none else 'Pending' }}</p>
+            <p><strong>Feedback:</strong> {{ submission.feedback or 'Not graded yet' }}</p>
+        </div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('student_assignment.submit_assignment', assignment_id=assignment.id) }}" enctype="multipart/form-data">
+            <label>Answer (Text)</label>
+            <textarea name="answer_text" rows="4" placeholder="Write your submission here...">{{ submission.answer_text if submission and submission.answer_text else '' }}</textarea>
+            <label>Upload File (PDF/DOCX/TXT/ZIP)</label>
+            <input type="file" name="submission_file" accept=".pdf,.docx,.txt,.zip">
+            <button class="btn btn-primary" type="submit">{% if submission %}Resubmit{% else %}Submit{% endif %} Assignment</button>
+        </form>
+    </section>
+    {% else %}
+    <p>No assignments available yet.</p>
+    {% endfor %}
+</div>
+<style>
+.learning-tabs { display:flex; gap:10px; flex-wrap:wrap; margin:10px 0 16px; }
+.tab-link { text-decoration:none; padding:7px 12px; border:1px solid var(--border); border-radius:8px; color:var(--text); background:var(--surface); }
+.tab-link.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+.assignment-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:14px; }
+.assignment-card textarea { width:100%; margin-bottom:8px; }
+.submission-status { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px; margin-bottom:10px; }
+</style>
+{% endblock %}
+

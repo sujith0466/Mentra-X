@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}View Referrals - Mentra{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-referrals">
+        <h1>Referral Transactions</h1>
+        <p class="muted">Review referral payouts, conversion quality, and reward status in one stream.</p>
+        <div class="admin-toolbar">
+            <a class="btn btn-secondary" href="{{ url_for('admin.export_referrals_csv') }}">Export Referrals CSV</a>
+            <a class="btn btn-secondary" href="{{ url_for('admin.manage_students') }}">Back to Students</a>
+        </div>
+
+        <div class="referral-stats">
+            <div class="stat-card">
+                <h3>Total Referrals</h3>
+                <p class="stat-value">{{ total_referrals }}</p>
+            </div>
+            <div class="stat-card">
+                <h3>Total Spent</h3>
+                <p class="stat-value">Rs {{ "%.2f"|format(total_spent) }}</p>
+            </div>
+        </div>
+
+        {% if referrals %}
+        <div class="admin-table-wrap">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Referrer</th>
+                        <th>New User</th>
+                        {% set next_reward_dir = 'asc' if sort != 'reward_amount' or direction == 'desc' else 'desc' %}
+                        {% set next_status_dir = 'asc' if sort != 'status' or direction == 'desc' else 'desc' %}
+                        {% set next_date_dir = 'asc' if sort != 'date' or direction == 'desc' else 'desc' %}
+                        <th><a href="{{ url_for('admin.view_referrals', sort='reward_amount', dir=next_reward_dir) }}">Reward Amount</a></th>
+                        <th><a href="{{ url_for('admin.view_referrals', sort='status', dir=next_status_dir) }}">Status</a></th>
+                        <th><a href="{{ url_for('admin.view_referrals', sort='date', dir=next_date_dir) }}">Date</a></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referral in referrals %}
+                    <tr>
+                        <td>{{ referral.referrer.name }}<br><small>{{ referral.referrer.email }}</small></td>
+                        <td>{{ referral.new_user.name }}<br><small>{{ referral.new_user.email }}</small></td>
+                        <td>Rs {{ "%.2f"|format(referral.reward_amount or 0) }}</td>
+                        <td>
+                            <span class="status-badge {% if referral.status == 'completed' %}status-completed{% else %}status-pending{% endif %}">
+                                {{ referral.status|capitalize }}
+                            </span>
+                        </td>
+                        <td>{{ referral.date.strftime('%Y-%m-%d %H:%M') if referral.date else '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-wrap">
+            <span class="pagination-meta">Showing page {{ pagination.page }} of {{ pagination.pages }}</span>
+            <div class="pagination-controls">
+                {% if pagination.has_prev %}
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.view_referrals', page=pagination.prev_num, sort=sort, dir=direction) }}">Previous</a>
+                {% endif %}
+                {% if pagination.has_next %}
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.view_referrals', page=pagination.next_num, sort=sort, dir=direction) }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+        <p>No referral transactions yet.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
