@@ -1,0 +1,3 @@
+from .recommendation_model import recommend_courses_ml, train_recommendation_model
+from .skill_prediction_model import predict_next_skills
+from .learning_difficulty_model import detect_learning_difficulty

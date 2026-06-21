@@ -1,0 +1,345 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ course.title }} - Watch Videos{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="course-videos-section">
+        <div class="course-header">
+            <h1>{{ course.title }}</h1>
+            <p class="domain-badge">{{ course.domain.name }}</p>
+            <div class="learning-tabs">
+                <a class="tab-link active" href="{{ url_for('student.course_videos', course_id=course.id) }}">Lessons</a>
+                <a class="tab-link" href="{{ url_for('student_quiz.course_quizzes', course_id=course.id) }}">Quizzes ({{ quiz_count }})</a>
+                <a class="tab-link" href="{{ url_for('student_assignment.course_assignments', course_id=course.id) }}">Assignments ({{ assignment_count }})</a>
+            </div>
+        </div>
+        
+        <div class="videos-container">
+            <div class="videos-main">
+                {% if videos %}
+                    {% set first_video = videos[0] %}
+                    <div class="video-player">
+                        <div class="player-wrapper">
+                            {% if 'youtube.com' in first_video.video_url or 'youtu.be' in first_video.video_url %}
+                                <!-- YouTube embed -->
+                                <iframe width="100%" height="500" 
+                                        src="https://www.youtube.com/embed/{{ first_video.video_url.split('v=')[1] if '?v=' in first_video.video_url else first_video.video_url.split('/')[-1] }}"
+                                        frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen></iframe>
+                            {% else %}
+                                <!-- Direct video link -->
+                                <video width="100%" height="500" controls>
+                                    <source src="{{ first_video.video_url }}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            {% endif %}
+                        </div>
+                        <div class="video-info">
+                            <h2>{{ first_video.title }}</h2>
+                            {% if first_video.duration %}
+                                <p class="duration">Duration: {{ first_video.duration }}</p>
+                            {% endif %}
+                            {% if first_video.description %}
+                                <p class="description">{{ first_video.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Videos Playlist -->
+                    <div class="videos-playlist">
+                        <h3>Course Videos ({{ videos|length }})</h3>
+                        <div class="playlist">
+                            {% for video in videos %}
+                            <div class="playlist-item {% if loop.first %}active{% endif %} video-item" 
+                                 data-index="{{ loop.index0 }}">
+                                <div class="playlist-number">{{ loop.index }}</div>
+                                <div class="playlist-info">
+                                    <h4>{{ video.title }}</h4>
+                                    {% if video.duration %}
+                                        <span class="duration">{{ video.duration }}</span>
+                                    {% endif %}
+                                    {% if video.id in completed_lesson_ids %}
+                                        <span class="lesson-state done">Completed</span>
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('student.complete_lesson', course_id=course.id, lesson_id=video.id) }}" class="lesson-complete-form">
+                                            <button type="submit" class="btn btn-sm btn-secondary">Mark Complete</button>
+                                        </form>
+                                    {% endif %}
+                                    <div class="lesson-ai-links">
+                                        <a href="{{ url_for('ai.notes', video_id=video.id) }}">Generate Notes</a>
+                                        <a href="{{ url_for('ai.practice_quiz', video_id=video.id) }}">Practice Quiz</a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="no-videos">
+                        <p>No videos available for this course yet.</p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="course-sidebar">
+                <!-- Syllabus -->
+                {% if syllabuses %}
+                <div class="sidebar-card">
+                    <h3>Course Syllabus</h3>
+                    <div class="syllabus-topics">
+                        {% for syllabus in syllabuses %}
+                        <div class="topic-item">
+                            <h5>{{ syllabus.topic_title }}</h5>
+                            {% if syllabus.topic_description %}
+                                <p>{{ syllabus.topic_description }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if course_modules %}
+                <div class="sidebar-card">
+                    <h3>Course Modules</h3>
+                    {% for module_row in course_modules %}
+                    <div class="topic-item">
+                        <h5>{{ module_row.module.order_index }}. {{ module_row.module.title }}</h5>
+                        {% for lesson in module_row.lessons %}
+                        <p>Lesson: {{ lesson.title }}</p>
+                        {% endfor %}
+                        {% for quiz in module_row.quizzes %}
+                        <p>Quiz: {{ quiz.title }}</p>
+                        {% endfor %}
+                        {% for assignment in module_row.assignments %}
+                        <p>Assignment: {{ assignment.title }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                <!-- Progress Update -->
+                <div class="sidebar-card">
+                    <h3>Your Progress</h3>
+                    <div class="progress-widget">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressDisplay" style="--progress: {{ enrollment.progress }}%;" data-progress="{{ enrollment.progress }}"></div>
+                        </div>
+                        <p class="progress-text">{{ enrollment.progress|int }}% Complete</p>
+                        
+                        <form method="POST" action="{{ url_for('student.update_progress', course_id=course.id) }}" class="progress-form">
+                            <input type="hidden" name="progress" id="progressInput" value="{{ enrollment.progress }}">
+                            <input type="range" min="0" max="100" value="{{ enrollment.progress }}" 
+                                   class="progress-slider" id="progressSlider"
+                                   oninput="updateProgress(this.value)">
+                            <button type="submit" class="btn btn-primary btn-sm">Update Progress</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Course Info -->
+                <div class="sidebar-card">
+                    <h3>Course Info</h3>
+                    <div class="info-list">
+                        <p><strong>Domain:</strong> {{ course.domain.name }}</p>
+                        <p><strong>Total Videos:</strong> {{ videos|length }}</p>
+                        <p><strong>Topics:</strong> {{ syllabuses|length }}</p>
+                        {% if course.instructor %}
+                            <p><strong>Instructor:</strong> {{ course.instructor }}</p>
+                        {% endif %}
+                        <p><strong>Enrolled:</strong> {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+// jshint ignore:start
+const videosData = {{ videos_payload|tojson }};
+// jshint ignore:end
+
+function loadVideo(index) {
+    const video = videosData[index];
+    const playerWrapper = document.querySelector('.player-wrapper');
+    
+    if (video.video_url.includes('youtube.com') || video.video_url.includes('youtu.be')) {
+        let videoId = '';
+        if (video.video_url.includes('v=')) {
+            videoId = video.video_url.split('v=')[1].split('&')[0];
+        } else {
+            const parts = video.video_url.split('/');
+            videoId = parts[parts.length - 1];
+        }
+        playerWrapper.innerHTML = `<iframe width="100%" height="500" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    } else {
+        playerWrapper.innerHTML = `<video width="100%" height="500" controls><source src="${video.video_url}" type="video/mp4">Your browser does not support the video tag.</video>`;
+    }
+    
+    document.querySelector('.video-info h2').textContent = video.title;
+    document.querySelector('.video-info .description').textContent = video.description || '';
+    
+    // Update playlist active state
+    document.querySelectorAll('.playlist-item').forEach((item, i) => {
+        item.classList.remove('active');
+        if (i === index) item.classList.add('active');
+    });
+}
+
+function updateProgress(value) {
+    document.getElementById('progressInput').value = value;
+    document.getElementById('progressDisplay').style.width = value + '%';
+    document.querySelector('.progress-text').textContent = value + '% Complete';
+}
+
+// Initialize playlist event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.video-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const index = this.getAttribute('data-index');
+            loadVideo(parseInt(index));
+        });
+    });
+});
+</script>
+
+<style>
+.videos-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.videos-main {
+    flex: 1;
+}
+
+.video-player {
+    background: black;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.player-wrapper {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+}
+
+.video-info {
+    background: var(--surface);
+    padding: 20px;
+    border-radius: 0 0 8px 8px;
+}
+
+.videos-playlist {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.playlist {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.playlist-item {
+    display: flex;
+    gap: 15px;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+}
+
+.playlist-item:hover {
+    background: #f0f0f0;
+    border-left-color: #FF6B35;
+}
+
+.playlist-item.active {
+    background: #FFE5D4;
+    border-left-color: #FF6B35;
+}
+
+.playlist-number {
+    background: #FF6B35;
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: bold;
+}
+
+.course-sidebar {
+    width: 300px;
+}
+.learning-tabs {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+.tab-link {
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    background: var(--surface);
+    color: #111827;
+}
+.tab-link.active {
+    background: #0f766e;
+    border-color: #0f766e;
+    color: #fff;
+}
+.lesson-state.done {
+    display: inline-block;
+    margin-left: 8px;
+    color: #047857;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.lesson-complete-form {
+    margin-top: 5px;
+}
+.lesson-ai-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+.lesson-ai-links a {
+    color: #0f766e;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.sidebar-card {
+    background: var(--surface);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.progress-slider {
+    width: 100%;
+    margin: 10px 0;
+}
+</style>
+{% endblock %}
+
+

@@ -1,0 +1,61 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Lesson Notes - Mentra{% endblock %}
+
+{% block content %}
+<section class="ai-page-shell">
+    <div class="ai-hero-card">
+        <div>
+            <p class="eyebrow">AI Learning Tools</p>
+            <h1>Generated Notes</h1>
+            <p>Quick revision notes for {{ video.title }} built from the lesson description and course topics.</p>
+        </div>
+        <a href="{{ url_for('student.course_videos', course_id=video.course_id) }}" class="action-link">Back to Course</a>
+    </div>
+
+    <section class="notes-grid">
+        <article class="ai-card">
+            <h2>Key Points</h2>
+            <ul class="roadmap-list">
+                {% for item in notes.key_points %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="ai-card">
+            <h2>Summary</h2>
+            <p>{{ notes.summary }}</p>
+        </article>
+        <article class="ai-card revision-card">
+            <h2>Revision Questions</h2>
+            <ul class="roadmap-list">
+                {% for item in notes.revision_questions %}
+                <li>{{ item }}</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+</section>
+
+<style>
+.ai-page-shell { display: grid; gap: 18px; margin: 18px 0 24px; }
+.ai-hero-card, .ai-card { background: var(--surface); border-radius: 14px; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08); }
+.ai-hero-card { padding: 18px; display: flex; justify-content: space-between; gap: 16px; align-items: end; }
+.eyebrow { margin: 0 0 8px; color: #0f766e; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.76rem; }
+.ai-hero-card h1 { margin: 0 0 8px; font-size: 1.7rem; color: #0f172a; }
+.ai-hero-card p { margin: 0; color: #475569; max-width: 720px; }
+.notes-grid { display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.revision-card { grid-column: 1 / -1; }
+.ai-card { padding: 16px; border: 1px solid #e2e8f0; }
+.ai-card h2 { margin: 0 0 10px; color: #0f172a; font-size: 1.05rem; }
+.ai-card p { margin: 0; color: #334155; line-height: 1.7; }
+.roadmap-list { margin: 0; padding-left: 18px; color: #334155; line-height: 1.7; }
+.action-link { display: inline-block; text-decoration: none; border-radius: 8px; background: #0f766e; color: #fff; padding: 10px 12px; font-weight: 600; }
+@media (max-width: 920px) {
+    .ai-hero-card { flex-direction: column; align-items: stretch; }
+    .notes-grid { grid-template-columns: 1fr; }
+    .revision-card { grid-column: auto; }
+}
+</style>
+{% endblock %}
+

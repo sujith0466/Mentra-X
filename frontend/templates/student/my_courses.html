@@ -1,0 +1,109 @@
+﻿{% extends "base.html" %}
+
+{% block title %}My Courses - Mentra{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="my-courses-section">
+        <h1>My Courses ({{ courses|length }})</h1>
+        
+        {% if courses %}
+            <div class="enrolled-courses-list">
+                {% for course in courses %}
+                {% set enrollment = enrollments[loop.index0] %}
+                <div class="enrolled-course-card">
+                    <div class="course-info-left">
+                        <div class="course-title">
+                            <h3>{{ course.title }}</h3>
+                            <span class="domain-badge">{{ course.domain.name }}</span>
+                        </div>
+                        <p class="course-description">{{ course.description }}</p>
+                        
+                        {% if course.instructor %}
+                        <p class="instructor">Instructor: {{ course.instructor }}</p>
+                        {% endif %}
+                        
+                        <div class="course-meta">
+                            <span>{{ course.videos|length }} Videos</span>
+                            <span>{{ course.syllabuses|length }} Topics</span>
+                            <span>Enrolled: {{ enrollment.enrolled_date.strftime('%b %d, %Y') }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="course-progress">
+                        <div class="progress-section">
+                            <h4>Progress</h4>
+                            <div class="progress-bar">
+                                <div class="progress-fill progress-bar-item" style="--progress: {{ enrollment.progress }}%;" data-progress="{{ enrollment.progress }}"></div>
+                            </div>
+                            <p class="progress-text">{{ enrollment.progress|int }}% Complete</p>
+                        </div>
+                        
+                        {% if enrollment.completed %}
+                        <div class="completion-badge">
+                            Completed
+                        </div>
+                        {% endif %}
+                        
+                        <a href="{{ url_for('student.course_videos', course_id=course.id) }}" class="btn btn-primary btn-lg btn-block">
+                            Continue Learning
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-courses">
+                <h2>No Courses Yet</h2>
+                <p>You haven't enrolled in any courses yet. Start learning today!</p>
+                <a href="{{ url_for('public.courses') }}" class="btn btn-primary btn-lg">Browse Courses</a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+
+<style>
+.enrolled-course-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-left: 5px solid #FF6B35;
+}
+
+.course-progress {
+    min-width: 250px;
+    text-align: right;
+}
+
+.progress-bar {
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: var(--progress, 0);
+    background: linear-gradient(90deg, #FF6B35, #F7931E);
+    transition: width 0.3s ease;
+}
+
+.completion-badge {
+    display: inline-block;
+    background: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+</style>
+{% endblock %}
+

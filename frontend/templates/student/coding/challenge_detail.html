@@ -1,0 +1,282 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ challenge.title }} - IDE - Mentra{% endblock %}
+
+{% block content %}
+<!-- Include Monaco loader -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js"></script>
+
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ challenge.title }}</h2>
+    </div>
+    <p class="muted"><strong>Topic:</strong> {{ challenge.topic }} | <strong>Difficulty:</strong> {{ challenge.difficulty }}</p>
+    <p>{{ challenge.description }}</p>
+</section>
+
+<section class="dashboard-section challenge-layout">
+    <div class="challenge-panel problem-panel">
+        <h3>Starter Code</h3>
+        <pre>{{ challenge.starter_code }}</pre>
+
+        <h3>Expected Output</h3>
+        <pre>{{ challenge.expected_output }}</pre>
+
+        <h3>Test Cases</h3>
+        <ul class="test-case-list">
+            {% for test in test_cases %}
+            <li><strong>Input:</strong> {{ test.input }} | <strong>Output:</strong> {{ test.output }}</li>
+            {% endfor %}
+        </ul>
+        
+        <hr>
+        <h3>Custom Input</h3>
+        <p class="muted" style="font-size: 0.85rem">Provide arguments or SQL setup queries for manual "Run Code".</p>
+        <textarea id="custom_input" rows="4" class="custom-input-box" placeholder="e.g. 5, 10"></textarea>
+    </div>
+
+    <div class="challenge-panel editor-panel">
+        <div class="editor-header">
+            <div>
+                <label for="language">Language</label>
+                <select id="language" name="language" onchange="changeLanguage()">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="sql">SQL</option>
+                </select>
+            </div>
+        </div>
+        
+        <div id="monaco-editor-container" class="monaco-editor-container"></div>
+        
+        <div class="button-row">
+             <button type="button" class="btn-primary-soft" onclick="runCode()" id="btn-run">Run Code</button>
+             <button type="button" class="btn-secondary-soft" onclick="submitCode()" id="btn-submit">Submit Solution</button>
+        </div>
+        
+        <div class="output-panel">
+             <div class="output-header">
+                  <h4>Output Console</h4>
+                  <span id="output-status" class="status-badge">Ready</span>
+             </div>
+             <pre id="output-console">Run code to see output.</pre>
+        </div>
+        
+        <div class="result-card" id="submission-result" style="display: none;">
+            <h4>Submission Result</h4>
+            <p><strong>Score:</strong> <span id="res-score"></span>%</p>
+            <p><strong>Passed Tests:</strong> <span id="res-passed"></span> / <span id="res-total"></span></p>
+            <ul id="res-details" class="test-case-list" style="margin-top: 10px;"></ul>
+        </div>
+    </div>
+</section>
+
+<!-- Data payload for JS context -->
+<script>
+    window.APP_CONTEXT = {
+        problemId: {{ challenge.id }},
+        starterCode: {{ challenge.starter_code | tojson }},
+        latestCode: {{ (latest_submission.code_submitted if latest_submission else challenge.starter_code) | tojson }},
+        defaultLang: "python"
+    };
+</script>
+
+<script>
+    let editor;
+    const STORAGE_KEY = `mentra_ide_${window.APP_CONTEXT.problemId}_code`;
+    
+    // Config Monaco
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        let savedCode = localStorage.getItem(STORAGE_KEY);
+        let initialCode = savedCode ? savedCode : window.APP_CONTEXT.latestCode;
+        
+        const initialMonacoTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "vs-dark" : "vs";
+        editor = monaco.editor.create(document.getElementById('monaco-editor-container'), {
+            value: initialCode,
+            language: window.APP_CONTEXT.defaultLang,
+            theme: initialMonacoTheme,
+            automaticLayout: true,
+            minimap: { enabled: false },
+            fontSize: 14,
+            scrollBeyondLastLine: false
+        });
+        
+        // Auto-save
+        editor.onDidChangeModelContent(() => {
+            localStorage.setItem(STORAGE_KEY, editor.getValue());
+        });
+
+        // Global theme sync
+        window.addEventListener('themeChanged', (e) => {
+            if (editor) {
+                monaco.editor.setTheme(e.detail.theme === 'dark' ? 'vs-dark' : 'vs');
+            }
+        });
+    });
+
+    function changeLanguage() {
+        if (!editor) return;
+        const lang = document.getElementById('language').value;
+        monaco.editor.setModelLanguage(editor.getModel(), lang);
+    }
+    
+    function changeTheme() {
+        if (!editor) return;
+        const theme = document.getElementById('editor_theme').value;
+        monaco.editor.setTheme(theme);
+    }
+    
+    function setConsoleOut(text, isError=false) {
+        const outPanel = document.querySelector('.output-panel');
+        const out = document.getElementById('output-console');
+        out.textContent = text || 'No output.';
+        
+        // Let mentra-theme.css handle background color overrides
+        outPanel.classList.add('console-output');
+        outPanel.style = ""; // Drop the legacy inline overrides
+        out.style = "";
+        
+        if (isError) {
+            out.className = "text-danger-console";
+        } else {
+            out.className = "text-success-console";
+        }
+        
+        // Auto-scroll to bottom of the output
+        setTimeout(() => { outPanel.scrollTop = outPanel.scrollHeight; }, 10);
+    }
+
+    async function runCode() {
+        if (!editor) return;
+        const code = editor.getValue();
+        const lang = document.getElementById('language').value;
+        const customInput = document.getElementById('custom_input').value;
+        const btn = document.getElementById('btn-run');
+        
+        btn.disabled = true;
+        btn.textContent = "Running...";
+        document.getElementById('output-status').textContent = 'Running';
+        document.getElementById('output-status').className = 'status-badge status-running';
+        
+        try {
+            const res = await fetch('/api/run-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: code, language: lang, input: customInput })
+            });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                setConsoleOut(data.output);
+                 document.getElementById('output-status').textContent = 'Success';
+                 document.getElementById('output-status').className = 'status-badge status-success';
+            } else {
+                setConsoleOut(data.error || data.output, true);
+                document.getElementById('output-status').textContent = 'Error';
+                 document.getElementById('output-status').className = 'status-badge status-error';
+            }
+        } catch (e) {
+            setConsoleOut("Failed to run code: " + e.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Run Code";
+        }
+    }
+    
+    async function submitCode() {
+        if (!editor) return;
+        const code = editor.getValue();
+        const lang = document.getElementById('language').value;
+        const btn = document.getElementById('btn-submit');
+        
+        btn.disabled = true;
+        btn.textContent = "Submitting...";
+        
+        document.getElementById('submission-result').style.display = 'none';
+        
+        try {
+            const res = await fetch('/api/submit-code', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    problem_id: window.APP_CONTEXT.problemId,
+                    code: code, 
+                    language: lang 
+                })
+            });
+            const data = await res.json();
+            
+            if (data.error && !data.results) {
+                 setConsoleOut(data.error, true);
+                 return;
+            }
+            
+            setConsoleOut(data.output || "Evaluation complete.");
+            
+            // Show result card
+            document.getElementById('submission-result').style.display = 'block';
+            document.getElementById('res-score').textContent = data.score;
+            document.getElementById('res-passed').textContent = data.passed_tests;
+            document.getElementById('res-total').textContent = data.total_tests;
+            
+            const list = document.getElementById('res-details');
+            list.innerHTML = '';
+            if(data.results) {
+                 data.results.forEach((r, idx) => {
+                     const li = document.createElement('li');
+                     li.className = r.passed ? 'test-pass' : 'test-fail';
+                     li.innerHTML = `<strong>Test ${idx+1}:</strong> ${r.passed ? 'PASSED' : 'FAILED'} 
+                                     <br><span class="muted">Input: ${r.input} | Expected: ${r.expected}</span>`;
+                     list.appendChild(li);
+                 });
+            }
+            
+        } catch (e) {
+            setConsoleOut("Failed to submit code: " + e.message, true);
+        } finally {
+            btn.disabled = false;
+            btn.textContent = "Submit Solution";
+        }
+    }
+</script>
+
+<style>
+.challenge-layout { display: grid; gap: 20px; grid-template-columns: 1fr 1.5fr; align-items: start; }
+.challenge-panel { border: 1px solid var(--border); border-radius: 16px; background: var(--surface); padding: 20px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); color: var(--text); }
+.problem-panel { max-height: calc(100vh - 120px); overflow-y: auto; }
+
+.editor-header { display: flex; gap: 20px; align-items: center; margin-bottom: 12px; }
+.editor-header label { font-weight: 600; font-size: 0.9rem; color: var(--muted); margin-right: 8px;}
+.editor-header select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font: inherit; background: var(--surface); color: var(--text); cursor: pointer; }
+
+.custom-input-box { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: Consolas, monospace; background: var(--surface); color: var(--text); resize: vertical; margin-top: 8px;}
+
+.button-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;}
+.btn-secondary-soft { display: inline-block; border-radius: 8px; padding: 10px 18px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer; transition: all 0.2s;}
+.btn-primary-soft { display: inline-block; border-radius: 8px; padding: 10px 18px; border: none; background: var(--primary); color: var(--surface); font-weight: 600; cursor: pointer; transition: all 0.2s;}
+.btn-primary-soft:hover { background: var(--primary-hover); }
+.btn-secondary-soft:hover { background: var(--surface-light); }
+
+button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.test-case-list { display: grid; gap: 10px; padding-left: 20px; font-family: monospace; font-size: 0.9rem;}
+.result-card { margin-top: 20px; padding: 18px; border-radius: 12px; background: var(--surface-light); border: 1px solid var(--border); color: var(--text); }
+.test-pass { color: var(--success); }
+.test-fail { color: var(--danger); }
+
+pre { white-space: pre-wrap; word-break: break-all; background: var(--surface-light); color: var(--text); padding: 14px; border-radius: 12px; font-size: 0.9rem; margin-top: 10px; border: 1px solid var(--border);}
+.output-panel { border-radius: 12px; border: 1px solid var(--border); background: var(--surface); padding: 16px; color: var(--text); max-height: 250px; overflow-y: auto; transition: background 0.2s, border 0.2s; }
+.output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.output-header h4 { margin: 0; color: var(--text); }
+.status-badge { font-size: 0.75rem; padding: 4px 8px; border-radius: 12px; font-weight: bold; background: var(--surface-light); color: var(--muted);}
+.status-success { background: var(--success-bg); color: var(--success); }
+.status-error { background: var(--danger-bg); color: var(--danger); }
+.status-running { background: var(--warning-bg); color: var(--warning);}
+.output-panel pre { background: transparent; padding: 0; margin: 0; border: none; font-family: Consolas, monospace;}
+.monaco-editor-container { height: 400px; width: 100%; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 15px; }
+
+@media (max-width: 1000px) { .challenge-layout { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+

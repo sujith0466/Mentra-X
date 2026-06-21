@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>{{ post.title }}</h2>
+    </div>
+    <p>{{ post.content }}</p>
+</section>
+
+<section class="dashboard-section">
+    <h3>Answers</h3>
+    {% for answer in answers %}
+    <div class="answer-card">
+        <p>{{ answer.answer_text }}</p>
+        <p class="muted">Votes: {{ answer.votes }}</p>
+        <form method="POST" action="{{ url_for('community.upvote', answer_id=answer.id) }}">
+            <button type="submit" class="btn-secondary-soft">Upvote</button>
+        </form>
+    </div>
+    {% else %}
+    <p class="muted">No answers yet. Be the first to help.</p>
+    {% endfor %}
+</section>
+
+<section class="dashboard-section">
+    <h3>Your Answer</h3>
+    <form method="POST" action="{{ url_for('community.answer_question') }}" class="stack-form">
+        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <textarea name="answer_text" rows="7" required></textarea>
+        <button type="submit" class="btn-primary-soft">Submit Answer</button>
+    </form>
+</section>
+
+<style>
+.answer-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px; background: #f8fafc; margin-bottom: 12px; }
+.stack-form { display: grid; gap: 12px; }
+.stack-form textarea { width: 100%; border: 1px solid #cbd5e1; border-radius: 10px; padding: 10px; }
+</style>
+{% endblock %}

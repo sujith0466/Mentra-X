@@ -1,0 +1,99 @@
+﻿{% extends "base.html" %}
+{% block title %}Manage Quizzes - {{ course.title }}{% endblock %}
+{% block content %}
+<div class="container">
+    <section class="admin-page-card">
+    <h1>Quizzes for {{ course.title }}</h1>
+    <p class="breadcrumb"><a href="{{ url_for('admin_quiz.quizzes_overview') }}">&larr; Back to Quiz Courses</a></p>
+
+    <form method="POST" action="{{ url_for('admin_quiz.add_quiz', course_id=course.id) }}" class="form">
+        <h2>Create Quiz</h2>
+        <div class="form-group"><label>Title</label><input type="text" name="title" required></div>
+        <div class="form-group"><label>Description</label><textarea name="description" rows="2"></textarea></div>
+        <div class="form-group">
+            <label>Module</label>
+            <select name="module_id">
+                <option value="">Unassigned</option>
+                {% for module in modules %}
+                <option value="{{ module.id }}">{{ module.order_index }}. {{ module.title }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Questions Target</label><input type="number" name="question_count_target" value="10" min="1"></div>
+            <div class="form-group"><label>Passing %</label><input type="number" name="passing_percentage" value="60" min="0" max="100"></div>
+            <div class="form-group"><label>Time Limit (min)</label><input type="number" name="time_limit_minutes" value="15" min="1"></div>
+            <div class="form-group"><label>Attempts Allowed</label><input type="number" name="attempts_allowed" value="3" min="1"></div>
+        </div>
+        <label><input type="checkbox" name="is_enabled" checked> Enabled</label>
+        <button type="submit" class="btn btn-primary">Create Quiz</button>
+    </form>
+
+    <div class="table-container">
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>Quiz</th><th>Questions</th><th>Pass %</th><th>Time</th><th>Attempts</th><th>Status</th><th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for quiz in quizzes.items %}
+            <tr>
+                <td><strong>{{ quiz.title }}</strong><br><small>{{ quiz.description or '' }}</small></td>
+                <td>{{ quiz.questions|length }} / {{ quiz.question_count_target }}</td>
+                <td>{{ quiz.passing_percentage }}</td>
+                <td>{{ quiz.time_limit_minutes }} min</td>
+                <td>{{ quiz.attempts_allowed }}</td>
+                <td>{{ 'Enabled' if quiz.is_enabled else 'Disabled' }}</td>
+                <td>
+                    <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_quiz.manage_quiz_questions', quiz_id=quiz.id) }}">Questions</a>
+                    <details>
+                        <summary>Edit</summary>
+                        <form method="POST" action="{{ url_for('admin_quiz.edit_quiz', quiz_id=quiz.id) }}">
+                            <input type="text" name="title" value="{{ quiz.title }}" required>
+                            <textarea name="description">{{ quiz.description or '' }}</textarea>
+                            <input type="number" name="question_count_target" value="{{ quiz.question_count_target }}" min="1">
+                            <input type="number" name="passing_percentage" value="{{ quiz.passing_percentage }}" min="0" max="100">
+                            <input type="number" name="time_limit_minutes" value="{{ quiz.time_limit_minutes }}" min="1">
+                            <input type="number" name="attempts_allowed" value="{{ quiz.attempts_allowed }}" min="1">
+                            <select name="module_id">
+                                <option value="">Unassigned</option>
+                                {% for module in modules %}
+                                <option value="{{ module.id }}" {% if quiz.module_id == module.id %}selected{% endif %}>{{ module.order_index }}. {{ module.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <label><input type="checkbox" name="is_enabled" {% if quiz.is_enabled %}checked{% endif %}> Enabled</label>
+                            <button class="btn btn-sm btn-primary" type="submit">Save</button>
+                        </form>
+                    </details>
+                    <form method="POST" action="{{ url_for('admin_quiz.delete_quiz', quiz_id=quiz.id) }}" style="display:inline" data-confirm-delete="true">
+                        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr><td colspan="7">No quizzes yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <div class="pagination-wrap">
+        {% if quizzes.has_prev %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_quiz.manage_course_quizzes', course_id=course.id, page=quizzes.prev_num) }}">Previous</a>
+        {% endif %}
+        <span>Page {{ quizzes.page }} of {{ quizzes.pages }}</span>
+        {% if quizzes.has_next %}
+        <a class="btn btn-sm btn-secondary" href="{{ url_for('admin_quiz.manage_course_quizzes', course_id=course.id, page=quizzes.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+    </section>
+</div>
+
+<style>
+.form-row { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+@media (max-width: 900px){ .form-row { grid-template-columns:1fr 1fr; } }
+</style>
+{% endblock %}
+
+

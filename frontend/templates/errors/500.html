@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - Mentra{% endblock %}
+
+{% block content %}
+<div class="container error-container">
+    <div class="error-page">
+        <h1>500</h1>
+        <h2>Server Error</h2>
+        <p>An unexpected error occurred. Please try again later or contact support.</p>
+        <div class="error-actions">
+            <a href="{{ url_for('public.index') }}" class="btn btn-primary">Go Home</a>
+            <a href="{{ url_for('public.contact') }}" class="btn btn-secondary">Contact Support</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

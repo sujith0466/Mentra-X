@@ -1,0 +1,472 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Course Builder - Mentra{% endblock %}
+
+{% block content %}
+<div class="container">
+    <section class="admin-edit-course">
+        <h1>Course Builder: {{ course.title }}</h1>
+        <p class="breadcrumb"><a href="{{ url_for('admin.manage_courses') }}">&larr; Back to Courses</a></p>
+
+        <div class="builder-tabs">
+            <button type="button" class="tab-btn active" data-tab="details">Details</button>
+            <button type="button" class="tab-btn" data-tab="modules">Modules</button>
+            <button type="button" class="tab-btn" data-tab="syllabus">Syllabus</button>
+            <button type="button" class="tab-btn" data-tab="videos">Videos</button>
+            <button type="button" class="tab-btn" data-tab="publish">Publish Checks</button>
+        </div>
+
+        <div class="course-edit-layout">
+            <div class="edit-course-form tab-panel active" data-panel="details">
+                <h2>Course Details</h2>
+                <form method="POST" action="{{ url_for('admin.edit_course', course_id=course.id) }}" class="form course-form-validation" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <label for="title">Course Title *</label>
+                        <input type="text" id="title" name="title" value="{{ course.title }}" required minlength="3" maxlength="100">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" rows="5" maxlength="1000">{{ course.description or '' }}</textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="domain_id">Domain *</label>
+                            <select id="domain_id" name="domain_id" required>
+                                <option value="">-- Select Domain --</option>
+                                {% for domain in domains %}
+                                <option value="{{ domain.id }}" {% if domain.id == course.domain_id %}selected{% endif %}>{{ domain.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Price (Rs) *</label>
+                            <input type="number" id="price" name="price" value="{{ course.price }}" step="0.01" min="0" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="instructor">Instructor Name *</label>
+                            <input type="text" id="instructor" name="instructor" value="{{ course.instructor }}" required minlength="2" maxlength="100">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Lifecycle Status *</label>
+                            <select id="status" name="status" required>
+                                {% for status_value in course_statuses %}
+                                <option value="{{ status_value }}" {% if course.status == status_value %}selected{% endif %}>{{ status_value|title }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Current Course Image</label>
+                        {% if current_image_url %}
+                        <div class="current-course-image-wrap">
+                            <img src="{{ current_image_url }}" alt="{{ course.title }}" class="current-course-image">
+                        </div>
+                        {% else %}
+                        <p class="empty-image-note">No image uploaded for this course yet.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        <label for="course_image">Upload New Course Image</label>
+                        <input type="file" id="course_image" name="course_image" accept=".png,.jpg,.jpeg,.webp,.gif">
+                        <small>Leave empty to keep current image.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="image_url">Or External Image URL (optional)</label>
+                        <input type="url" id="image_url" name="image_url" value="{{ course.image_url if course.image_url and (course.image_url.startswith('http://') or course.image_url.startswith('https://')) else '' }}" placeholder="e.g., https://example.com/image.jpg">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="demo_video_url">Demo Video URL (YouTube/Vimeo embed)</label>
+                        <input type="url" id="demo_video_url" name="demo_video_url" value="{{ course.demo_video_url or '' }}" placeholder="https://www.youtube.com/watch?v=...">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Course Changes</button>
+                        <a href="{{ url_for('admin.course_view', course_id=course.id) }}" class="btn btn-secondary">Preview</a>
+                    </div>
+                </form>
+
+                <div class="course-info-card">
+                    <h3>Course Information</h3>
+                    <div class="info-group">
+                        <p><strong>Status:</strong> {{ (course.status or 'draft')|title }}</p>
+                        <p><strong>Created:</strong> {{ course.created_at.strftime('%d-%m-%Y') if course.created_at else 'N/A' }}</p>
+                        <p><strong>Videos:</strong> {{ course.videos|length }}</p>
+                        <p><strong>Students Enrolled:</strong> {{ course.enrollments|length }}</p>
+                        <p><strong>Syllabus Topics:</strong> {{ course.syllabuses|length }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="course-management-panels tab-panel" data-panel="modules">
+                <div class="management-panel">
+                    <div class="panel-header">
+                        <h2>Course Modules ({{ modules|length }})</h2>
+                    </div>
+                    <div class="add-form">
+                        <form method="POST" action="{{ url_for('admin.add_course_module', course_id=course.id) }}">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Module Title</label>
+                                    <input type="text" name="title" required maxlength="200">
+                                </div>
+                                <div class="form-group">
+                                    <label>Order Index</label>
+                                    <input type="number" name="order_index" min="1" value="{{ (modules|length) + 1 }}">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Module</button>
+                        </form>
+                    </div>
+
+                    {% if modules %}
+                    <div class="items-list">
+                        {% for module in modules %}
+                        <div class="item">
+                            <form method="POST" action="{{ url_for('admin.edit_course_module', module_id=module.id) }}">
+                                <div class="form-row">
+                                    <input type="text" name="title" value="{{ module.title }}" required>
+                                    <input type="number" name="order_index" value="{{ module.order_index }}" min="1">
+                                </div>
+                                <button type="submit" class="btn btn-sm btn-primary">Save Module</button>
+                            </form>
+                            <form method="POST" action="{{ url_for('admin.delete_course_module', module_id=module.id) }}" data-confirm-delete="true">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <h3>Assign Lessons to Modules</h3>
+                    {% for lesson in lessons %}
+                    <form method="POST" action="{{ url_for('admin.update_content_module', course_id=course.id) }}" class="form-row" style="margin-bottom:8px;">
+                        <input type="hidden" name="content_type" value="lesson">
+                        <input type="hidden" name="content_id" value="{{ lesson.id }}">
+                        <input type="text" value="{{ lesson.title }}" readonly>
+                        <select name="module_id">
+                            <option value="">Unassigned</option>
+                            {% for module in modules %}
+                            <option value="{{ module.id }}" {% if lesson.module_id == module.id %}selected{% endif %}>{{ module.order_index }}. {{ module.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                    </form>
+                    {% endfor %}
+
+                    <h3>Assign Quizzes to Modules</h3>
+                    {% for quiz in quizzes %}
+                    <form method="POST" action="{{ url_for('admin.update_content_module', course_id=course.id) }}" class="form-row" style="margin-bottom:8px;">
+                        <input type="hidden" name="content_type" value="quiz">
+                        <input type="hidden" name="content_id" value="{{ quiz.id }}">
+                        <input type="text" value="{{ quiz.title }}" readonly>
+                        <select name="module_id">
+                            <option value="">Unassigned</option>
+                            {% for module in modules %}
+                            <option value="{{ module.id }}" {% if quiz.module_id == module.id %}selected{% endif %}>{{ module.order_index }}. {{ module.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                    </form>
+                    {% endfor %}
+
+                    <h3>Assign Assignments to Modules</h3>
+                    {% for assignment in assignments %}
+                    <form method="POST" action="{{ url_for('admin.update_content_module', course_id=course.id) }}" class="form-row" style="margin-bottom:8px;">
+                        <input type="hidden" name="content_type" value="assignment">
+                        <input type="hidden" name="content_id" value="{{ assignment.id }}">
+                        <input type="text" value="{{ assignment.title }}" readonly>
+                        <select name="module_id">
+                            <option value="">Unassigned</option>
+                            {% for module in modules %}
+                            <option value="{{ module.id }}" {% if assignment.module_id == module.id %}selected{% endif %}>{{ module.order_index }}. {{ module.title }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-secondary">Update</button>
+                    </form>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="course-management-panels tab-panel" data-panel="syllabus">
+                <div class="management-panel">
+                    <div class="panel-header">
+                        <h2>Course Syllabus ({{ course.syllabuses|length }})</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('addSyllabusForm').style.display='block'">+ Add Topic</button>
+                            <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.manage_syllabus', course_id=course.id) }}">Open Full Manager</a>
+                        </div>
+                    </div>
+
+                    <div id="addSyllabusForm" class="add-form" style="display:none;">
+                        <form method="POST" action="{{ url_for('admin.add_syllabus') }}" class="course-form-validation">
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <div class="form-group">
+                                <input type="text" name="topic_title" placeholder="Topic Title *" minlength="3" maxlength="200" required>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="topic_description" placeholder="Topic Description (optional)" rows="3" maxlength="1000"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="number" name="order_number" placeholder="Order Number" value="{{ (course.syllabuses|length) + 1 }}" min="0">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Topic</button>
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('addSyllabusForm').style.display='none'">Cancel</button>
+                        </form>
+                    </div>
+
+                    {% if course.syllabuses %}
+                    <div class="items-list">
+                        {% for syllabus in course.syllabuses|sort(attribute='order_number') %}
+                        <div class="item">
+                            <div class="item-header">
+                                <span class="item-order">{{ syllabus.order_number }}</span>
+                                <span class="item-title">{{ syllabus.topic_title }}</span>
+                            </div>
+                            {% if syllabus.topic_description %}
+                            <p class="item-description">{{ syllabus.topic_description }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="empty-message">No syllabus topics added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="course-management-panels tab-panel" data-panel="videos">
+                <div class="management-panel">
+                    <div class="panel-header">
+                        <h2>Course Videos ({{ course.videos|length }})</h2>
+                        <div class="panel-actions">
+                            <button class="btn btn-sm btn-primary" onclick="document.getElementById('addVideoForm').style.display='block'">+ Add Video</button>
+                            <a class="btn btn-sm btn-secondary" href="{{ url_for('admin.manage_videos', course_id=course.id) }}">Open Full Manager</a>
+                        </div>
+                    </div>
+
+                    <div id="addVideoForm" class="add-form" style="display:none;">
+                        <form method="POST" action="{{ url_for('admin.add_video') }}" class="course-form-validation">
+                            <input type="hidden" name="course_id" value="{{ course.id }}">
+                            <div class="form-group">
+                                <input type="text" name="title" placeholder="Video Title *" minlength="3" maxlength="100" required>
+                            </div>
+                            <div class="form-group">
+                                <input type="url" name="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
+                            </div>
+                            <div class="form-group">
+                                <textarea name="description" placeholder="Video Description (optional)" rows="2" maxlength="500"></textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <input type="text" name="duration" placeholder="Duration (e.g., 15:30)">
+                                </div>
+                                <div class="form-group">
+                                    <input type="number" name="order_number" placeholder="Order" value="{{ (course.videos|length) + 1 }}" min="0">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <select name="module_id">
+                                    <option value="">Unassigned Module</option>
+                                    {% for module in modules %}
+                                    <option value="{{ module.id }}">{{ module.order_index }}. {{ module.title }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Add Video</button>
+                            <button type="button" class="btn btn-secondary" onclick="document.getElementById('addVideoForm').style.display='none'">Cancel</button>
+                        </form>
+                    </div>
+
+                    {% if course.videos %}
+                    <div class="items-list">
+                        {% for video in course.videos|sort(attribute='order_number') %}
+                        <div class="item">
+                            <div class="item-header">
+                                <span class="item-order">{{ video.order_number }}</span>
+                                <span class="item-title">{{ video.title }}</span>
+                                {% if video.duration %}
+                                <span class="item-duration">{{ video.duration }}</span>
+                                {% endif %}
+                            </div>
+                            {% if video.description %}
+                            <p class="item-description">{{ video.description }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p class="empty-message">No videos added yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="course-management-panels tab-panel" data-panel="publish">
+                <div class="management-panel">
+                    <h2>Publish Readiness</h2>
+                    <ul class="checklist">
+                        <li class="{{ 'ok' if course.syllabuses|length > 0 else 'bad' }}">Syllabus topics: {{ course.syllabuses|length }}</li>
+                        <li class="{{ 'ok' if course.videos|length > 0 else 'bad' }}">Videos: {{ course.videos|length }}</li>
+                        <li class="{{ 'ok' if course.title and course.instructor else 'bad' }}">Core details filled</li>
+                    </ul>
+                    <p class="note">Publishing is blocked unless the course has at least one syllabus topic and one video.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="danger-zone" style="margin-top: 40px;">
+            <h3>Danger Zone</h3>
+            <p>Deleting this course removes all associated videos, syllabuses, and enrollments.</p>
+            <form method="POST" action="{{ url_for('admin.delete_course', course_id=course.id) }}" style="display:inline;" data-confirm-delete="true">
+                <button type="submit" class="btn btn-danger">Delete Course</button>
+            </form>
+        </div>
+    </section>
+</div>
+
+<style>
+.tab-panel {
+    display: none;
+}
+.tab-panel.active {
+    display: block;
+}
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+.current-course-image-wrap {
+    width: 100%;
+    max-width: 340px;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    background: #f7f7f7;
+}
+.current-course-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+.panel-actions {
+    display: flex;
+    gap: 8px;
+}
+.item-header {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.item-order {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+.item-title {
+    font-weight: 600;
+}
+.item-duration {
+    font-size: 0.84rem;
+    color: var(--secondary);
+}
+.item-description {
+    margin: 8px 0 0 40px;
+    color: var(--secondary);
+}
+.form-actions {
+    display: flex;
+    gap: 10px;
+}
+.checklist {
+    list-style: none;
+    padding: 0;
+}
+.checklist li {
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.checklist li.ok {
+    background: rgba(16, 185, 129, 0.15);
+    color: #047857;
+}
+.checklist li.bad {
+    background: rgba(239, 68, 68, 0.16);
+    color: #b91c1c;
+}
+.note {
+    color: var(--secondary);
+    margin-top: 8px;
+}
+.danger-zone {
+    border-left: 4px solid #ef4444;
+}
+@media (max-width: 900px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+document.querySelectorAll('.tab-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
+        btn.classList.add('active');
+        const panel = document.querySelector('.tab-panel[data-panel="' + btn.dataset.tab + '"]');
+        if (panel) panel.classList.add('active');
+    });
+});
+
+document.querySelectorAll('.course-form-validation').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+        const title = form.querySelector('input[name="title"]');
+        const instructor = form.querySelector('input[name="instructor"]');
+        const price = form.querySelector('input[name="price"]');
+        const status = form.querySelector('select[name="status"]');
+
+        if (title && title.value.trim().length < 3) {
+            e.preventDefault();
+            alert('Title must be at least 3 characters.');
+            return;
+        }
+        if (instructor && instructor.value.trim().length < 2) {
+            e.preventDefault();
+            alert('Instructor name must be at least 2 characters.');
+            return;
+        }
+        if (price && parseFloat(price.value) < 0) {
+            e.preventDefault();
+            alert('Price cannot be negative.');
+            return;
+        }
+        if (status && status.value === 'published') {
+            const syllabusCount = {{ course.syllabuses|length }};
+            const videoCount = {{ course.videos|length }};
+            if (syllabusCount <= 0 || videoCount <= 0) {
+                e.preventDefault();
+                alert('Cannot publish: add at least one syllabus topic and one video.');
+            }
+        }
+    });
+});
+</script>
+{% endblock %}
+

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Interview Prep - Mentra{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="section-title-row">
+        <h2>AI Interview Preparation</h2>
+        <a class="btn-primary-soft" href="{{ url_for('interview.interview_start') }}">Start Mock Interview</a>
+    </div>
+    <p class="muted">Practice technical, behavioral, and coding interview questions with AI-generated feedback.</p>
+</section>
+
+<section class="dashboard-section">
+    <h3>Supported Roles</h3>
+    <div class="pill-row">
+        {% for role in roles %}
+        <span class="badge-pill">{{ role }}</span>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="dashboard-section">
+    <h3>Recent Interview Sessions</h3>
+    <div class="session-grid">
+        {% for item in recent_sessions %}
+        <article class="session-card">
+            <p class="eyebrow">{{ item.difficulty }}</p>
+            <h4>{{ item.role }}</h4>
+            <p><strong>Status:</strong> {{ item.status|replace('_', ' ')|title }}</p>
+            <p><strong>Score:</strong> {{ item.score }}%</p>
+            <a href="{{ url_for('interview.interview_result', id=item.id) if item.status == 'completed' else url_for('interview.interview_session_view', id=item.id) }}">Open Session</a>
+        </article>
+        {% else %}
+        <p class="muted">No mock interviews yet. Start one to begin preparing.</p>
+        {% endfor %}
+    </div>
+</section>
+
+<style>
+.pill-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.session-grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.session-card { border: 1px solid #e2e8f0; border-radius: 14px; padding: 16px; background: #f8fafc; }
+.eyebrow { margin: 0 0 8px; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #0f766e; font-weight: 700; }
+</style>
+{% endblock %}
+

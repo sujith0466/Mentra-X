@@ -1,0 +1,544 @@
+.student-dashboard-v3,
+.admin-dashboard-v3 {
+    display: grid;
+    gap: 14px;
+    margin: 10px 0 18px;
+}
+
+/* Remove inherited admin section shell that creates a white frame around dashboard */
+.admin-main .admin-dashboard-v3 {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.dash-hero {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 20px;
+    background:
+        radial-gradient(620px 220px at -10% -30%, rgba(29, 78, 216, 0.34), transparent 70%),
+        radial-gradient(420px 200px at 110% -30%, rgba(15, 118, 110, 0.32), transparent 68%),
+        linear-gradient(150deg, #0f172a, #1d4ed8 48%, #0f766e);
+    color: #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: center;
+}
+
+.dash-hero h1 {
+    margin: 0 0 6px;
+    color: #f8fafc;
+    font-size: clamp(1.35rem, 2vw, 2rem);
+}
+
+.dash-hero p {
+    margin: 0;
+    color: #dbeafe;
+}
+
+.dash-eyebrow {
+    display: inline-block;
+    margin: 0 0 8px;
+    border: 1px solid rgba(191, 219, 254, 0.4);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 4px 10px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.dash-hero-meta {
+    margin-top: 10px;
+    color: #bfdbfe;
+    font-size: 0.88rem;
+}
+
+.dash-hero-actions {
+    margin-top: 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dash-hero-actions .btn-primary-soft {
+    background: linear-gradient(135deg, #ffffff, #dbeafe) !important;
+    color: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+.dash-hero-actions .btn-secondary-soft {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(191, 219, 254, 0.35) !important;
+}
+
+.dash-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1px solid rgba(191, 219, 254, 0.44);
+    background: linear-gradient(145deg, #ffffff, #bfdbfe);
+    color: #0f172a;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+.dash-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.dash-kpi-card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    background:
+        radial-gradient(320px 120px at -10% -40%, rgba(29, 78, 216, 0.09), transparent 72%),
+        var(--surface);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.dash-kpi-label {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 700;
+}
+
+.dash-kpi-value {
+    margin: 6px 0 0;
+    color: var(--text);
+    font-size: 1.45rem;
+    font-weight: 900;
+    line-height: 1.1;
+}
+
+.dash-kpi-sub {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+}
+
+.dash-grid-2 {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 12px;
+}
+
+.dash-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.dash-panel {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    background: var(--surface);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.07);
+}
+
+.dash-panel h2,
+.dash-panel h3 {
+    margin: 0;
+    color: var(--text);
+}
+
+.dash-panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.dash-panel-head a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.dash-progress-row {
+    display: grid;
+    grid-template-columns: minmax(120px, 2fr) minmax(120px, 5fr) 56px;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.dash-progress-row:last-child {
+    margin-bottom: 0;
+}
+
+.dash-progress-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--text);
+    font-size: 0.88rem;
+}
+
+.dash-progress-bar {
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+}
+
+.dash-progress-bar span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #1d4ed8, #0f766e);
+}
+
+.dash-progress-value {
+    text-align: right;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.dash-list {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 7px;
+}
+
+.dash-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.dash-chip {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 10px;
+    background: var(--surface-light);
+    color: var(--text);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.dash-card-link {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    padding: 12px;
+    text-decoration: none;
+    color: var(--text);
+    display: grid;
+    gap: 4px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dash-card-link strong {
+    font-size: 0.95rem;
+}
+
+.dash-card-link span {
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.dash-card-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(29, 78, 216, 0.4);
+    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.1);
+}
+
+.dash-table-wrap {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dash-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: var(--surface);
+}
+
+.dash-table th,
+.dash-table td {
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.dash-table th {
+    background: linear-gradient(180deg, rgba(29, 78, 216, 0.11), rgba(15, 118, 110, 0.08));
+    font-size: 0.76rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text);
+}
+
+.dash-table tbody tr:hover td {
+    background: rgba(29, 78, 216, 0.05);
+}
+
+.dash-empty {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* Admin dashboard: remove extra white frame around table wrapper */
+.admin-dashboard-v3 .dash-table-wrap {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+/* Student dashboard: compact recommended cards */
+.student-dashboard-v3 .recommended-mini-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 14px !important;
+}
+
+/* Recommended cards: same base visual style as /courses page */
+.student-dashboard-v3 .recommended-mini-grid .course-card {
+    background: var(--surface) !important;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12) !important;
+    border: 0 !important;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 0;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 14px 24px rgba(79, 70, 229, 0.2) !important;
+}
+
+/* Disable global decorative overlay that can hide card content on hover */
+.student-dashboard-v3 .recommended-mini-grid .course-card::after,
+.student-dashboard-v3 .recommended-mini-grid .course-card::before {
+    display: none !important;
+    content: none !important;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-image {
+    width: 100%;
+    height: 160px;
+    background: var(--surface-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    font-size: 3rem;
+    overflow: hidden;
+    position: relative;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-light);
+    color: var(--text);
+    font-size: 3rem;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-body {
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-domain {
+    display: inline-block;
+    width: fit-content;
+    background: rgba(99, 102, 241, 0.14);
+    color: #6366f1;
+    border: 1px solid rgba(99, 102, 241, 0.24);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-level {
+    display: inline-flex;
+    margin-bottom: 10px;
+    border-radius: 999px;
+    border: 1px solid #facc15;
+    background: #fef9c3;
+    color: #854d0e;
+    padding: 4px 10px;
+    font-size: 0.74rem;
+    font-weight: 700;
+    width: fit-content;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-title {
+    margin: 0 0 12px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text) !important;
+    line-height: 1.4;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-description {
+    margin: 0 0 15px;
+    color: var(--muted) !important;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--border);
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-instructor {
+    font-size: 0.85rem;
+    color: var(--muted) !important;
+    font-style: italic;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-price.free {
+    color: #10b981;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .course-footer {
+    padding: 15px 20px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+}
+
+.student-dashboard-v3 .recommended-mini-grid .btn-view-details {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: #ffffff;
+    border: 0;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    text-align: center;
+    display: block;
+}
+
+.student-dashboard-v3 .recommended-mini-grid .btn-view-details:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 1100px) {
+    .student-dashboard-v3 .recommended-mini-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 700px) {
+    .student-dashboard-v3 .recommended-mini-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+.dash-side-stack {
+    display: grid;
+    gap: 10px;
+}
+
+.dash-alert {
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: 12px;
+    padding: 12px;
+    background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(248, 113, 113, 0.08));
+}
+
+.dash-alert h3 {
+    margin: 0 0 8px;
+}
+
+.dash-alert ul {
+    margin: 0;
+    padding-left: 18px;
+    display: grid;
+    gap: 6px;
+}
+
+@media (max-width: 1240px) {
+    .dash-kpi-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 980px) {
+    .dash-hero,
+    .dash-grid-2,
+    .dash-grid-3 {
+        grid-template-columns: 1fr;
+        display: grid;
+    }
+
+    .dash-hero {
+        align-items: start;
+    }
+
+    .dash-kpi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    .dash-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-progress-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+
+    .dash-progress-value {
+        text-align: left;
+    }
+}

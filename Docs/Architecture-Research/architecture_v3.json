@@ -1,0 +1,956 @@
+{
+  "version": "1.0",
+  "diagramId": "exported",
+  "title": "Architecture Diagram",
+  "nodes": [
+    {
+      "id": "study-dashboard",
+      "type": "frontend",
+      "label": "Study Dashboard",
+      "generic_name": "study dashboard",
+      "ports": [
+        {
+          "id": "out-http",
+          "label": "HTTPS",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "User interface for tracking study progress and analytics.",
+        "tech": [
+          "React",
+          "Tailwind CSS"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "cognitive-chat-ui",
+      "type": "frontend",
+      "label": "Cognitive Chat UI",
+      "generic_name": "chat interface",
+      "ports": [
+        {
+          "id": "out-ws",
+          "label": "WebSocket",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Main interaction interface for the cognitive AI tutor.",
+        "tech": [
+          "React",
+          "WebSockets"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "lms-video-player",
+      "type": "frontend",
+      "label": "LMS Video Player",
+      "generic_name": "video player",
+      "ports": [
+        {
+          "id": "out-http",
+          "label": "HTTPS",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Video player for LMS content with tracking capabilities.",
+        "tech": [
+          "React",
+          "Video.js"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "flask-gateway",
+      "type": "api-gateway",
+      "label": "🔐 Flask API Gateway",
+      "generic_name": "api gateway",
+      "ports": [
+        {
+          "id": "in-user",
+          "label": "User In",
+          "side": "top"
+        },
+        {
+          "id": "out-orch",
+          "label": "Orch Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "API Gateway with JWT Auth, Rate Limiting, and Session Management.",
+        "tech": [
+          "Flask",
+          "Python",
+          "PyJWT"
+        ]
+      }
+    },
+    {
+      "id": "memory-agent",
+      "type": "service",
+      "label": "Memory Agent",
+      "generic_name": "memory agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "out-tutor",
+          "label": "Tutor Out",
+          "side": "right"
+        },
+        {
+          "id": "out-qdrant",
+          "label": "Qdrant Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Living Cognitive Model: Mastery, Learning Style, Behavior, Retention, Weakness Patterns. Parallel Qdrant fetch: learning_dna + past_doubts + explanation_history.",
+        "tech": [
+          "Mastra.AI",
+          "Python",
+          "Learning DNA Agent"
+        ]
+      }
+    },
+    {
+      "id": "tutor-agent",
+      "type": "service",
+      "label": "Adaptive Tutor Agent",
+      "generic_name": "tutor agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "in-mem",
+          "label": "Mem In",
+          "side": "left"
+        },
+        {
+          "id": "in-regen",
+          "label": "Regen In",
+          "side": "bottom"
+        },
+        {
+          "id": "out-safety",
+          "label": "Safety Out",
+          "side": "bottom"
+        },
+        {
+          "id": "out-engine",
+          "label": "Engine Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Core adaptive tutor. Selects Level 1–5 teaching based on Digital Twin state. Learning DNA Badge: Adaptive Pedagogy.",
+        "tech": [
+          "Mastra.AI",
+          "Python",
+          "Tutor Agent"
+        ]
+      }
+    },
+    {
+      "id": "verification-agent",
+      "type": "service",
+      "label": "Verification Agent",
+      "generic_name": "verification agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "in-safety",
+          "label": "Safety In",
+          "side": "left"
+        },
+        {
+          "id": "out-student",
+          "label": "Student Out",
+          "side": "right"
+        },
+        {
+          "id": "out-qdrant",
+          "label": "Qdrant Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Generates micro-quiz post-explanation and mutates twin state.",
+        "tech": [
+          "Mastra.AI",
+          "Python"
+        ]
+      }
+    },
+    {
+      "id": "assessment-agent",
+      "type": "service",
+      "label": "Assessment Agent",
+      "generic_name": "assessment agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "out-qdrant",
+          "label": "Qdrant Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Adaptive diagnostic calibrated to JEE/NEET/UPSC difficulty.",
+        "tech": [
+          "Mastra.AI",
+          "Python"
+        ]
+      }
+    },
+    {
+      "id": "weakness-intel-agent",
+      "type": "service",
+      "label": "Weakness Intel Agent [CRON]",
+      "generic_name": "weakness agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "out-qdrant",
+          "label": "Qdrant Out",
+          "side": "bottom"
+        },
+        {
+          "id": "out-insight",
+          "label": "Insight Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Semantic clustering of failure patterns firing every 5 sessions.",
+        "tech": [
+          "Mastra.AI",
+          "Python",
+          "Cron"
+        ]
+      }
+    },
+    {
+      "id": "insight-agent",
+      "type": "service",
+      "label": "Insight Agent [WEEKLY]",
+      "generic_name": "insight agent",
+      "ports": [
+        {
+          "id": "in-orch",
+          "label": "Orch In",
+          "side": "top"
+        },
+        {
+          "id": "in-weakness",
+          "label": "Weakness In",
+          "side": "left"
+        },
+        {
+          "id": "out-mysql",
+          "label": "MySQL Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Synthesizes progress reports and revision curriculum.",
+        "tech": [
+          "Mastra.AI",
+          "Python"
+        ]
+      }
+    },
+    {
+      "id": "qdrant-memory-engine",
+      "type": "database",
+      "label": "🔵 QDRANT LEARNING DNA MEMORY ENGINE",
+      "generic_name": "vector database",
+      "ports": [
+        {
+          "id": "in",
+          "label": "In",
+          "side": "left"
+        },
+        {
+          "id": "out",
+          "label": "Out",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "Collections: learning_dna, past_doubts, explanation_history, session_logs, weak_concepts. Features: Stateful Memory RAG, 1536-dim Embeddings, Concept Decay Tracking (mastery_score × 0.85 every 7 days). HNSW Index, Cosine Similarity.",
+        "tech": [
+          "Qdrant",
+          "Vector DB",
+          "HNSW",
+          "Cosine Similarity"
+        ]
+      }
+    },
+    {
+      "id": "enkrypt-safety-layer",
+      "type": "service",
+      "label": "Enkrypt AI Safety Layer",
+      "generic_name": "safety service",
+      "ports": [
+        {
+          "id": "in",
+          "label": "In",
+          "side": "top"
+        },
+        {
+          "id": "out",
+          "label": "Out",
+          "side": "bottom"
+        },
+        {
+          "id": "loop",
+          "label": "Regen Loop",
+          "side": "left"
+        }
+      ],
+      "data": {
+        "description": "Validators: Hallucination, Math, Science, Pedagogy. Confidence Scorer: conf = 0.35×math + 0.30×science + 0.20×hallucination + 0.15×pedagogy. Thresholds: >0.90 Approve, 0.75-0.89 HITL Review, <0.75 Regenerate. Double Failure: Textbook Fallback.",
+        "tech": [
+          "Enkrypt AI",
+          "Safety Middleware",
+          "Python"
+        ]
+      }
+    },
+    {
+      "id": "mysql-foundation-db",
+      "type": "database",
+      "label": "MySQL Foundation DB",
+      "generic_name": "relational database",
+      "ports": [
+        {
+          "id": "in-insight-push",
+          "label": "Push Plan",
+          "side": "top"
+        },
+        {
+          "id": "out-ground-truth",
+          "label": "Ground Truth",
+          "side": "top"
+        }
+      ],
+      "data": {
+        "description": "Relational database for deterministic user data, courses, and XP.",
+        "tech": [
+          "MySQL"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "student-output-node",
+      "type": "client",
+      "label": "⑥ Student Response",
+      "generic_name": "student client",
+      "ports": [
+        {
+          "id": "in-final-resp",
+          "label": "Final Response",
+          "side": "left"
+        }
+      ],
+      "data": {
+        "description": "The end user receiving the personalized learning experience.",
+        "tech": [
+          "Web Browser"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "mastra-dag-orchestrator",
+      "type": "service",
+      "label": "Mastra DAG Orchestrator",
+      "generic_name": "orchestrator",
+      "ports": [
+        {
+          "id": "in-gw",
+          "label": "GW In",
+          "side": "top"
+        },
+        {
+          "id": "in-db",
+          "label": "DB In",
+          "side": "bottom"
+        },
+        {
+          "id": "out-agents",
+          "label": "Agents Out",
+          "side": "bottom"
+        },
+        {
+          "id": "out-db",
+          "label": "out-db",
+          "side": "right"
+        }
+      ],
+      "data": {
+        "description": "MENTRA X | AI-Powered Student Digital Twin | Learning DNA + Cognitive Swarm + Stateful Memory RAG. Target Users: [JEE] [NEET] [UPSC] [CAT] [Boards]. Graph-based Multi-Agent Coordinator.",
+        "tech": [
+          "Mastra.AI",
+          "Python",
+          "DAG Orchestrator"
+        ]
+      }
+    },
+    {
+      "id": "hitl-expert-review",
+      "type": "service",
+      "label": "👨‍🏫 HITL Expert Review",
+      "generic_name": "human review",
+      "ports": [
+        {
+          "id": "in-safety",
+          "label": "Safety In",
+          "side": "left"
+        },
+        {
+          "id": "out-corpus",
+          "label": "Corpus Out",
+          "side": "bottom"
+        }
+      ],
+      "data": {
+        "description": "Triggered when Enkrypt score = 0.75–0.89 (warning).",
+        "tech": [
+          "React",
+          "Python"
+        ],
+        "isolated": false
+      }
+    },
+    {
+      "id": "textbook-fallback",
+      "type": "service",
+      "label": "📖 Verified Textbook Fallback",
+      "generic_name": "fallback service",
+      "ports": [
+        {
+          "id": "in-safety",
+          "label": "Safety In",
+          "side": "top"
+        }
+      ],
+      "data": {
+        "description": "Verified textbook content used when AI confidence is critically low.",
+        "tech": [
+          "NCERT Corpus"
+        ],
+        "isolated": true
+      }
+    },
+    {
+      "id": "student-digital-twin",
+      "type": "database",
+      "label": "Student Digital Twin",
+      "generic_name": "digital twin state",
+      "ports": [
+        {
+          "id": "in",
+          "label": "Update/Query",
+          "side": "left"
+        }
+      ],
+      "data": {
+        "description": "Stores learning profile, knowledge state, behavior, and progress history.",
+        "tech": [
+          "JSON",
+          "State Management"
+        ],
+        "isolated": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "enkrypt-to-tutor-regen-v2",
+      "source": {
+        "nodeId": "enkrypt-safety-layer",
+        "portId": "left"
+      },
+      "target": {
+        "nodeId": "tutor-agent",
+        "portId": "bottom"
+      },
+      "type": "async-event",
+      "label": "Regenerate Response"
+    },
+    {
+      "id": "16a149ac-ed0d-4574-8188-b77da510db71",
+      "source": {
+        "nodeId": "flask-gateway",
+        "portId": "in-client"
+      },
+      "target": {
+        "nodeId": "assessment-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "c801bdec-703d-4e10-9109-7e2541f52489",
+      "source": {
+        "nodeId": "flask-gateway",
+        "portId": "in-client"
+      },
+      "target": {
+        "nodeId": "weakness-intel-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orch-to-verify",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "verification-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": "⑤ Verify"
+    },
+    {
+      "id": "orch-to-weakness",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out-agents"
+      },
+      "target": {
+        "nodeId": "weakness-intel-agent",
+        "portId": "in-orch"
+      },
+      "type": "internal-api",
+      "label": "CRON trigger"
+    },
+    {
+      "id": "orch-to-insight",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out-agents"
+      },
+      "target": {
+        "nodeId": "insight-agent",
+        "portId": "in-orch"
+      },
+      "type": "internal-api",
+      "label": "Report"
+    },
+    {
+      "id": "enkrypt-to-hitl-v2",
+      "source": {
+        "nodeId": "enkrypt-safety-layer",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "hitl-expert-review",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": "HITL Review (0.75-0.89)"
+    },
+    {
+      "id": "enkrypt-to-fallback-v2",
+      "source": {
+        "nodeId": "enkrypt-safety-layer",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "textbook-fallback",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": "Double Failure Fallback"
+    },
+    {
+      "id": "assessment-to-qdrant-v2",
+      "source": {
+        "nodeId": "assessment-agent",
+        "portId": "bottom"
+      },
+      "target": {
+        "nodeId": "qdrant-memory-engine",
+        "portId": "top"
+      },
+      "type": "database",
+      "label": "initialize_twin"
+    },
+    {
+      "id": "verify-to-qdrant-dna",
+      "source": {
+        "nodeId": "verification-agent",
+        "portId": "out-qdrant"
+      },
+      "target": {
+        "nodeId": "qdrant-memory-engine",
+        "portId": "in-agents"
+      },
+      "type": "database",
+      "label": "mutate mastery"
+    },
+    {
+      "id": "weakness-to-insight",
+      "source": {
+        "nodeId": "weakness-intel-agent",
+        "portId": "out-insight"
+      },
+      "target": {
+        "nodeId": "insight-agent",
+        "portId": "in-weakness"
+      },
+      "type": "internal-api",
+      "label": "Weakness Clusters"
+    },
+    {
+      "id": "hitl-to-qdrant-corpus",
+      "source": {
+        "nodeId": "hitl-expert-review",
+        "portId": "out-corpus"
+      },
+      "target": {
+        "nodeId": "qdrant-memory-engine",
+        "portId": "in-hitl"
+      },
+      "type": "database",
+      "label": "Expert-Verified Content"
+    },
+    {
+      "id": "orch-to-mem",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "memory-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": "② Memory Retrieval"
+    },
+    {
+      "id": "orch-to-tutor",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "tutor-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": "③ Tutor Reasoning"
+    },
+    {
+      "id": "mem-to-qdrant",
+      "source": {
+        "nodeId": "memory-agent",
+        "portId": "db"
+      },
+      "target": {
+        "nodeId": "qdrant-memory-engine",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": "Parallel Retrieval (DNA, Doubts, History)"
+    },
+    {
+      "id": "weakness-to-qdrant-v2",
+      "source": {
+        "nodeId": "weakness-intel-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "qdrant-memory-engine",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": "Mutate Twin (Green Flow)"
+    },
+    {
+      "id": "insight-to-mysql",
+      "source": {
+        "nodeId": "insight-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "mysql-foundation-db",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": "Push Revision Plan"
+    },
+    {
+      "id": "mysql-to-mastra-v2",
+      "source": {
+        "nodeId": "mysql-foundation-db",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": "Ground Truth"
+    },
+    {
+      "id": "dashboard-to-gw",
+      "source": {
+        "nodeId": "study-dashboard",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "flask-gateway",
+        "portId": "in"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "chat-to-gw",
+      "source": {
+        "nodeId": "cognitive-chat-ui",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "flask-gateway",
+        "portId": "in"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "video-to-gw",
+      "source": {
+        "nodeId": "lms-video-player",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "flask-gateway",
+        "portId": "in"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "gw-to-orch",
+      "source": {
+        "nodeId": "flask-gateway",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "orch-to-assess",
+      "source": {
+        "nodeId": "mastra-dag-orchestrator",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "assessment-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "assess-to-mem",
+      "source": {
+        "nodeId": "assessment-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "memory-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "mem-to-tutor",
+      "source": {
+        "nodeId": "memory-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "tutor-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "tutor-to-enkrypt",
+      "source": {
+        "nodeId": "tutor-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "enkrypt-safety-layer",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "enkrypt-to-verify",
+      "source": {
+        "nodeId": "enkrypt-safety-layer",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "verification-agent",
+        "portId": "in"
+      },
+      "type": "internal-api",
+      "label": null
+    },
+    {
+      "id": "verify-to-output",
+      "source": {
+        "nodeId": "verification-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "student-output-node",
+        "portId": "in"
+      },
+      "type": "http",
+      "label": null
+    },
+    {
+      "id": "mem-to-twin",
+      "source": {
+        "nodeId": "memory-agent",
+        "portId": "db"
+      },
+      "target": {
+        "nodeId": "student-digital-twin",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": null
+    },
+    {
+      "id": "weakness-to-twin",
+      "source": {
+        "nodeId": "weakness-intel-agent",
+        "portId": "out"
+      },
+      "target": {
+        "nodeId": "student-digital-twin",
+        "portId": "in"
+      },
+      "type": "database",
+      "label": null
+    }
+  ],
+  "groups": [
+    {
+      "children": [
+        "student-output-node"
+      ],
+      "id": "output-group",
+      "label": "STUDENT OUTPUT"
+    },
+    {
+      "children": [
+        "study-dashboard",
+        "cognitive-chat-ui",
+        "lms-video-player"
+      ],
+      "id": "user-layer",
+      "label": "User Layer"
+    },
+    {
+      "children": [
+        "flask-gateway"
+      ],
+      "id": "api-layer",
+      "label": "API Layer"
+    },
+    {
+      "children": [
+        "mastra-dag-orchestrator",
+        "assessment-agent",
+        "memory-agent",
+        "tutor-agent",
+        "verification-agent",
+        "weakness-intel-agent",
+        "insight-agent"
+      ],
+      "id": "cognitive-swarm",
+      "label": "Mentra Cognitive Swarm"
+    },
+    {
+      "children": [
+        "student-digital-twin"
+      ],
+      "id": "digital-twin-layer",
+      "label": "Digital Twin Layer"
+    },
+    {
+      "children": [
+        "qdrant-memory-engine"
+      ],
+      "id": "memory-layer",
+      "label": "Memory Layer"
+    },
+    {
+      "children": [
+        "enkrypt-safety-layer",
+        "hitl-expert-review",
+        "textbook-fallback"
+      ],
+      "id": "safety-layer",
+      "label": "Safety Layer"
+    },
+    {
+      "children": [
+        "mysql-foundation-db"
+      ],
+      "id": "foundation-layer",
+      "label": "Foundation Layer"
+    }
+  ],
+  "metadata": {}
+}

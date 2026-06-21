@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+
+{% block title %}Referral Program - Mentra{% endblock %}
+
+{% block content %}
+<section class="referral-shell">
+    <header class="referral-hero">
+        <div>
+            <p class="eyebrow">Student Growth</p>
+            <h1>Invite Friends, Earn Rewards</h1>
+            <p>Share your invite link. When your friend joins with your code, both of you receive instant bonus credit.</p>
+        </div>
+        <div class="referral-hero-actions">
+            <button type="button" class="btn btn-secondary" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
+            <button type="button" class="btn btn-secondary" onclick="shareOnTwitter()">Share on X</button>
+        </div>
+    </header>
+
+    <section class="referral-top-grid">
+        <article class="referral-card referral-code-card">
+            <h2>Your Referral Code</h2>
+            <div class="code-row">
+                <code class="referral-code" id="referralCode">{{ referral_code }}</code>
+                <button type="button" class="btn btn-primary" onclick="copyCode()">Copy Code</button>
+            </div>
+            <h3>Referral Link</h3>
+            <div class="link-row">
+                <input type="text" value="{{ referral_link }}" id="referralLink" readonly class="link-input">
+                <button type="button" class="btn btn-primary" onclick="copyLink()">Copy Link</button>
+            </div>
+            <p id="copyStatus" class="copy-status muted">Tip: Share your link in class groups and communities.</p>
+        </article>
+
+        <aside class="referral-stats-grid">
+            <article class="referral-stat">
+                <p class="label">Friends Referred</p>
+                <p class="value">{{ referral_count }}</p>
+            </article>
+            <article class="referral-stat">
+                <p class="label">Total Earnings</p>
+                <p class="value">Rs.{{ "%.2f"|format(total_earnings) }}</p>
+            </article>
+            <article class="referral-stat">
+                <p class="label">Wallet Balance</p>
+                <p class="value">Rs.{{ "%.2f"|format(wallet_balance) }}</p>
+            </article>
+        </aside>
+    </section>
+
+    <section class="referral-card steps-card">
+        <h2>How it works</h2>
+        <div class="steps-grid">
+            <article class="step-card">
+                <span class="step-no">01</span>
+                <p>Share your referral link or code.</p>
+            </article>
+            <article class="step-card">
+                <span class="step-no">02</span>
+                <p>Your friend registers using your invite.</p>
+            </article>
+            <article class="step-card">
+                <span class="step-no">03</span>
+                <p>Both accounts receive Rs.100 bonus instantly.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="referral-card history-card">
+        <div class="section-head">
+            <h2>Referral History</h2>
+            <span class="muted">{{ referral_count }} successful referral{{ '' if referral_count == 1 else 's' }}</span>
+        </div>
+
+        {% if referred_users %}
+        <div class="history-table-wrap">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Friend</th>
+                        <th>Email</th>
+                        <th>Date</th>
+                        <th>Reward</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for referred_user in referred_users %}
+                    <tr>
+                        <td>{{ referred_user.name }}</td>
+                        <td>{{ referred_user.email or 'N/A' }}</td>
+                        <td>{{ referred_user.date.strftime('%d %b %Y') if referred_user.date else 'N/A' }}</td>
+                        <td><span class="reward-chip">Rs.{{ "%.2f"|format(referred_user.reward) }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-referrals">
+            <h3>No referrals yet</h3>
+            <p class="muted">Start sharing your link to unlock your first reward milestone.</p>
+            <div class="empty-actions">
+                <button type="button" class="btn btn-primary" onclick="shareOnWhatsApp()">Share on WhatsApp</button>
+                <button type="button" class="btn btn-secondary" onclick="shareOnTwitter()">Share on X</button>
+            </div>
+        </div>
+        {% endif %}
+    </section>
+</section>
+
+<script>
+function showCopyStatus(message) {
+    const status = document.getElementById('copyStatus');
+    if (!status) return;
+    status.textContent = message;
+}
+
+function fallbackCopyText(text, successMessage) {
+    const input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+    showCopyStatus(successMessage);
+}
+
+function copyCode() {
+    const code = document.getElementById('referralCode').innerText.trim();
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(() => showCopyStatus('Referral code copied.'));
+    } else {
+        fallbackCopyText(code, 'Referral code copied.');
+    }
+}
+
+function copyLink() {
+    const link = document.getElementById('referralLink').value;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(link).then(() => showCopyStatus('Referral link copied.'));
+    } else {
+        fallbackCopyText(link, 'Referral link copied.');
+    }
+}
+
+function shareOnWhatsApp() {
+    const link = document.getElementById('referralLink').value;
+    const message = `Join me on Mentra and get Rs.100 bonus. Use code {{ referral_code }} or click ${link}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+}
+
+function shareOnTwitter() {
+    const link = document.getElementById('referralLink').value;
+    const message = `Learning on Mentra is awesome. Join with my code {{ referral_code }} ${link}`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}`, '_blank');
+}
+</script>
+
+<style>
+.referral-shell {
+    display: grid;
+    gap: 14px;
+    margin: 14px 0 24px;
+}
+
+.referral-hero,
+.referral-card {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    background:
+        radial-gradient(520px 150px at -12% -20%, rgba(29, 78, 216, 0.11), transparent 72%),
+        radial-gradient(420px 150px at 110% -20%, rgba(15, 118, 110, 0.1), transparent 70%),
+        var(--surface);
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+}
+
+.referral-hero {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+}
+
+.referral-hero h1 {
+    margin: 0 0 6px;
+    color: var(--text);
+}
+
+.referral-hero p {
+    margin: 0;
+    color: var(--muted);
+    max-width: 760px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #0f766e;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.referral-hero-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.referral-top-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 12px;
+}
+
+.referral-code-card {
+    padding: 16px;
+}
+
+.referral-code-card h2,
+.referral-code-card h3 {
+    margin: 0 0 8px;
+    color: var(--text);
+}
+
+.code-row,
+.link-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.referral-code {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px dashed var(--border);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--text);
+    background: var(--surface);
+}
+
+.link-input {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    background: var(--surface);
+    color: var(--text);
+}
+
+.copy-status {
+    margin: 0;
+    font-size: 0.86rem;
+}
+
+.referral-stats-grid {
+    display: grid;
+    gap: 10px;
+}
+
+.referral-stat {
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 14px;
+}
+
+.referral-stat .label {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.referral-stat .value {
+    margin: 6px 0 0;
+    color: var(--text);
+    font-size: 1.5rem;
+    font-weight: 900;
+}
+
+.steps-card,
+.history-card {
+    padding: 16px;
+}
+
+.steps-card h2,
+.history-card h2 {
+    margin: 0 0 10px;
+    color: var(--text);
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.step-card {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    padding: 12px;
+}
+
+.step-card p {
+    margin: 8px 0 0;
+    color: var(--text);
+}
+
+.step-no {
+    display: inline-flex;
+    padding: 4px 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(29, 78, 216, 0.25);
+    background: rgba(29, 78, 216, 0.12);
+    color: #1d4ed8;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.history-table-wrap {
+    overflow-x: auto;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+    border-bottom: 1px solid var(--border);
+    padding: 11px 10px;
+    text-align: left;
+    color: var(--text);
+}
+
+.history-table th {
+    font-size: 0.78rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--muted);
+}
+
+.reward-chip {
+    display: inline-flex;
+    border-radius: 999px;
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    background: rgba(16, 185, 129, 0.14);
+    color: #10b981;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 4px 10px;
+}
+
+.empty-referrals {
+    border: 1px dashed var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    background: var(--surface);
+}
+
+.empty-referrals h3 {
+    margin: 0 0 6px;
+}
+
+.empty-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+@media (max-width: 980px) {
+    .referral-hero,
+    .referral-top-grid,
+    .steps-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+{% endblock %}
