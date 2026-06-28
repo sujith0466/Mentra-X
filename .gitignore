@@ -43,7 +43,4 @@ uploads/
 *.old.pdf
 node_modules/
 
-
-Docs/Roadmap/
-
 architecture.json
