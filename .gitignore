@@ -44,3 +44,10 @@ uploads/
 node_modules/
 
 architecture.json
+
+Docs/ADR/
+Docs/Demo/
+Docs/Engineering/
+Docs/Errors/
+Docs/Playbooks/
+Docs/Roadmap/
