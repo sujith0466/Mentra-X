@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Twin Profile - Mentra{% endblock %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboards-startup-v3.css') }}">
+<style>
+    .json-key { color: #881391; font-weight: bold; }
+    .json-value { color: #1a1aa6; }
+    .json-string { color: #c41a16; }
+    .json-boolean { color: #1c00ce; }
+    .json-null { color: #808080; font-style: italic; }
+    .twin-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+        font-family: monospace;
+        white-space: pre-wrap;
+        margin-top: 15px;
+        overflow-x: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="student-dashboard-v3">
+    <header class="dash-hero">
+        <div>
+            <span class="dash-eyebrow">Digital Twin</span>
+            <h1>Student Profile Twin</h1>
+            <p>Your unified learning state powered by the Digital Twin Engine.</p>
+            <div class="dash-hero-actions">
+                <a href="{{ url_for('student.dashboard') }}" class="btn btn-secondary-soft">Back to Dashboard</a>
+            </div>
+        </div>
+        <div class="dash-avatar" aria-hidden="true">{{ (user.name[:1] or 'S')|upper }}</div>
+    </header>
+
+    <section class="dash-panel">
+        <div class="dash-panel-head">
+            <h2>Raw Twin Data Profile</h2>
+        </div>
+        <p class="muted">This read-only view displays the live state of your Digital Twin.</p>
+        
+        <div id="twin-profile-content" class="twin-box">
+            Loading Twin Profile...
+        </div>
+    </section>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/v1/twin/profile')
+        .then(res => {
+            if(!res.ok) throw new Error("Twin Not Found or Error");
+            return res.json();
+        })
+        .then(data => {
+            const container = document.getElementById("twin-profile-content");
+            // Simple syntax highlighting for JSON
+            let jsonString = JSON.stringify(data, null, 4);
+            jsonString = jsonString.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            container.innerHTML = jsonString.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'json-value';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'json-boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'json-null';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        })
+        .catch(err => {
+            console.error("Profile fetch error:", err);
+            document.getElementById("twin-profile-content").textContent = "Error: " + err.message;
+            document.getElementById("twin-profile-content").style.color = "#dc3545";
+        });
+});
+</script>
+{% endblock %}

@@ -131,6 +131,72 @@
         </article>
     </section>
 
+    <section class="dash-grid-2">
+        <!-- Milestone 5: Digital Twin Widget -->
+        <article class="dash-panel" id="twin-widget">
+            <div class="dash-panel-head">
+                <h2>Digital Twin Health</h2>
+                <a href="{{ url_for('student.twin_profile') }}">View Profile</a>
+            </div>
+            
+            <div id="twin-status-container" style="margin-bottom: 15px;">
+                <span class="dash-kpi-sub">Status: <span id="twin-status-badge" style="font-weight: 500; color: #888;">Checking...</span></span>
+                <span class="dash-kpi-sub" style="float: right;">Version: <span id="twin-version">...</span></span>
+            </div>
+            
+            <div id="twin-health-container">
+                <div class="dash-progress-row">
+                    <span class="dash-progress-label">Health Score</span>
+                    <div class="dash-progress-bar"><span id="twin-health-bar" style="width: 0%; background: #00d2ff; transition: width 0.5s ease;"></span></div>
+                    <span class="dash-progress-value" id="twin-health-value">0%</span>
+                </div>
+            </div>
+            
+            <div style="margin-top: 15px;" class="dash-grid-2">
+                <div>
+                    <h3 style="margin: 0 0 6px;">Learning DNA</h3>
+                    <p class="dash-kpi-sub" id="twin-dna-summary">...</p>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 6px;">Weak Concepts</h3>
+                    <p class="dash-kpi-sub"><span id="twin-weak-count">0</span> concepts to review</p>
+                </div>
+            </div>
+            
+            <div id="twin-error-msg" class="dash-empty" style="display: none; margin-top: 15px; color: #dc3545;">Failed to load Twin Data.</div>
+        </article>
+
+        <!-- AI Resume Insights Widget -->
+        <article class="dash-panel" id="resume-insights-widget">
+            <div class="dash-panel-head">
+                <h2>Resume Insights</h2>
+                <a href="{{ url_for('career_ai.resume_analyzer') }}">Open Analyzer</a>
+            </div>
+            {% if resume_insights %}
+            <div style="margin-top: 15px; display: grid; gap: 15px;">
+                <div>
+                    <h3 style="margin: 0 0 6px; font-size: 0.95rem; color: var(--text-dark);">Detected Skills</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        {% for skill in resume_insights.detected_skills %}
+                        <span style="background: rgba(15, 118, 110, 0.1); color: #0f766e; border: 1px solid rgba(15, 118, 110, 0.2); border-radius: 999px; padding: 2px 8px; font-size: 0.8rem; font-weight: 600;">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div>
+                    <h3 style="margin: 0 0 6px; font-size: 0.95rem; color: var(--text-dark);">Recommended Next Skills</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                        {% for skill in resume_insights.recommended_skills %}
+                        <span style="background: rgba(240, 133, 37, 0.1); color: #f08525; border: 1px solid rgba(240, 133, 37, 0.2); border-radius: 999px; padding: 2px 8px; font-size: 0.8rem; font-weight: 600;">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="dash-empty">No resume uploaded yet.</div>
+            {% endif %}
+        </article>
+    </section>
+
     <section class="dash-panel">
         <div class="dash-panel-head">
             <h2>Recommended Courses</h2>
@@ -248,5 +314,37 @@ function mentraSubmitAgentQuestion() {
         output.textContent = 'Assistant is temporarily unavailable.';
     });
 }
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('/api/v1/twin/dashboard')
+        .then(res => {
+            if(!res.ok) throw new Error("Not initialized");
+            return res.json();
+        })
+        .then(data => {
+            const badge = document.getElementById("twin-status-badge");
+            badge.textContent = data.twin_status;
+            if(data.twin_status === 'ACTIVE') {
+                badge.style.color = '#28a745';
+            } else if(data.twin_status === 'INITIALIZING' || data.twin_status === 'SYNCING') {
+                badge.style.color = '#ffc107';
+            } else {
+                badge.style.color = '#dc3545';
+            }
+            
+            document.getElementById("twin-version").textContent = "v" + data.twin_version;
+            document.getElementById("twin-health-bar").style.width = data.twin_health + "%";
+            document.getElementById("twin-health-value").textContent = data.twin_health.toFixed(1) + "%";
+            document.getElementById("twin-dna-summary").textContent = data.learning_dna_summary;
+            document.getElementById("twin-weak-count").textContent = data.weak_concept_count;
+        })
+        .catch(err => {
+            console.error("Twin fetch error:", err);
+            document.getElementById("twin-status-badge").textContent = "ERROR";
+            document.getElementById("twin-status-badge").style.color = '#dc3545';
+            document.getElementById("twin-error-msg").style.display = "block";
+        });
+});
 </script>
 {% endblock %}

@@ -1,0 +1,546 @@
+{% extends "base.html" %}
+
+{% block title %}Mentra - Adaptive Assessment{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        --ass-bg: #0f172a;
+        --ass-card: #1e293b;
+        --ass-primary: #3b82f6;
+        --ass-primary-hover: #2563eb;
+        --ass-success: #10b981;
+        --ass-text: #f8fafc;
+        --ass-muted: #94a3b8;
+        --ass-border: #334155;
+    }
+
+    body {
+        background-color: var(--ass-bg);
+        color: var(--ass-text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .assessment-container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .glass-card {
+        background: rgba(30, 41, 59, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 16px;
+        padding: 40px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .hidden {
+        display: none !important;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.5s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn-primary {
+        background-color: var(--ass-primary);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        background-color: var(--ass-primary-hover);
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .option-btn {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--ass-border);
+        color: var(--ass-text);
+        padding: 16px 20px;
+        border-radius: 12px;
+        font-size: 1rem;
+        text-align: left;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: block;
+        width: 100%;
+        margin-bottom: 12px;
+    }
+
+    .option-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: var(--ass-muted);
+    }
+
+    .option-btn.selected {
+        background-color: rgba(59, 130, 246, 0.1);
+        border-color: var(--ass-primary);
+        box-shadow: 0 0 0 1px var(--ass-primary);
+    }
+
+    .header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        border-bottom: 1px solid var(--ass-border);
+        padding-bottom: 20px;
+    }
+
+    .progress-wrapper {
+        flex: 1;
+        margin-right: 20px;
+    }
+
+    .progress-bar {
+        height: 6px;
+        background: var(--ass-border);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: 8px;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: var(--ass-primary);
+        width: 0%;
+        transition: width 0.5s ease;
+    }
+
+    .difficulty-badge {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--ass-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    
+    .difficulty-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background-color: var(--ass-muted);
+    }
+
+    .diff-1 { background-color: #10b981; } /* Easy */
+    .diff-2 { background-color: #3b82f6; } /* Medium */
+    .diff-3 { background-color: #f59e0b; } /* Hard */
+    .diff-4 { background-color: #ef4444; } /* Expert */
+
+    .question-text {
+        font-size: 1.25rem;
+        line-height: 1.6;
+        margin-bottom: 24px;
+        font-weight: 500;
+    }
+
+    .actions-bar {
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .loader {
+        border: 3px solid rgba(255,255,255,0.1);
+        border-top: 3px solid var(--ass-primary);
+        border-radius: 50%;
+        width: 24px;
+        height: 24px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .result-metric {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .result-metric h3 {
+        margin: 0 0 10px 0;
+        color: var(--ass-muted);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .result-metric .value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--ass-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="assessment-container">
+    
+    <!-- Landing State -->
+    <div id="state-landing" class="glass-card fade-in">
+        <h1 style="margin-top: 0;">Mentra Adaptive Assessment</h1>
+        <p style="color: var(--ass-muted); line-height: 1.6; margin-bottom: 30px;">
+            This intelligent assessment adapts to your skill level in real-time. 
+            The difficulty will adjust based on your answers to rapidly map your Learning DNA.
+        </p>
+        
+        <div style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--ass-primary); padding: 16px; margin-bottom: 30px; border-radius: 0 8px 8px 0;">
+            <strong>Pro Tip:</strong> Take your time. It's better to get a hard question right slowly than rush and get an easy one wrong.
+        </div>
+        
+        <div id="resume-banner" class="hidden" style="margin-bottom: 20px; color: var(--ass-success); display: flex; align-items: center; gap: 8px;">
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            An active session was found. You can resume where you left off.
+        </div>
+
+        <button id="btn-start" class="btn-primary" onclick="startAssessment()">
+            <span id="start-text">Start Assessment</span>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </button>
+    </div>
+
+    <!-- Loading State -->
+    <div id="state-loading" class="glass-card hidden" style="text-align: center; padding: 60px 20px;">
+        <div class="loader" style="width: 40px; height: 40px; border-width: 4px; margin-bottom: 20px;"></div>
+        <h2 style="margin: 0; color: var(--ass-muted);" id="loading-text">Analyzing cognitive state...</h2>
+    </div>
+
+    <!-- Question State -->
+    <div id="state-question" class="glass-card hidden">
+        <div class="header-bar">
+            <div class="progress-wrapper">
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--ass-muted);">
+                    <span id="progress-text">Question 1</span>
+                </div>
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                </div>
+            </div>
+            <div class="difficulty-badge">
+                <div id="diff-dot" class="difficulty-indicator diff-2"></div>
+                Level <span id="diff-text">2</span>
+            </div>
+        </div>
+
+        <div id="question-text" class="question-text">
+            Loading question...
+        </div>
+
+        <div id="options-container">
+            <!-- Options injected here -->
+        </div>
+
+        <div class="actions-bar">
+            <button id="btn-submit" class="btn-primary" onclick="submitAnswer()" disabled>
+                Submit Answer
+            </button>
+        </div>
+    </div>
+
+    <!-- Completed State -->
+    <div id="state-completed" class="glass-card hidden fade-in" style="text-align: center;">
+        <div style="display: inline-flex; background: rgba(16, 185, 129, 0.1); color: var(--ass-success); padding: 16px; border-radius: 50%; margin-bottom: 20px;">
+            <svg width="40" height="40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h2 style="margin-top: 0;">Assessment Complete!</h2>
+        <p style="color: var(--ass-muted); margin-bottom: 30px;">
+            Your Learning DNA has been mapped successfully and your Student Twin is now updated.
+        </p>
+
+        <div class="result-metric">
+            <h3>Twin Synchronization</h3>
+            <div class="value">100%</div>
+        </div>
+
+        <a href="{{ url_for('student.dashboard') }}" class="btn-primary" style="text-decoration: none;">
+            Return to Dashboard
+        </a>
+    </div>
+
+</div>
+
+<script>
+    // State
+    let sessionState = {
+        sessionId: null,
+        question: null,
+        currentDifficulty: null,
+        questionsAnswered: 0,
+        selectedOption: null
+    };
+
+    const MAX_QUESTIONS = 10; // For progress bar estimation
+
+    document.addEventListener('DOMContentLoaded', () => {
+        checkExistingSession();
+    });
+
+    function checkExistingSession() {
+        const savedSessionId = localStorage.getItem('mentra_ass_session_id');
+        const savedStateStr = localStorage.getItem('mentra_ass_state');
+
+        if (savedSessionId && savedStateStr) {
+            try {
+                const parsedState = JSON.parse(savedStateStr);
+                
+                // Verify with backend
+                fetch(`/api/v1/assessment/session/${savedSessionId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'success' && data.session_status === 'active') {
+                            document.getElementById('resume-banner').classList.remove('hidden');
+                            document.getElementById('start-text').innerText = 'Resume Assessment';
+                            
+                            // Restore state variables
+                            sessionState.sessionId = savedSessionId;
+                            sessionState.question = parsedState.question;
+                            sessionState.currentDifficulty = parsedState.currentDifficulty;
+                            sessionState.questionsAnswered = data.questions_answered;
+                        } else {
+                            clearLocalSession();
+                        }
+                    })
+                    .catch(err => {
+                        console.error('Session verification failed', err);
+                        clearLocalSession();
+                    });
+            } catch (e) {
+                clearLocalSession();
+            }
+        }
+    }
+
+    function clearLocalSession() {
+        localStorage.removeItem('mentra_ass_session_id');
+        localStorage.removeItem('mentra_ass_state');
+        sessionState.sessionId = null;
+    }
+
+    function saveLocalSession() {
+        if (!sessionState.sessionId) return;
+        localStorage.setItem('mentra_ass_session_id', sessionState.sessionId);
+        localStorage.setItem('mentra_ass_state', JSON.stringify({
+            question: sessionState.question,
+            currentDifficulty: sessionState.currentDifficulty
+        }));
+    }
+
+    function showState(stateId) {
+        ['state-landing', 'state-loading', 'state-question', 'state-completed'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        const el = document.getElementById(stateId);
+        el.classList.remove('hidden');
+        
+        // Retrigger animation
+        el.classList.remove('fade-in');
+        void el.offsetWidth; 
+        el.classList.add('fade-in');
+    }
+
+    async function startAssessment() {
+        if (sessionState.sessionId && sessionState.question) {
+            // Resume flow
+            renderQuestion();
+            showState('state-question');
+            return;
+        }
+
+        showState('state-loading');
+        document.getElementById('loading-text').innerText = 'Initializing cognitive engine...';
+
+        try {
+            const res = await fetch('/api/v1/assessment/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ exam_track: 'JEE' })
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                sessionState.sessionId = data.session_id;
+                sessionState.question = data.question;
+                sessionState.currentDifficulty = data.current_difficulty;
+                sessionState.questionsAnswered = 0;
+                
+                saveLocalSession();
+                renderQuestion();
+                showState('state-question');
+            } else {
+                alert('Error starting assessment: ' + data.message);
+                showState('state-landing');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to connect to assessment engine.');
+            showState('state-landing');
+        }
+    }
+
+    function renderQuestion() {
+        const q = sessionState.question;
+        
+        // Update header
+        const qNum = sessionState.questionsAnswered + 1;
+        document.getElementById('progress-text').innerText = `Question ${qNum}`;
+        const pct = Math.min((qNum / MAX_QUESTIONS) * 100, 100);
+        document.getElementById('progress-fill').style.width = `${pct}%`;
+
+        // Update difficulty
+        const diff = sessionState.currentDifficulty || 2;
+        document.getElementById('diff-text').innerText = diff;
+        const diffDot = document.getElementById('diff-dot');
+        diffDot.className = `difficulty-indicator diff-${diff > 4 ? 4 : diff}`;
+
+        // Update text
+        document.getElementById('question-text').innerText = q.text;
+
+        // Render options
+        const container = document.getElementById('options-container');
+        container.innerHTML = '';
+        sessionState.selectedOption = null;
+        document.getElementById('btn-submit').disabled = true;
+
+        if (q.type === 'multiple_choice' && q.options) {
+            // Assume options is dict or list. If dict, convert to entries.
+            let opts = q.options;
+            if (!Array.isArray(opts)) {
+                opts = Object.entries(opts).map(([k, v]) => ({ key: k, val: v }));
+            } else {
+                opts = opts.map(v => ({ key: v, val: v }));
+            }
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = typeof opt.val === 'string' ? opt.val : opt.key;
+                btn.onclick = () => selectOption(btn, opt.key);
+                container.appendChild(btn);
+            });
+        } else {
+            // Text input fallback
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.className = 'option-btn';
+            input.placeholder = 'Type your answer here...';
+            input.oninput = (e) => {
+                sessionState.selectedOption = e.target.value;
+                document.getElementById('btn-submit').disabled = e.target.value.trim() === '';
+            };
+            container.appendChild(input);
+        }
+    }
+
+    function selectOption(btnElement, value) {
+        document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+        btnElement.classList.add('selected');
+        sessionState.selectedOption = value;
+        document.getElementById('btn-submit').disabled = false;
+    }
+
+    async function submitAnswer() {
+        if (!sessionState.selectedOption) return;
+
+        const btn = document.getElementById('btn-submit');
+        const originalText = btn.innerText;
+        btn.innerText = 'Processing...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('/api/v1/assessment/answer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    session_id: sessionState.sessionId,
+                    question_id: sessionState.question.id,
+                    submitted_answer: sessionState.selectedOption.toString(),
+                    current_difficulty: sessionState.currentDifficulty
+                })
+            });
+            const data = await res.json();
+
+            if (data.status === 'completed') {
+                finalizeAssessment();
+            } else if (data.status === 'active') {
+                sessionState.question = data.next_question;
+                sessionState.currentDifficulty = data.next_difficulty;
+                sessionState.questionsAnswered += 1;
+                
+                saveLocalSession();
+                renderQuestion();
+            } else {
+                alert(data.message || 'Error submitting answer');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to submit answer.');
+        } finally {
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    async function finalizeAssessment() {
+        showState('state-loading');
+        document.getElementById('loading-text').innerText = 'Synthesizing Learning DNA...';
+
+        try {
+            const res = await fetch('/api/v1/assessment/complete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ session_id: sessionState.sessionId })
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                clearLocalSession();
+                showState('state-completed');
+            } else {
+                alert('Error completing assessment: ' + data.message);
+                showState('state-landing');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('Failed to complete assessment.');
+            showState('state-landing');
+        }
+    }
+</script>
+{% endblock %}

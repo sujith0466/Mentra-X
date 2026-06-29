@@ -37,6 +37,13 @@ from backend.models import (
     UserResume,
     Video,
     db,
+    StudentTwinRecord,
+    TwinKnowledgeStateRecord,
+    TwinMutationLogRecord,
+    QuestionMetadata,
+    AssessmentSession,
+    AssessmentResponse,
+    AssessmentResult,
 )
 
 
@@ -182,6 +189,22 @@ class SQLiteFixtureMixin:
                 db.session.execute(text('SET FOREIGN_KEY_CHECKS=0'))
                 db.session.commit()
             student_id = cls.fixture_ids.get("student_id")
+            
+            if student_id:
+                # Delete assessment and twin data
+                session_ids = [s.id for s in AssessmentSession.query.filter_by(user_id=student_id).all()]
+                if session_ids:
+                    AssessmentResponse.query.filter(AssessmentResponse.session_id.in_(session_ids)).delete(synchronize_session=False)
+                    AssessmentResult.query.filter(AssessmentResult.session_id.in_(session_ids)).delete(synchronize_session=False)
+                AssessmentSession.query.filter_by(user_id=student_id).delete(synchronize_session=False)
+                
+                # Delete twin records
+                TwinKnowledgeStateRecord.query.filter(TwinKnowledgeStateRecord.twin_id.in_(
+                    db.session.query(StudentTwinRecord.id).filter_by(user_id=student_id)
+                )).delete(synchronize_session=False)
+                StudentTwinRecord.query.filter_by(user_id=student_id).delete(synchronize_session=False)
+                TwinMutationLogRecord.query.filter_by(user_id=student_id).delete(synchronize_session=False)
+                
             attempt_ids = [row.id for row in QuizAttempt.query.filter_by(user_id=student_id).all()] if student_id else []
             if attempt_ids:
                 QuizAnswer.query.filter(QuizAnswer.attempt_id.in_(attempt_ids)).delete(synchronize_session=False)
@@ -203,6 +226,12 @@ class SQLiteFixtureMixin:
                 UserResume.query.filter_by(user_id=student_id).delete(synchronize_session=False)
                 ReferralTransaction.query.filter((ReferralTransaction.referrer_id == student_id) | (ReferralTransaction.new_user_id == student_id)).delete(synchronize_session=False)
                 User.query.filter(User.email.like(f"qa_register_{cls.fixture_token}%@example.com")).delete(synchronize_session=False)
+            
+            # Deletion of global test metadata
+            question_id = cls.fixture_ids.get("question_id")
+            if question_id:
+                QuestionMetadata.query.filter_by(question_id=question_id).delete(synchronize_session=False)
+                
             for model, key in [
                 (QuizQuestion, "question_id"),
                 (Quiz, "quiz_id"),
@@ -216,9 +245,10 @@ class SQLiteFixtureMixin:
                 record_id = cls.fixture_ids.get(key)
                 if record_id:
                     model.query.filter_by(id=record_id).delete(synchronize_session=False)
+            
             if db.engine.dialect.name == 'mysql':
                 db.session.execute(text('SET FOREIGN_KEY_CHECKS=1'))
-                db.session.commit()
+            db.session.commit()
 
     @staticmethod
     def text_upload(content: str, filename: str = "resume.txt"):

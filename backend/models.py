@@ -1,5 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
+from datetime import datetime, timezone
+
+def utcnow():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
 from werkzeug.security import generate_password_hash, check_password_hash
 import uuid
 import string
@@ -22,7 +25,7 @@ class User(db.Model):
     referral_code = db.Column(db.String(20), unique=True, nullable=False)
     referred_by = db.Column(db.String(20), nullable=True)
     wallet_balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     # Relationships
     enrollments = db.relationship('Enrollment', backref='student', lazy=True, foreign_keys='Enrollment.user_id')
@@ -54,7 +57,7 @@ class UserResume(db.Model):
     projects_json = db.Column(db.Text, nullable=True)
     education_json = db.Column(db.Text, nullable=True)
     experience_json = db.Column(db.Text, nullable=True)
-    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    uploaded_at = db.Column(db.DateTime, default=utcnow)
 
     def __repr__(self):
         return f'<UserResume {self.user_id}>'
@@ -67,7 +70,7 @@ class Domain(db.Model):
     name = db.Column(db.String(100), nullable=False, unique=True)
     description = db.Column(db.String(500), nullable=True)
     image_url = db.Column(db.String(500), nullable=True)  # Path to domain image
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     # Relationships
     courses = db.relationship('Course', backref='domain', lazy=True, cascade='all, delete-orphan')
@@ -88,7 +91,7 @@ class Course(db.Model):
     image_url = db.Column(db.String(500), nullable=True)
     demo_video_url = db.Column(db.String(500), nullable=True)  # YouTube/Vimeo embed URL
     status = db.Column(db.String(20), nullable=False, default='draft')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     # Relationships
     syllabuses = db.relationship('Syllabus', backref='course', lazy=True, cascade='all, delete-orphan')
@@ -111,7 +114,7 @@ class Syllabus(db.Model):
     topic_title = db.Column(db.String(200), nullable=False)
     topic_description = db.Column(db.String(1000), nullable=True)
     order_number = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     def __repr__(self):
         return f'<Syllabus {self.topic_title}>'
@@ -128,7 +131,7 @@ class Video(db.Model):
     duration = db.Column(db.String(20), nullable=True)  # e.g., "45:30"
     module_id = db.Column(db.Integer, db.ForeignKey('course_modules.id'), nullable=True, index=True)
     order_number = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     def __repr__(self):
         return f'<Video {self.title}>'
@@ -140,7 +143,7 @@ class Enrollment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False)
-    enrolled_date = db.Column(db.DateTime, default=datetime.utcnow)
+    enrolled_date = db.Column(db.DateTime, default=utcnow)
     progress = db.Column(db.Float, default=0.0)  # 0-100 percentage
     progress_percentage = db.Column(db.Float, default=0.0)  # Cached progress
     completed = db.Column(db.Boolean, default=False)
@@ -157,7 +160,7 @@ class ContactMessage(db.Model):
     email = db.Column(db.String(100), nullable=False)
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.String(1000), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     
     def __repr__(self):
         return f'<ContactMessage {self.name}>'
@@ -171,7 +174,7 @@ class ReferralTransaction(db.Model):
     new_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     reward_amount = db.Column(db.Float, default=100.0)
     status = db.Column(db.String(20), default='completed')  # 'pending' or 'completed'
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    date = db.Column(db.DateTime, default=utcnow)
     
     def __repr__(self):
         return f'<ReferralTransaction {self.referrer_id}-{self.new_user_id}>'
@@ -186,7 +189,7 @@ class ChatbotConversation(db.Model):
     user_message = db.Column(db.Text, nullable=False)
     bot_response = db.Column(db.Text, nullable=False)
     domain = db.Column(db.String(100), nullable=True)  # Domain context (Web Dev, Data Science, etc.)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime, default=utcnow)
     
     def __repr__(self):
         return f'<ChatbotConversation {self.user_id}-{self.timestamp}>'
@@ -203,9 +206,9 @@ class AdminUser(db.Model):
     email = db.Column(db.String(100), nullable=True)
     role = db.Column(db.String(30), nullable=False, default='super_admin')
     is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=utcnow)
     last_login = db.Column(db.DateTime, nullable=True)
-    password_changed_at = db.Column(db.DateTime, default=datetime.utcnow)
+    password_changed_at = db.Column(db.DateTime, default=utcnow)
     
     # Relationship
     user = db.relationship('User', backref='admin_profile')
@@ -231,7 +234,7 @@ class AuditLog(db.Model):
     before_values = db.Column(db.Text, nullable=True)
     after_values = db.Column(db.Text, nullable=True)
     metadata_json = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     actor = db.relationship('User', backref='audit_logs')
 
@@ -269,7 +272,7 @@ class Quiz(db.Model):
     attempts_allowed = db.Column(db.Integer, nullable=False, default=3)
     is_enabled = db.Column(db.Boolean, nullable=False, default=True)
     module_id = db.Column(db.Integer, db.ForeignKey('course_modules.id'), nullable=True, index=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     questions = db.relationship('QuizQuestion', backref='quiz', lazy=True, cascade='all, delete-orphan')
     attempts = db.relationship('QuizAttempt', backref='quiz', lazy=True, cascade='all, delete-orphan')
@@ -291,9 +294,10 @@ class QuizQuestion(db.Model):
     correct_answer = db.Column(db.String(500), nullable=False)
     order_index = db.Column(db.Integer, nullable=False, default=1)
     order_number = db.Column(db.Integer, nullable=False, default=1)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     answers = db.relationship('QuizAnswer', backref='question', lazy=True, cascade='all, delete-orphan')
+    assessment_metadata = db.relationship('QuestionMetadata', backref='question', uselist=False, lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<QuizQuestion {self.id}:{self.question_type}>'
@@ -309,9 +313,9 @@ class QuizAttempt(db.Model):
     correct_answers = db.Column(db.Integer, nullable=False, default=0)
     score_percentage = db.Column(db.Float, nullable=False, default=0.0)
     passed = db.Column(db.Boolean, nullable=False, default=False)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    start_time = db.Column(db.DateTime, default=utcnow, nullable=False)
     end_time = db.Column(db.DateTime, nullable=True)
-    started_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    started_at = db.Column(db.DateTime, default=utcnow, nullable=False)
     submitted_at = db.Column(db.DateTime, nullable=True)
 
     student = db.relationship('User', backref='quiz_attempts')
@@ -328,7 +332,7 @@ class QuizAnswer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('quiz_questions.id'), nullable=False, index=True)
     submitted_answer = db.Column(db.Text, nullable=True)
     is_correct = db.Column(db.Boolean, nullable=False, default=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     def __repr__(self):
         return f'<QuizAnswer {self.id}:{self.attempt_id}>'
@@ -344,7 +348,7 @@ class Assignment(db.Model):
     marks = db.Column(db.Float, nullable=False, default=100.0)
     module_id = db.Column(db.Integer, db.ForeignKey('course_modules.id'), nullable=True, index=True)
     attachment_path = db.Column(db.String(500), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     submissions = db.relationship('AssignmentSubmission', backref='assignment', lazy=True, cascade='all, delete-orphan')
 
@@ -359,7 +363,7 @@ class AssignmentSubmission(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     answer_text = db.Column(db.Text, nullable=True)
     submission_file = db.Column(db.String(500), nullable=True)
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    submitted_at = db.Column(db.DateTime, default=utcnow, nullable=False)
     marks_awarded = db.Column(db.Float, nullable=True)
     feedback = db.Column(db.String(1000), nullable=True)
     graded_at = db.Column(db.DateTime, nullable=True)
@@ -378,7 +382,7 @@ class LessonProgress(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     completed = db.Column(db.Boolean, nullable=False, default=False)
     completed_at = db.Column(db.DateTime, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student = db.relationship('User', backref='lesson_progresses')
 
@@ -397,7 +401,7 @@ class LearningStreak(db.Model):
     last_learning_date = db.Column(db.Date, nullable=True)
     current_streak = db.Column(db.Integer, nullable=False, default=0)
     longest_streak = db.Column(db.Integer, nullable=False, default=0)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student = db.relationship('User', backref='learning_streak', uselist=False)
 
@@ -412,7 +416,7 @@ class SkillProgress(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     skill_name = db.Column(db.String(200), nullable=False, index=True)
     progress_percentage = db.Column(db.Float, nullable=False, default=0.0)
-    last_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    last_updated = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student = db.relationship('User', backref='skill_progress_rows')
 
@@ -434,7 +438,7 @@ class CodingChallenge(db.Model):
     starter_code = db.Column(db.Text, nullable=True)
     expected_output = db.Column(db.Text, nullable=True)
     test_cases_json = db.Column(db.Text, nullable=False, default='[]')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     submissions = db.relationship('CodingSubmission', backref='challenge', lazy=True, cascade='all, delete-orphan')
 
@@ -458,7 +462,7 @@ class CodingSubmission(db.Model):
     execution_output = db.Column(db.Text, nullable=True)
     passed_tests = db.Column(db.Integer, nullable=False, default=0)
     score = db.Column(db.Float, nullable=False, default=0.0)
-    submitted_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    submitted_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student = db.relationship('User', backref='coding_submissions')
 
@@ -472,7 +476,7 @@ class InterviewSession(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     role = db.Column(db.String(100), nullable=False, index=True)
     difficulty = db.Column(db.String(50), nullable=False, default='Beginner')
-    start_time = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    start_time = db.Column(db.DateTime, default=utcnow, nullable=False)
     end_time = db.Column(db.DateTime, nullable=True)
     score = db.Column(db.Float, nullable=False, default=0.0)
     status = db.Column(db.String(30), nullable=False, default='in_progress')
@@ -522,7 +526,7 @@ class ProjectIdea(db.Model):
     difficulty = db.Column(db.String(50), nullable=False, default='Beginner')
     tech_stack = db.Column(db.Text, nullable=True)
     architecture = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student_projects = db.relationship('StudentProject', backref='project_idea', lazy=True, cascade='all, delete-orphan')
 
@@ -543,7 +547,7 @@ class StudentProject(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project_ideas.id'), nullable=False, index=True)
     progress_percentage = db.Column(db.Float, nullable=False, default=0.0)
-    started_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    started_at = db.Column(db.DateTime, default=utcnow, nullable=False)
     completed_at = db.Column(db.DateTime, nullable=True)
 
     student = db.relationship('User', backref='student_projects')
@@ -572,7 +576,7 @@ class CommunityPost(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     author = db.relationship('User', backref='community_posts')
     answers = db.relationship('CommunityAnswer', backref='post', lazy=True, cascade='all, delete-orphan')
@@ -588,7 +592,7 @@ class CommunityAnswer(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     answer_text = db.Column(db.Text, nullable=False)
     votes = db.Column(db.Integer, nullable=False, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     author = db.relationship('User', backref='community_answers')
 
@@ -613,7 +617,7 @@ class UserBadge(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
     badge_name = db.Column(db.String(100), nullable=False)
-    awarded_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    awarded_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     student = db.relationship('User', backref='user_badges')
 
@@ -625,7 +629,7 @@ class CourseModule(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id'), nullable=False, index=True)
     title = db.Column(db.String(200), nullable=False)
     order_index = db.Column(db.Integer, nullable=False, default=1)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
 
     lessons = db.relationship('Video', backref='module', lazy=True)
     quizzes = db.relationship('Quiz', backref='module', lazy=True)
@@ -762,4 +766,130 @@ def _validate_course_module_before_write(mapper, connection, target):
     if _has_duplicate_child_title(CourseModule, target, "title", "course_id", normalized_title):
         raise ValueError("Module title already exists in this course.")
 
+class StudentTwinRecord(db.Model):
+    __tablename__ = 'student_twins'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, unique=True, index=True)
+    twin_version = db.Column(db.Integer, nullable=False, default=1)
+    twin_status = db.Column(db.String(50), nullable=False, default='INITIALIZING') # INITIALIZING, ACTIVE, SYNCING, ERROR
+    twin_health = db.Column(db.Float, nullable=False, default=0.0)
+    exam_track = db.Column(db.String(50), nullable=False, default='JEE')
+    academic_state = db.Column(db.Text, nullable=True) # JSON string
+    skill_state = db.Column(db.Text, nullable=True) # JSON string
+    learning_dna = db.Column(db.Text, nullable=True) # JSON string
+    career_state = db.Column(db.Text, nullable=True) # JSON string
+    project_state = db.Column(db.Text, nullable=True) # JSON string
+    opportunity_state = db.Column(db.Text, nullable=True) # JSON string
+    metadata_json = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=utcnow, onupdate=utcnow, nullable=False)
 
+    student = db.relationship('User', backref=db.backref('twin', uselist=False))
+    knowledge_states = db.relationship('TwinKnowledgeStateRecord', backref='twin', lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<StudentTwinRecord {self.user_id}:{self.twin_status}>'
+
+class TwinKnowledgeStateRecord(db.Model):
+    __tablename__ = 'twin_knowledge_states'
+    id = db.Column(db.Integer, primary_key=True)
+    twin_id = db.Column(db.Integer, db.ForeignKey('student_twins.id'), nullable=False, index=True)
+    concept_id = db.Column(db.String(100), nullable=False, index=True)
+    mastery_score = db.Column(db.Float, nullable=False, default=0.0)
+    decay_coefficient = db.Column(db.Float, nullable=False, default=1.0)
+    mistake_count = db.Column(db.Integer, nullable=False, default=0)
+    last_reviewed = db.Column(db.DateTime, nullable=True)
+    
+    __table_args__ = (
+        db.UniqueConstraint('twin_id', 'concept_id', name='uq_twin_knowledge_twin_concept'),
+    )
+
+    def __repr__(self):
+        return f'<TwinKnowledgeStateRecord {self.twin_id}:{self.concept_id}:{self.mastery_score}>'
+
+class TwinMutationLogRecord(db.Model):
+    __tablename__ = 'twin_mutation_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    twin_version = db.Column(db.Integer, nullable=False)
+    mutation_type = db.Column(db.String(100), nullable=False)
+    concept = db.Column(db.String(100), nullable=True)
+    field_changed = db.Column(db.String(100), nullable=True)
+    old_value = db.Column(db.Text, nullable=True)
+    new_value = db.Column(db.Text, nullable=True)
+    agent_name = db.Column(db.String(100), nullable=True)
+    session_id = db.Column(db.String(100), nullable=True)
+    mutated_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<TwinMutationLog {self.id}:{self.twin_id}:{self.mutation_type}>'
+
+# ==============================================================================
+# PHASE 2: ADAPTIVE ASSESSMENT ENGINE MODELS
+# ==============================================================================
+
+class QuestionMetadata(db.Model):
+    """Normalized metadata for QuizQuestion used by the Adaptive Assessment Engine"""
+    __tablename__ = 'question_metadata'
+    id = db.Column(db.Integer, primary_key=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('quiz_questions.id'), nullable=False, index=True, unique=True)
+    concept = db.Column(db.String(100), nullable=True, index=True)
+    topic = db.Column(db.String(100), nullable=True)
+    chapter = db.Column(db.String(100), nullable=True)
+    subject = db.Column(db.String(100), nullable=True)
+    difficulty_tier = db.Column(db.Integer, nullable=False, default=2) # 1-5 scale
+    exam_track = db.Column(db.String(50), nullable=True, index=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<QuestionMetadata {self.id}:{self.concept}>'
+
+
+class AssessmentSession(db.Model):
+    """Tracks a single adaptive assessment session for a student"""
+    __tablename__ = 'assessment_sessions'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), nullable=False, unique=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    exam_track = db.Column(db.String(50), nullable=False)
+    status = db.Column(db.String(20), nullable=False, default='active') # active, completed, abandoned
+    started_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    completed_at = db.Column(db.DateTime, nullable=True)
+
+    student = db.relationship('User', backref='assessment_sessions')
+    responses = db.relationship('AssessmentResponse', backref='session', lazy=True, cascade='all, delete-orphan')
+    result = db.relationship('AssessmentResult', backref='session', uselist=False, lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f'<AssessmentSession {self.session_id}:{self.status}>'
+
+
+class AssessmentResponse(db.Model):
+    """Tracks individual question responses within an assessment session"""
+    __tablename__ = 'assessment_responses'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('assessment_sessions.id'), nullable=False, index=True)
+    question_id = db.Column(db.Integer, db.ForeignKey('quiz_questions.id'), nullable=False, index=True)
+    submitted_answer = db.Column(db.Text, nullable=True)
+    is_correct = db.Column(db.Boolean, nullable=False, default=False)
+    difficulty_at_time = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    question = db.relationship('QuizQuestion')
+
+    def __repr__(self):
+        return f'<AssessmentResponse {self.id}:{self.is_correct}>'
+
+
+class AssessmentResult(db.Model):
+    """Stores the final estimated knowledge state and DNA upon completion"""
+    __tablename__ = 'assessment_results'
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('assessment_sessions.id'), nullable=False, index=True, unique=True)
+    knowledge_state = db.Column(db.JSON, nullable=True) # Bayesian computed concepts
+    inferred_style = db.Column(db.String(50), nullable=True) # Visual, Narrative, Mathematical
+    inferred_level = db.Column(db.Integer, nullable=False, default=2)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<AssessmentResult {self.session_id}>'

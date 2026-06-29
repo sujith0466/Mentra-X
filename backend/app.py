@@ -86,8 +86,11 @@ app.mongo_db = mongo_db
 app.config['MONGO_DB'] = mongo_db
 print(f"[PID {os.getpid()}] App object ID: {id(app)}, mongo_db present: {mongo_db is not None}")
 
+from flask_migrate import Migrate
+
 # Initialize Database
 db.init_app(app)
+migrate = Migrate(app, db)
 
 # Import and register blueprints
 from backend.auth_routes import auth_bp
@@ -107,6 +110,8 @@ from backend.routes.interview_routes import interview_api_bp
 from backend.routes.ai_enhancements import ai_enhancements_bp
 from backend.routes.learning_routes import learning_routes_bp
 from backend.routes.experience_routes import experience_routes_bp
+from backend.routes.twin_routes import twin_bp
+from backend.routes.assessment_routes import assessment_bp
 
 
 
@@ -133,7 +138,8 @@ app.register_blueprint(interview_api_bp)
 app.register_blueprint(ai_enhancements_bp)
 app.register_blueprint(learning_routes_bp)
 app.register_blueprint(experience_routes_bp)
-
+app.register_blueprint(twin_bp)
+app.register_blueprint(assessment_bp)
 
 
 @app.route('/uploads/<path:filename>')

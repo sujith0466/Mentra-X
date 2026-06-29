@@ -77,7 +77,7 @@ def student_required(f):
         if 'user_id' not in session:
             flash('Please login first!', 'warning')
             return redirect(url_for('auth.login'))
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user or user.role != 'student':
             flash('Access denied! Student account required.', 'danger')
             return redirect(url_for('public.index'))
@@ -386,7 +386,7 @@ def dashboard():
 def download_certificate(course_id):
     """Download PDF certificate for completed courses."""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         enrollment = Enrollment.query.filter_by(user_id=user.id, course_id=course_id).first_or_404()
         current_progress = enrollment.progress_percentage if enrollment.progress_percentage is not None else (enrollment.progress or 0)
         if not (enrollment.completed or current_progress >= 100):
@@ -447,7 +447,7 @@ def download_certificate(course_id):
 def my_courses():
     """View Enrolled Courses"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -517,7 +517,7 @@ def course_details(course_id):
         # Check if user is logged in and already enrolled
         is_enrolled = False
         if 'user_id' in session:
-            user = User.query.get(session['user_id'])
+            user = db.session.get(User, session['user_id'])
             if user:
                 enrollment = Enrollment.query.filter_by(user_id=user.id, course_id=course_id).first()
                 is_enrolled = enrollment is not None
@@ -537,7 +537,7 @@ def course_details(course_id):
 def course_videos(course_id):
     """View Course Videos (Only for Enrolled Students)"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -601,7 +601,7 @@ def course_videos(course_id):
 def enroll_course(course_id):
     """Enroll in a Course"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -629,12 +629,24 @@ def enroll_course(course_id):
 
 
 
+@student_bp.route('/twin/profile')
+@student_required
+def twin_profile():
+    """Read-only view of the Student Digital Twin Profile"""
+    user = db.session.get(User, session['user_id'])
+    return render_template('student/twin_profile.html', user=user)
+
+@student_bp.route('/assessment')
+@student_required
+def assessment():
+    return render_template('student/assessment.html')
+
 @student_bp.route('/profile/edit', methods=['GET', 'POST'])
 @student_required
 def edit_profile():
     # Edit student profile details without schema changes.
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -697,7 +709,7 @@ def edit_profile():
 def referral():
     """Referral Program Page"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         if not user:
             flash('User not found!', 'danger')
             return redirect(url_for('auth.login'))
@@ -732,7 +744,7 @@ def referral():
 def update_progress(course_id):
     """Update Course Progress"""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         progress = request.form.get('progress', 0)
         
         enrollment = Enrollment.query.filter_by(user_id=user.id, course_id=course_id).first_or_404()
@@ -758,7 +770,7 @@ def update_progress(course_id):
 def complete_lesson(course_id, lesson_id):
     """Mark lesson as completed and update streak/progress."""
     try:
-        user = User.query.get(session['user_id'])
+        user = db.session.get(User, session['user_id'])
         enrollment = Enrollment.query.filter_by(user_id=user.id, course_id=course_id).first()
         if not enrollment:
             flash('You must enroll in this course first.', 'danger')

@@ -39,6 +39,7 @@
                 <li class="nav-dropdown">
                     <button type="button" class="nav-dropdown-toggle" id="featuresMenuBtn" aria-expanded="false" aria-controls="featuresMenu">Features</button>
                     <div class="nav-dropdown-menu features-dropdown" id="featuresMenu">
+                        <a href="{{ url_for('student.assessment') }}" class="nav-link">Adaptive Assessment</a>
                         <a href="{{ url_for('learning_path_page') }}" class="nav-link">Learning Path</a>
                         <a href="{{ url_for('weekly_report_page') }}" class="nav-link">Weekly Report</a>
                         <a href="{{ url_for('flashcards_page') }}" class="nav-link">Flashcards</a>
