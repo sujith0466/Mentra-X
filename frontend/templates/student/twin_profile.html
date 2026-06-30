@@ -47,7 +47,22 @@
             Loading Twin Profile...
         </div>
     </section>
+
+    <!-- Milestone 6: Semantic Context Preview -->
+    <section class="dash-panel" id="memory-preview-widget" style="margin-top: 20px;">
+        <div class="dash-panel-head">
+            <h2>Semantic Memory Context</h2>
+            <button onclick="refreshMemories()" class="btn-primary" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; border: none; cursor: pointer;">Refresh Context</button>
+        </div>
+        <p class="muted">Live semantic retrieval of your learning vectors from Qdrant.</p>
+        <div id="memory-preview-content" class="twin-box" style="background: #fff; padding: 0;">
+            <ul class="dash-list" id="memory-preview-ul" style="margin: 0;">
+                <li class="muted" style="padding: 15px;">Loading semantic context...</li>
+            </ul>
+        </div>
+    </section>
 </section>
+
 {% endblock %}
 
 {% block scripts %}
@@ -86,4 +101,34 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 });
 </script>
+<script src="{{ url_for('static', filename='js/memory_api_client.js') }}"></script>
+<script>
+async function refreshMemories() {
+    const ul = document.getElementById('memory-preview-ul');
+    ul.innerHTML = '<li class="muted" style="padding: 15px;">Loading...</li>';
+    try {
+        const res = await MemoryApiClient.retrieveContext('weak_concepts', 'weak concept', 5);
+        ul.innerHTML = '';
+        if (res.ok && res.data && res.data.results && res.data.results.length > 0) {
+            res.data.results.forEach(mem => {
+                const li = document.createElement('li');
+                li.style.padding = '15px';
+                li.style.borderBottom = '1px solid #dee2e6';
+                li.innerHTML = `<div><strong>${mem.payload.event_type || 'Concept'}</strong> - Score: ${mem.score.toFixed(3)}</div>
+                                <div class="muted" style="font-size: 0.85rem; margin-top: 5px;">${JSON.stringify(mem.payload)}</div>`;
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = '<li class="muted" style="padding: 15px;">No semantic memories found.</li>';
+        }
+    } catch (err) {
+        ul.innerHTML = '<li class="muted" style="color: #dc3545; padding: 15px;">Failed to load context</li>';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    refreshMemories();
+});
+</script>
+
 {% endblock %}

@@ -253,6 +253,40 @@
         </div>
     </section>
 
+    <section class="dash-grid-2">
+        <!-- Milestone 6: Semantic Memory Status -->
+        <article class="dash-panel" id="memory-widget">
+            <div class="dash-panel-head">
+                <h2>Semantic Memory Status</h2>
+            </div>
+            
+            <div id="memory-status-container" style="margin-bottom: 15px;">
+                <span class="dash-kpi-sub">Qdrant: <span id="qdrant-status-badge" style="font-weight: 500; color: #888;">Checking...</span></span>
+                <span class="dash-kpi-sub" style="float: right;">Embeddings: <span id="embeddings-status-badge" style="font-weight: 500; color: #888;">Checking...</span></span>
+            </div>
+            
+            <div style="margin-top: 15px;" id="memory-collections-list">
+                <h3 style="margin: 0 0 6px;">Active Collections</h3>
+                <ul class="dash-list" id="memory-collections-ul">
+                    <li class="muted">Loading...</li>
+                </ul>
+            </div>
+        </article>
+
+        <!-- Milestone 6: Semantic Context Preview -->
+        <article class="dash-panel" id="memory-preview-widget">
+            <div class="dash-panel-head">
+                <h2>Recent Memories</h2>
+                <button onclick="refreshMemories()" class="btn-primary" style="padding: 4px 10px; font-size: 0.8rem; border-radius: 4px; border: none; cursor: pointer;">Refresh</button>
+            </div>
+            <div id="memory-preview-content">
+                <ul class="dash-list" id="memory-preview-ul">
+                    <li class="muted">Loading context...</li>
+                </ul>
+            </div>
+        </article>
+    </section>
+
     <section class="dash-grid-2" id="certificates">
         <article class="dash-panel">
             <div class="dash-panel-head"><h2>Achievements</h2></div>
@@ -347,4 +381,68 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 });
 </script>
+<script src="{{ url_for('static', filename='js/memory_api_client.js') }}"></script>
+<script>
+async function initMemoryWidget() {
+    try {
+        const health = await MemoryApiClient.getHealth();
+        const qBadge = document.getElementById('qdrant-status-badge');
+        const eBadge = document.getElementById('embeddings-status-badge');
+        
+        if (health.ok) {
+            qBadge.textContent = 'ONLINE';
+            qBadge.style.color = '#28a745';
+            eBadge.textContent = 'READY';
+            eBadge.style.color = '#28a745';
+        } else {
+            qBadge.textContent = 'ERROR';
+            qBadge.style.color = '#dc3545';
+            eBadge.textContent = 'ERROR';
+            eBadge.style.color = '#dc3545';
+        }
+
+        const status = await MemoryApiClient.getStatus();
+        const ul = document.getElementById('memory-collections-ul');
+        ul.innerHTML = '';
+        if (status.ok && status.collections) {
+            status.collections.forEach(col => {
+                const li = document.createElement('li');
+                li.innerHTML = `<strong>${col}</strong>`;
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = '<li class="muted">Unavailable</li>';
+        }
+
+        await refreshMemories();
+    } catch (err) {
+        console.error('Memory widget error:', err);
+    }
+}
+
+async function refreshMemories() {
+    const ul = document.getElementById('memory-preview-ul');
+    ul.innerHTML = '<li class="muted">Loading...</li>';
+    try {
+        const res = await MemoryApiClient.retrieveContext('learning_dna', 'learning', 3);
+        ul.innerHTML = '';
+        if (res.ok && res.data && res.data.results && res.data.results.length > 0) {
+            res.data.results.forEach(mem => {
+                const li = document.createElement('li');
+                li.innerHTML = `<div><strong>${mem.payload.event_type || 'Memory'}</strong></div><div class="muted" style="font-size: 0.8rem;">Score: ${mem.score.toFixed(3)} | Ver: ${mem.payload.twin_version}</div>`;
+                ul.appendChild(li);
+            });
+        } else {
+            ul.innerHTML = '<li class="muted">No recent memories found.</li>';
+        }
+    } catch (err) {
+        ul.innerHTML = '<li class="muted" style="color: #dc3545;">Failed to load context</li>';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    initMemoryWidget();
+});
+</script>
+
 {% endblock %}

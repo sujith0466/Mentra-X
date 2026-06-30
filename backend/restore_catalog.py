@@ -436,7 +436,6 @@ def ensure_modules_and_lessons(course, track):
         for m in CourseModule.query.filter_by(course_id=course.id).all()
     }
 
-    order_base = 1
     for idx, (module_title, lessons) in enumerate(module_blueprint, start=1):
         key = normalized(module_title)
         module = existing_modules.get(key)

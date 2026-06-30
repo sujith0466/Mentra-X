@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from backend.models import db, Course, Assignment, AssignmentSubmission, CourseModule
 from backend.admin_routes import admin_required, ADMIN_ROLE_PERMISSIONS
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import uuid
 

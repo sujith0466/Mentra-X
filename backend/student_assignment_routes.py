@@ -3,7 +3,7 @@ from backend.models import db, User, Course, Enrollment, Assignment, AssignmentS
 from backend.student_routes import student_required
 from backend.learning_utils import update_learning_streak, refresh_progress_on_assignment_submission
 from werkzeug.utils import secure_filename
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 import uuid
 

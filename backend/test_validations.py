@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Test script for validation functions
 
-from backend.app import app, extract_youtube_id, is_valid_url, is_valid_email
+from backend.app import extract_youtube_id, is_valid_url, is_valid_email
 
 print("=" * 50)
 print("Testing Validation Functions")

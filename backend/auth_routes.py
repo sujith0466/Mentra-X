@@ -3,7 +3,7 @@ from werkzeug.utils import secure_filename
 from backend.models import db, User, ReferralTransaction, AdminUser, UserResume
 from backend.services.ai.career.resume_parser_service import extract_text_from_docx, extract_text_from_pdf, parse_resume
 from backend.services.twin.twin_initializer import TwinInitializationService
-from datetime import datetime
+from datetime import datetime, timezone
 from backend.audit_utils import log_audit
 import re
 import time
@@ -253,7 +253,6 @@ def login():
                     except Exception as e:
                         print(f"Failed to initialize twin for user {user.id}: {e}")
                         # Even if twin fails, allow login to proceed
-                        pass
                         
                     return redirect(url_for('student.dashboard'))
             else:

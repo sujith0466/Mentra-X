@@ -13,3 +13,5 @@ python-dotenv==1.0.1
 pymongo==4.16.0
 dnspython==2.8.0
 waitress==3.0.2
+qdrant-client>=1.7.0
+sentence-transformers>=3.0.0

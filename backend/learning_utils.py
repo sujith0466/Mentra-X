@@ -1,5 +1,5 @@
-from datetime import datetime, date, timedelta
-from backend.models import db, LearningStreak, LessonProgress, Enrollment, Video
+from datetime import datetime, timezone
+from backend.models import db, LessonProgress, Enrollment, Video
 from backend.services.learning.streak_xp import update_streak
 
 

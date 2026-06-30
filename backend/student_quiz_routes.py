@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from backend.models import db, User, Course, Enrollment, Quiz, QuizQuestion, QuizAttempt, QuizAnswer
 from backend.student_routes import student_required
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from sqlalchemy import func
 from backend.learning_utils import update_learning_streak, refresh_progress_on_quiz_completion
 

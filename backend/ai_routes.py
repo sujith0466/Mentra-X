@@ -47,7 +47,7 @@ import os
 import json
 import uuid
 import zipfile
-from datetime import datetime
+from datetime import datetime, timezone
 
 from backend.services.mongo_service import safe_insert
 from backend.services.learning.streak_xp import update_streak

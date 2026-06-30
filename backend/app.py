@@ -112,6 +112,7 @@ from backend.routes.learning_routes import learning_routes_bp
 from backend.routes.experience_routes import experience_routes_bp
 from backend.routes.twin_routes import twin_bp
 from backend.routes.assessment_routes import assessment_bp
+from backend.routes.memory_routes import memory_bp
 
 
 
@@ -140,6 +141,7 @@ app.register_blueprint(learning_routes_bp)
 app.register_blueprint(experience_routes_bp)
 app.register_blueprint(twin_bp)
 app.register_blueprint(assessment_bp)
+app.register_blueprint(memory_bp)
 
 
 @app.route('/uploads/<path:filename>')
@@ -271,7 +273,7 @@ def mongo_check():
     except Exception as e:
         return jsonify({"error": str(e), "debug": {"pid": pid}}), 500
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 @app.route("/mongo-test-insert")
 def mongo_test_insert():
@@ -784,14 +786,13 @@ def _repair_legacy_schema(database_path):
 @app.before_request
 def before_request():
     """Run before each request"""
-    pass
 
 @app.context_processor
 def inject_user():
     """Make user available in templates"""
     user = None
     if 'user_id' in session:
-        user = db.session.get(User, session['user_id'])
+        user = User.query.get(session['user_id'])
     csrf_token = session.get('csrf_token')
     if not csrf_token:
         csrf_token = secrets.token_urlsafe(32)

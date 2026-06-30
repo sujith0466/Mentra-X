@@ -1,5 +1,4 @@
-from typing import Dict, Any, Optional
-from backend.models import QuizQuestion, AssessmentSession, AssessmentResult, db
+from backend.models import QuizQuestion, AssessmentResult, db
 from backend.services.assessment.assessment_service import AssessmentService
 from backend.services.assessment.branching_engine import BranchingEngine
 from backend.services.assessment.knowledge_estimator import KnowledgeEstimator
@@ -45,7 +44,7 @@ class AssessmentPipeline:
         if not session or session.status != 'active':
             raise ValueError("Invalid or inactive session.")
             
-        question = db.session.get(QuizQuestion, question_id)
+        question = QuizQuestion.query.get(question_id)
         if not question:
             raise ValueError("Invalid question ID.")
             

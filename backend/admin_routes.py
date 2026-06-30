@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, session, jsonify, Response
 from backend.models import db, User, Domain, Course, Syllabus, Video, Enrollment, ReferralTransaction, AdminUser, AuditLog, CourseModule, Quiz, Assignment, UserResume
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from functools import wraps
 from werkzeug.utils import secure_filename
 from sqlalchemy import and_, func, or_

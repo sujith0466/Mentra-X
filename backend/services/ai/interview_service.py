@@ -87,7 +87,7 @@ def evaluate_answer(question_data: dict, user_answer: str) -> dict:
 
     # Clean the input answer heavily for matching
     cleaned_answer = re.sub(r'[^\w\s]', '', answer)
-    words_in_answer = set(cleaned_answer.split())
+    set(cleaned_answer.split())
     
     matches = 0
     matched_keywords = []

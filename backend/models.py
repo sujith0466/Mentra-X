@@ -2,11 +2,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 
 def utcnow():
-    return datetime.now(timezone.utc).replace(tzinfo=None)
+    return datetime.utcnow().replace(tzinfo=None)
 from werkzeug.security import generate_password_hash, check_password_hash
-import uuid
-import string
-import random
 import json
 import re
 from sqlalchemy import event

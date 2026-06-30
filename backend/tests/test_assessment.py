@@ -2,7 +2,6 @@ import unittest
 from backend.app import app
 from backend.models import db, User, QuizQuestion, QuestionMetadata, AssessmentSession, AssessmentResponse, AssessmentResult
 from backend.services.assessment.difficulty_policy import DifficultyPolicy
-from backend.services.assessment.branching_engine import BranchingEngine
 from backend.services.assessment.knowledge_estimator import KnowledgeEstimator
 from backend.services.assessment.dna_seeder import DNASeeder
 from backend.services.assessment.assessment_pipeline import AssessmentPipeline

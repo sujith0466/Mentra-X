@@ -4,7 +4,7 @@ from backend.services.coding.test_runner import run_tests
 from backend.models import CodingChallenge, CodingSubmission, db
 from backend.services.mongo_service import safe_insert
 from backend.services.learning.streak_xp import update_streak
-from datetime import datetime
+from datetime import datetime, timezone
 
 coding_api_bp = Blueprint('coding_api', __name__, url_prefix='/api')
 

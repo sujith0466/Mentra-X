@@ -1,5 +1,4 @@
 import unittest
-import json
 from backend.app import app
 from backend.models import db, StudentTwinRecord
 from backend.tests.test_support import SQLiteFixtureMixin

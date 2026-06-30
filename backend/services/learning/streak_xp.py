@@ -5,7 +5,7 @@ Tracks daily learning streaks and calculates dynamic XP points
 based on student actions (progress, challenges, quizzes).
 """
 
-from datetime import datetime, date, timedelta
+from datetime import datetime, timezone, date, timedelta
 from backend.models import (
     db, LearningStreak, UserXP, LessonProgress, 
     Enrollment, CodingSubmission, QuizAttempt

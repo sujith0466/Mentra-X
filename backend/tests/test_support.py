@@ -23,7 +23,6 @@ from backend.models import (
     Enrollment,
     LearningStreak,
     LessonProgress,
-    ProjectIdea,
     ProjectTask,
     Quiz,
     QuizAnswer,

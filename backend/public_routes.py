@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, session
 from backend.models import db, Domain, Course, Video, ContactMessage, Enrollment, User, ChatbotConversation
 from backend.services.ai.rulebased_chatbot_service import build_rulebased_chatbot_payload
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 import os
 import glob

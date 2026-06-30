@@ -5,7 +5,7 @@ Populates the Education Portal database with sample domains and courses.
 """
 
 from backend.app import app, db
-from backend.models import Domain, Course, Syllabus, User
+from backend.models import Domain, Course, Syllabus
 
 def seed_database():
     """Seed the database with sample data"""

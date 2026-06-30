@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
 from backend.models import AssignmentSubmission, Course, CourseModule, Enrollment, Quiz, QuizAttempt, SkillProgress, db

@@ -5,7 +5,7 @@ def compute_and_store_health(twin_id: int) -> float:
     Computes a composite TwinHealthScore from modular states
     and stores it in the twin record.
     """
-    twin = db.session.get(StudentTwinRecord, twin_id)
+    twin = StudentTwinRecord.query.get(twin_id)
     if not twin:
         return 0.0
         

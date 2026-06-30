@@ -1,6 +1,5 @@
 """Test script for AI Chatbot API"""
 import requests
-import json
 
 api_url = 'http://localhost:5000/api/chatbot'
 

@@ -7,7 +7,7 @@ All logic is local and lightweight.
 
 from __future__ import annotations
 
-from datetime import datetime, timedelta
+from datetime import datetime, timezone, timedelta
 from typing import List
 
 from sqlalchemy.orm import joinedload
@@ -184,7 +184,7 @@ def _build_summary_text(
 
 def generate_weekly_report(user_id: int) -> dict:
     """Build a weekly AI report with strong/weak topic insights."""
-    user = db.session.get(User, user_id)
+    user = User.query.get(user_id)
     user_name = user.name if user else 'Student'
 
     courses = _course_progress_summary(user_id)

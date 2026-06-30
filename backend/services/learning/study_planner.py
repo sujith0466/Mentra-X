@@ -5,7 +5,7 @@ Creates a personalized subset of tasks (daily, weekly) based on
 enrolled courses and Phase B learning path data. Local logic only.
 """
 
-from backend.models import db, Enrollment, Course, Video
+from backend.models import Enrollment
 
 def generate_study_plan(user_id: int) -> dict:
     """

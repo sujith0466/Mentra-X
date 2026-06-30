@@ -14,7 +14,6 @@ from backend.models import (
     Quiz,
     QuizAttempt,
     UserResume,
-    Video,
 )
 from backend.services.ai.career.resume_service import CAREER_SKILL_MAP, SKILL_KEYWORDS
 from backend.services.ai.career.skill_gap_service import detect_skill_gap

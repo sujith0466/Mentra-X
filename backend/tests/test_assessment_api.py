@@ -1,7 +1,6 @@
 import unittest
-import json
 from backend.app import app
-from backend.models import db, User, QuizQuestion, QuestionMetadata, AssessmentSession, StudentTwinRecord, Quiz, Course
+from backend.models import db, User, QuizQuestion, QuestionMetadata, StudentTwinRecord, Quiz, Course
 from backend.tests.test_support import SQLiteFixtureMixin
 import uuid
 
@@ -80,7 +79,7 @@ class TestAssessmentAPI(SQLiteFixtureMixin, unittest.TestCase):
             'current_difficulty': data_start['current_difficulty']
         })
         self.assertEqual(res_ans.status_code, 200)
-        data_ans = res_ans.get_json()
+        res_ans.get_json()
         
         # 4. Complete assessment
         res_complete = self.client.post('/api/v1/assessment/complete', json={'session_id': session_id})

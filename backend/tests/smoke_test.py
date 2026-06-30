@@ -1,7 +1,6 @@
 import time
-import json
 from backend.app import app
-from backend.models import db, User
+from backend.models import User
 
 def measure(name, func, *args, **kwargs):
     t0 = time.time()

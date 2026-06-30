@@ -8,7 +8,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from backend.app import app
-from backend.models import db, User, StudentTwinRecord, TwinKnowledgeStateRecord
+from backend.models import db, StudentTwinRecord, TwinKnowledgeStateRecord
 from backend.services.twin.concept_resolver import ConceptResolver
 from backend.services.twin.twin_builder import build_initial_twin
 from backend.services.twin.twin_health import compute_and_store_health
@@ -56,7 +56,7 @@ class TestTwinCoreServices(SQLiteFixtureMixin, unittest.TestCase):
             self.assertTrue(success)
             
             # Verify version increment
-            twin_updated = db.session.get(StudentTwinRecord, twin.id)
+            twin_updated = StudentTwinRecord.query.get(twin.id)
             self.assertEqual(twin_updated.twin_version, 2)
             
             # Verify knowledge state created
@@ -67,5 +67,5 @@ class TestTwinCoreServices(SQLiteFixtureMixin, unittest.TestCase):
             # 3. Test Health
             health = compute_and_store_health(twin.id)
             self.assertGreater(health, 0.0)
-            twin_final = db.session.get(StudentTwinRecord, twin.id)
+            twin_final = StudentTwinRecord.query.get(twin.id)
             self.assertEqual(twin_final.twin_health, health)

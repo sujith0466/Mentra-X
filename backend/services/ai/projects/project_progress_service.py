@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
-from backend.models import ProjectIdea, ProjectTask, SkillProgress, StudentProject, db
+from backend.models import ProjectTask, SkillProgress, StudentProject, db
 from backend.services.community.gamification_service import award_xp
 
 

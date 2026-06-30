@@ -6,7 +6,7 @@ from backend.models import (
 )
 from backend.services.twin.concept_resolver import ConceptResolver
 from backend.services.twin.twin_model import (
-    StudentTwin, AcademicState, SkillState, LearningDNA, CareerState, ProjectState, OpportunityState
+    AcademicState, SkillState, LearningDNA, CareerState, ProjectState, OpportunityState
 )
 
 def build_initial_twin(user_id: int, exam_track: str = "JEE") -> StudentTwinRecord:
@@ -14,7 +14,7 @@ def build_initial_twin(user_id: int, exam_track: str = "JEE") -> StudentTwinReco
     Initializes a new Digital Twin by performing a massive cross-table query
     of the student's historical LMS data to build the starting 7-state representation.
     """
-    user = db.session.get(User, user_id)
+    user = User.query.get(user_id)
     if not user:
         raise ValueError("User not found")
     
@@ -33,7 +33,7 @@ def build_initial_twin(user_id: int, exam_track: str = "JEE") -> StudentTwinReco
     db.session.flush() # get ID
     
     # Academic State
-    xp = db.session.get(UserXP, user_id)
+    xp = UserXP.query.get(user_id)
     xp_total = xp.xp_points if xp else 0
     enrollments = db.session.query(Enrollment).filter_by(user_id=user_id).all()
     enrolled_courses = [e.course_id for e in enrollments]
@@ -105,4 +105,4 @@ def build_initial_twin(user_id: int, exam_track: str = "JEE") -> StudentTwinReco
     from backend.services.twin.twin_health import compute_and_store_health
     compute_and_store_health(twin.id)
     
-    return db.session.get(StudentTwinRecord, twin.id)
+    return StudentTwinRecord.query.get(twin.id)

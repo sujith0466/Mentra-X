@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import ast
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List, Optional, Tuple
 
 from backend.models import CodingChallenge, CodingSubmission, SkillProgress, db
