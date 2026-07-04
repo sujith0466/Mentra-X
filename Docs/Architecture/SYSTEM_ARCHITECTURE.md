@@ -6,17 +6,28 @@ Mentra AI Student Platform is a Flask monolith that combines LMS workflows and m
 
 ## Architecture
 
-Reflecting the actual implementation, the architecture currently includes:
-
-Existing Mentra LMS
+Frontend
 ↓
-Digital Twin Engine
+API Layer
 ↓
-Adaptive Assessment Engine
+Mastra Cognitive Swarm
 ↓
-REST API Facade
-
-**Future Architecture (Phases 4-6):** Mastra and Enkrypt are not yet implemented and are planned for future phases.
+Enterprise Runtime
+↓
+Enterprise Services
+• Explainability
+• Evaluation
+• Observability
+• Privacy
+• Dashboard
+↓
+Digital Twin
+↓
+Semantic Memory
+↓
+Assessment Engine
+↓
+Database
 
 ## Core Architecture
 
@@ -42,12 +53,12 @@ REST API Facade
 
 ## AI Layering & Phases
 
-- **Phase 0:** Architecture Freeze (✅ Complete)
-- **Phase 1:** Digital Twin Foundation (✅ Complete)
-- **Phase 2:** Adaptive Assessment Engine (✅ Complete)
-- **Phase 2.5:** Production Stabilization (✅ Complete)
-- **Phase 3:** Qdrant Memory Integration (✅ Complete)
-- **Phase 4:** Mastra Learning Agent (Planned)
-- **Phase 5:** Adaptive Teaching (Planned)
-- **Phase 6:** Enkrypt Safety Layer (Planned)
+- **Phase 0:** Foundation (✅ Complete)
+- **Phase 1:** Digital Twin (✅ Complete)
+- **Phase 2:** Assessment Intelligence (✅ Complete)
+- **Phase 3:** Semantic Memory (Qdrant) (✅ Complete)
+- **Phase 4:** Mastra Cognitive Swarm (✅ Complete)
+- **Phase 5:** Enterprise AI Platform (✅ Complete)
+- **Phase 6:** Adaptive Learning Intelligence (Planned)
+- **Phase 7:** Enkrypt Safety Layer (Planned)
 

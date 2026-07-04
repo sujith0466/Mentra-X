@@ -2,6 +2,7 @@ import time
 import hashlib
 from typing import Dict, Any
 from backend.services.orchestration.providers.llm_provider import LLMProvider
+from backend.services.observability.decorators import trace_llm_generation
 
 class MastraProvider(LLMProvider):
     """
@@ -11,6 +12,7 @@ class MastraProvider(LLMProvider):
         self.api_key = api_key
         self.model_name = "mastra-cognitive-v1"
 
+    @trace_llm_generation(provider="Mastra", model="mastra-cognitive-v1")
     def generate(self, prompt: str, context: Dict[str, Any], query: str, **kwargs) -> Dict[str, Any]:
         start_time = time.time()
         

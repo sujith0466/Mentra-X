@@ -890,3 +890,180 @@ class AssessmentResult(db.Model):
 
     def __repr__(self):
         return f'<AssessmentResult {self.session_id}>'
+
+
+class UserConsent(db.Model):
+    """Tracks explicit user opt-in/opt-out consent preferences for GDPR/COPPA compliance"""
+    __tablename__ = 'user_consents'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False, index=True)
+    consent_type = db.Column(db.String(50), nullable=False) # AI_TUTORING, SEMANTIC_MEMORY_STORAGE, BAYESIAN_PROFILING, TELEMETRY_ANALYTICS
+    status = db.Column(db.String(20), nullable=False, default='GRANTED') # GRANTED, REVOKED, PENDING
+    granted_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    revoked_at = db.Column(db.DateTime, nullable=True)
+    ip_address = db.Column(db.String(45), nullable=True)
+    policy_version = db.Column(db.String(20), default='1.0', nullable=False)
+    consent_version = db.Column(db.String(20), default='1.0', nullable=False)
+    consent_source = db.Column(db.String(50), default='WEB_APP', nullable=False)
+    locale = db.Column(db.String(10), default='en-US', nullable=False)
+    accepted_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'consent_type', name='uq_user_consent'),)
+
+    def __repr__(self):
+        return f'<UserConsent {self.user_id}:{self.consent_type}:{self.status}>'
+
+
+class PrivacyAuditLog(db.Model):
+    """Immutable audit trail for GDPR data subject requests and retention lifecycle actions"""
+    __tablename__ = 'privacy_audit_logs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=True, index=True) # Nullable if user was erased
+    action = db.Column(db.String(50), nullable=False) # EXPORT_REQUESTED, ERASURE_COMPLETED, RECTIFY_PROCESSED, CONSENT_UPDATED, ANONYMIZATION_EXECUTED
+    event_type = db.Column(db.String(50), nullable=True)
+    details = db.Column(db.JSON, nullable=True)
+    ip_address = db.Column(db.String(45), nullable=True)
+    previous_hash = db.Column(db.String(64), nullable=True)
+    current_hash = db.Column(db.String(64), nullable=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<PrivacyAuditLog {self.id}:{self.action}>'
+
+
+@db.event.listens_for(PrivacyAuditLog, 'before_insert')
+def _compute_audit_hash(mapper, connection, target):
+    import hashlib, json
+    if not target.event_type:
+        target.event_type = target.action
+    if not target.created_at:
+        target.created_at = utcnow()
+    
+    try:
+        result = connection.execute(
+            db.text("SELECT current_hash FROM privacy_audit_logs WHERE current_hash IS NOT NULL ORDER BY id DESC LIMIT 1")
+        ).fetchone()
+        prev_hash = result[0] if (result and result[0]) else "0" * 64
+    except Exception:
+        prev_hash = "0" * 64
+        
+    target.previous_hash = prev_hash
+    payload_str = f"{prev_hash}|{target.created_at.isoformat()}|{target.event_type}|{json.dumps(target.details or {}, sort_keys=True)}|{target.user_id}"
+    target.current_hash = hashlib.sha256(payload_str.encode('utf-8')).hexdigest()
+
+
+class WorkflowStateRecord(db.Model):
+    """Persistent storage for Cognitive Swarm workflow state and recovery checkpointing."""
+    __tablename__ = 'workflow_states'
+    workflow_id = db.Column(db.String(100), primary_key=True)
+    workflow_status = db.Column(db.String(50), nullable=False, default='started', index=True)
+    current_step = db.Column(db.Integer, nullable=False, default=0)
+    completed_steps = db.Column(db.JSON, nullable=True)
+    current_agent = db.Column(db.String(100), nullable=True)
+    user_id = db.Column(db.Integer, nullable=True, index=True)
+    execution_events = db.Column(db.JSON, nullable=True)
+    retry_count = db.Column(db.Integer, nullable=False, default=0)
+    error_context = db.Column(db.JSON, nullable=True)
+    consent_snapshot = db.Column(db.JSON, nullable=True)
+    state_data = db.Column(db.JSON, nullable=True)
+    started_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<WorkflowStateRecord {self.workflow_id}:{self.workflow_status}>'
+
+
+class EventRecord(db.Model):
+    """Persistent storage for Event Bus, event replay, and Dead Letter Queue (DLQ)."""
+    __tablename__ = 'event_records'
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.String(100), unique=True, nullable=False, index=True)
+    event_type = db.Column(db.String(100), nullable=False, index=True)
+    payload = db.Column(db.JSON, nullable=True)
+    status = db.Column(db.String(20), nullable=False, default='PUBLISHED', index=True) # PUBLISHED, PROCESSED, FAILED, DLQ
+    error_message = db.Column(db.Text, nullable=True)
+    retry_count = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    processed_at = db.Column(db.DateTime, nullable=True)
+
+    def __repr__(self):
+        return f'<EventRecord {self.event_id}:{self.event_type}:{self.status}>'
+
+
+class PromptVersionRecord(db.Model):
+    """Centralized versioned prompt repository supporting semantic versioning, hashing, and governance."""
+    __tablename__ = 'prompt_versions'
+    id = db.Column(db.Integer, primary_key=True)
+    prompt_id = db.Column(db.String(100), nullable=False, index=True) # e.g. "tutor.system"
+    semantic_version = db.Column(db.String(20), nullable=False) # e.g. "1.0.0"
+    prompt_hash = db.Column(db.String(64), nullable=False) # SHA256 of content
+    author = db.Column(db.String(100), nullable=False, default='system')
+    status = db.Column(db.String(20), nullable=False, default='APPROVED', index=True) # DRAFT, APPROVED, DEPRECATED
+    content = db.Column(db.Text, nullable=False)
+    change_history = db.Column(db.JSON, nullable=True)
+    tags = db.Column(db.JSON, nullable=True)
+    model_compatibility = db.Column(db.JSON, nullable=True)
+    eval_analytics = db.Column(db.JSON, nullable=True)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    __table_args__ = (db.UniqueConstraint('prompt_id', 'semantic_version', name='uq_prompt_version'),)
+
+    def __repr__(self):
+        return f'<PromptVersionRecord {self.prompt_id}:{self.semantic_version}:{self.status}>'
+
+
+class ExplainabilityRecord(db.Model):
+    """Persistent storage for workflow decision graphs, reasoning summaries, confidence, and citations."""
+    __tablename__ = 'explainability_records'
+    workflow_id = db.Column(db.String(100), primary_key=True)
+    decision_graph = db.Column(db.JSON, nullable=True)
+    reasoning_summary = db.Column(db.Text, nullable=True)
+    confidence_score = db.Column(db.Float, nullable=False, default=0.0)
+    uncertainty_score = db.Column(db.Float, nullable=False, default=0.0)
+    citations = db.Column(db.JSON, nullable=True)
+    assumptions = db.Column(db.JSON, nullable=True)
+    limitations = db.Column(db.JSON, nullable=True)
+    safety_checks = db.Column(db.JSON, nullable=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<ExplainabilityRecord {self.workflow_id}:conf={self.confidence_score}>'
+
+
+class EvaluationRecord(db.Model):
+    """Persistent storage for AI evaluation framework scores, metrics, and benchmarks."""
+    __tablename__ = 'evaluation_records'
+    id = db.Column(db.Integer, primary_key=True)
+    workflow_id = db.Column(db.String(100), nullable=True, index=True)
+    evaluation_type = db.Column(db.String(50), nullable=False, index=True) # faithfulness, hallucination, etc.
+    score = db.Column(db.Float, nullable=False)
+    reason = db.Column(db.Text, nullable=True)
+    metadata_json = db.Column(db.JSON, nullable=True)
+    provider = db.Column(db.String(50), nullable=True)
+    prompt_version = db.Column(db.String(50), nullable=True)
+    created_at = db.Column(db.DateTime, default=utcnow, nullable=False)
+
+    def __repr__(self):
+        return f'<EvaluationRecord {self.evaluation_type}:{self.score}>'
+
+
+def ensure_privacy_schema(session):
+    from sqlalchemy import text
+    commands = [
+        "ALTER TABLE user_consents ADD COLUMN consent_version VARCHAR(20) DEFAULT '1.0' NOT NULL;",
+        "ALTER TABLE user_consents ADD COLUMN consent_source VARCHAR(50) DEFAULT 'WEB_APP' NOT NULL;",
+        "ALTER TABLE user_consents ADD COLUMN locale VARCHAR(10) DEFAULT 'en-US' NOT NULL;",
+        "ALTER TABLE user_consents ADD COLUMN accepted_at DATETIME NULL;",
+        "ALTER TABLE privacy_audit_logs ADD COLUMN event_type VARCHAR(50) NULL;",
+        "ALTER TABLE privacy_audit_logs ADD COLUMN previous_hash VARCHAR(64) NULL;",
+        "ALTER TABLE privacy_audit_logs ADD COLUMN current_hash VARCHAR(64) NULL;",
+        "ALTER TABLE prompt_versions ADD COLUMN eval_analytics JSON NULL;"
+    ]
+    for cmd in commands:
+        try:
+            session.execute(text(cmd))
+            session.commit()
+        except Exception:
+            session.rollback()

@@ -117,6 +117,28 @@ Create a `.env` file in the project root with:
 
 If `.env` is missing, Mentra falls back to SQLite and default-safe settings.
 
+## Current Architecture
+
+Layer 1
+Core LMS
+
+Layer 2
+Digital Twin
+
+Layer 3
+Semantic Memory
+
+Layer 4
+Mastra Cognitive Swarm
+
+Layer 5
+Enterprise AI Platform
+
+Future
+
+Layer 6
+Adaptive Learning Intelligence
+
 ## Architecture Overview
 
 Mentra follows a modular Flask architecture:
@@ -130,14 +152,27 @@ Mentra follows a modular Flask architecture:
 
 ## Phase Development Timeline
 
-- **Phase 0:** Architecture Freeze (✅ Complete)
-- **Phase 1:** Digital Twin Foundation (✅ Complete)
-- **Phase 2:** Adaptive Assessment Engine (✅ Complete)
-- **Phase 2.5:** Production Stabilization (✅ Complete)
-- **Phase 3:** Qdrant Memory Integration (⏳ Ready)
-- **Phase 4:** Mastra Learning Agent (Planned)
-- **Phase 5:** Adaptive Teaching (Planned)
-- **Phase 6:** Enkrypt Safety Layer (Planned)
+### Completed
+- **Phase 0:** Foundation
+- **Phase 1:** Digital Twin
+- **Phase 2:** Assessment Intelligence
+- **Phase 3:** Semantic Memory (Qdrant)
+- **Phase 4:** Mastra Cognitive Swarm
+- **Phase 5:** Enterprise AI Platform
+
+### Upcoming
+
+**Phase 6 — Adaptive Learning Intelligence**
+- TutorDecisionEngine
+- LearningStyleDetector
+- DynamicPromptBuilder
+- AdaptiveDifficultyController
+- PersonalizationEngine
+- Opportunity Intelligence
+- Predictive Intervention
+
+**Future**
+- **Phase 7:** Enkrypt Safety Layer
 
 ## System Modules
 

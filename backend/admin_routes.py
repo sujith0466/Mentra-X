@@ -579,6 +579,13 @@ def dashboard():
         return redirect(url_for('public.index'))
 
 
+@admin_bp.route('/ai-operations')
+@admin_required
+def ai_operations_dashboard():
+    """Enterprise AI Operations Dashboard Command Center"""
+    return render_template('admin/ai_operations_dashboard.html')
+
+
 @admin_bp.route('/course/<int:course_id>/view')
 @admin_required
 def course_view(course_id):

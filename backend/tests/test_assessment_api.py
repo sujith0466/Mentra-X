@@ -40,6 +40,11 @@ class TestAssessmentAPI(SQLiteFixtureMixin, unittest.TestCase):
         with app.app_context():
             user = User.query.filter_by(role='student').first()
             user_id = user.id
+            twin = StudentTwinRecord.query.filter_by(user_id=user_id).first()
+            if not twin:
+                twin = StudentTwinRecord(user_id=user_id, learning_dna="{}", twin_version=1)
+                db.session.add(twin)
+                db.session.commit()
         
         with self.client.session_transaction() as session:
             session['user_id'] = user_id

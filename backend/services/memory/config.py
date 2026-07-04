@@ -8,7 +8,7 @@ class QdrantConfig:
     QDRANT_COLLECTION_PREFIX = os.getenv("QDRANT_COLLECTION_PREFIX", "mentra")
     
     # Optional API key for cloud deployments
-    QDRANT_API_KEY = os.getenv("QDRANT_API_KEY", None)
+    QDRANT_API_KEY = os.getenv("QDRANT_API_KEY") or None
     
     # Embedding Configuration
     EMBEDDING_PROVIDER = os.getenv("EMBEDDING_PROVIDER", "local").lower()

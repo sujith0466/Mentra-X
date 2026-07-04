@@ -1,6 +1,7 @@
 import logging
 from typing import Dict, Any, Callable, Optional
 from pydantic import BaseModel
+from backend.services.observability.decorators import trace_tool_call
 
 logger = logging.getLogger(__name__)
 
@@ -38,16 +39,32 @@ class ToolRegistry:
     def register_tool(self, definition: ToolDefinition, func: Callable):
         """
         Registers a tool implementation alongside its strict definition.
+        Automatically instruments the tool function with OpenTelemetry and metrics.
         """
         name = definition.name
         if name in self._tools:
             logger.warning(f"Tool {name} is already registered. Overwriting.")
         
+        if not getattr(func, "_is_instrumented", False):
+            instrumented_func = trace_tool_call(tool_name=name)(func)
+            instrumented_func._is_instrumented = True
+        else:
+            instrumented_func = func
+
         self._tools[name] = {
             "definition": definition,
-            "func": func
+            "func": instrumented_func
         }
         logger.info(f"Registered tool: {name} v{definition.version}")
+
+    def execute_tool(self, name: str, *args, **kwargs) -> Any:
+        """
+        Executes a registered tool by name with automatic instrumentation.
+        """
+        tool = self.get_tool(name)
+        if not tool or "func" not in tool:
+            raise ValueError(f"Tool {name} not found in ToolRegistry.")
+        return tool["func"](*args, **kwargs)
 
     def get_tool(self, name: str) -> Optional[Dict[str, Any]]:
         return self._tools.get(name)

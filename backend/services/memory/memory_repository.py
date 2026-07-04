@@ -79,3 +79,24 @@ class MemoryRepository:
         except Exception as e:
             logger.error(f"Failed to delete points from {prefixed_name}: {e}")
             raise
+
+    def scroll_points(self, collection_name: str, filter_conditions: List[FieldCondition], limit: int = 100) -> List[Dict[str, Any]]:
+        """Scroll points matching filter conditions without vector search."""
+        prefixed_name = self._get_prefixed_name(collection_name)
+        query_filter = Filter(must=filter_conditions) if filter_conditions else None
+        try:
+            results, _ = self.client.scroll(
+                collection_name=prefixed_name,
+                scroll_filter=query_filter,
+                limit=limit
+            )
+            return [
+                {
+                    "id": getattr(res, "id"),
+                    "payload": getattr(res, "payload")
+                }
+                for res in results
+            ]
+        except Exception as e:
+            logger.error(f"Failed to scroll points in {prefixed_name}: {e}")
+            return []

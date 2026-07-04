@@ -1,0 +1,168 @@
+<!-- AI Explainability & Evaluation Admin Widget (Phase 5 Milestone 5) -->
+<div id="aiExplainabilityWidget" class="card bg-dark text-white border-info mb-4" style="border-radius: 10px; box-shadow: 0 4px 15px rgba(0, 195, 255, 0.15);">
+    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-info">
+        <h5 class="mb-0 text-info"><i class="fas fa-brain me-2"></i>AI Cognitive Swarm Telemetry & Explainability</h5>
+        <button class="btn btn-sm btn-outline-info" type="button" data-bs-toggle="collapse" data-bs-target="#explainabilityWidgetBody" aria-expanded="false" aria-controls="explainabilityWidgetBody">
+            <i class="fas fa-chevron-down"></i> Toggle Telemetry
+        </button>
+    </div>
+    <div id="explainabilityWidgetBody" class="collapse">
+        <div class="card-body">
+            <!-- Input to query workflow ID -->
+            <div class="row mb-3">
+                <div class="col-md-8">
+                    <input type="text" id="widgetWorkflowIdInput" class="form-control bg-secondary text-white border-secondary" placeholder="Enter Workflow ID (e.g. wf-tutor-101)">
+                </div>
+                <div class="col-md-4">
+                    <button class="btn btn-info w-100" onclick="loadExplainabilityTelemetry()"><i class="fas fa-search me-1"></i> Inspect Workflow</button>
+                </div>
+            </div>
+
+            <!-- Telemetry Metrics Bar -->
+            <div id="telemetryMetricsBar" class="row text-center mb-3 d-none">
+                <div class="col-md-3">
+                    <div class="p-2 border rounded border-info">
+                        <small class="text-muted d-block">Confidence Score</small>
+                        <span id="widgetConfidenceScore" class="h5 text-success">0.00</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 border rounded border-info">
+                        <small class="text-muted d-block">Overall Quality Eval</small>
+                        <span id="widgetEvalScore" class="h5 text-info">0.00</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 border rounded border-info">
+                        <small class="text-muted d-block">Execution Latency</small>
+                        <span id="widgetLatency" class="h5 text-warning">0 ms</span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-2 border rounded border-info">
+                        <small class="text-muted d-block">Provider / Prompt Ver</small>
+                        <span id="widgetProviderVer" class="h6 text-light">Mastra / 1.0.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs for Detailed Views -->
+            <ul class="nav nav-tabs border-secondary mb-3" id="explainabilityTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active text-info bg-transparent" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graph-pane" type="button" role="tab">Decision Graph DAG</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-info bg-transparent" id="eval-tab" data-bs-toggle="tab" data-bs-target="#eval-pane" type="button" role="tab">AI Evaluation Metrics</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link text-info bg-transparent" id="cit-tab" data-bs-toggle="tab" data-bs-target="#cit-pane" type="button" role="tab">Grounded Citations</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="explainabilityTabsContent">
+                <!-- Decision Graph Pane -->
+                <div class="tab-pane fade show active" id="graph-pane" role="tabpanel">
+                    <p class="text-muted small">Directed Acyclic Graph (DAG) execution sequence:</p>
+                    <div id="widgetDecisionGraphContainer" class="p-3 bg-black rounded" style="font-family: monospace; max-height: 250px; overflow-y: auto;">
+                        <span class="text-muted">No decision graph loaded.</span>
+                    </div>
+                </div>
+
+                <!-- Evaluation Pane -->
+                <div class="tab-pane fade" id="eval-pane" role="tabpanel">
+                    <div id="widgetEvaluationContainer" class="table-responsive">
+                        <table class="table table-dark table-sm table-bordered">
+                            <thead>
+                                <tr><th>Metric</th><th>Score</th><th>Reason / Analysis</th></tr>
+                            </thead>
+                            <tbody id="widgetEvaluationBody">
+                                <tr><td colspan="3" class="text-muted text-center">No evaluation data loaded.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Citations Pane -->
+                <div class="tab-pane fade" id="cit-pane" role="tabpanel">
+                    <ul id="widgetCitationsList" class="list-group list-group-flush bg-transparent">
+                        <li class="list-group-item bg-transparent text-muted">No grounded citations loaded.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+async function loadExplainabilityTelemetry() {
+    const wfId = document.getElementById('widgetWorkflowIdInput').value.trim();
+    if (!wfId) return alert('Please enter a valid Workflow ID.');
+
+    try {
+        // Fetch workflow explainability
+        const expResp = await fetch(`/api/explainability/workflow/${wfId}`);
+        const expJson = await expResp.json();
+        
+        // Fetch evaluations
+        const evalResp = await fetch(`/api/explainability/evaluation/${wfId}`);
+        const evalJson = await evalResp.json();
+
+        if (expJson.status === 'success') {
+            const data = expJson.data;
+            document.getElementById('telemetryMetricsBar').classList.remove('d-none');
+            document.getElementById('widgetConfidenceScore').innerText = data.confidence_score || '0.00';
+            
+            // Render Decision Graph
+            const graphContainer = document.getElementById('widgetDecisionGraphContainer');
+            if (data.decision_graph && data.decision_graph.nodes) {
+                let html = '<ul class="list-unstyled mb-0">';
+                for (const [nid, node] of Object.entries(data.decision_graph.nodes)) {
+                    html += `<li><span class="badge bg-info">${node.node_type}</span> <strong>${node.label}</strong> <span class="text-muted">(${node.latency_ms}ms)</span> [${node.status}]</li>`;
+                }
+                html += '</ul>';
+                graphContainer.innerHTML = html;
+            } else {
+                graphContainer.innerHTML = '<span class="text-muted">Graph data unavailable.</span>';
+            }
+
+            // Render Citations
+            const citList = document.getElementById('widgetCitationsList');
+            if (data.citations && data.citations.length > 0) {
+                citList.innerHTML = data.citations.map(c => `
+                    <li class="list-group-item bg-dark text-white border-secondary">
+                        <span class="badge bg-secondary">${c.source_type}</span> <strong>Ref: ${c.reference_id}</strong>
+                        <p class="mb-0 small text-muted">"${c.snippet}" (Score: ${c.relevance_score})</p>
+                    </li>
+                `).join('');
+            } else {
+                citList.innerHTML = '<li class="list-group-item bg-transparent text-muted">No citations recorded.</li>';
+            }
+        }
+
+        if (evalJson.status === 'success') {
+            const evals = evalJson.evaluations;
+            const evalBody = document.getElementById('widgetEvaluationBody');
+            if (evals && evals.length > 0) {
+                let totalScore = 0;
+                let lat = 0;
+                let prov = 'Mastra';
+                let ver = '1.0.0';
+                evalBody.innerHTML = evals.map(e => {
+                    totalScore += e.score;
+                    if (e.metadata && e.metadata.latency_ms) lat = e.metadata.latency_ms;
+                    if (e.provider) prov = e.provider;
+                    if (e.prompt_version) ver = e.prompt_version;
+                    return `<tr><td><span class="badge bg-info">${e.evaluation_type}</span></td><td><strong>${e.score}</strong></td><td class="small text-muted">${e.reason}</td></tr>`;
+                }).join('');
+                document.getElementById('widgetEvalScore').innerText = (totalScore / evals.length).toFixed(2);
+                document.getElementById('widgetLatency').innerText = `${lat} ms`;
+                document.getElementById('widgetProviderVer').innerText = `${prov} / ${ver}`;
+            } else {
+                evalBody.innerHTML = '<tr><td colspan="3" class="text-muted text-center">No evaluations found.</td></tr>';
+            }
+        }
+    } catch (err) {
+        console.error('Failed to load explainability telemetry:', err);
+    }
+}
+</script>

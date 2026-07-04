@@ -2,6 +2,7 @@ import time
 import hashlib
 from typing import Dict, Any
 from backend.services.orchestration.providers.llm_provider import LLMProvider
+from backend.services.observability.decorators import trace_llm_generation
 
 class OpenRouterProvider(LLMProvider):
     """
@@ -11,6 +12,7 @@ class OpenRouterProvider(LLMProvider):
         self.api_key = api_key
         self.model_name = model
 
+    @trace_llm_generation(provider="OpenRouter", model="openrouter-dynamic")
     def generate(self, prompt: str, context: Dict[str, Any], query: str, **kwargs) -> Dict[str, Any]:
         start_time = time.time()
         

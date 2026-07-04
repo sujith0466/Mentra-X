@@ -2,6 +2,7 @@ import time
 import hashlib
 from typing import Dict, Any
 from backend.services.orchestration.providers.llm_provider import LLMProvider
+from backend.services.observability.decorators import trace_llm_generation
 
 class MockProvider(LLMProvider):
     """
@@ -10,6 +11,7 @@ class MockProvider(LLMProvider):
     def __init__(self, default_response: str = "Simulated response"):
         self.default_response = default_response
 
+    @trace_llm_generation(provider="MockProvider", model="mock-model-v1")
     def generate(self, prompt: str, context: Dict[str, Any], query: str, **kwargs) -> Dict[str, Any]:
         start_time = time.time()
         

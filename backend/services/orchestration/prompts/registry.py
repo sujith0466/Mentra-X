@@ -30,8 +30,16 @@ class PromptRegistry:
     def get_prompt(self, agent_name: str) -> str:
         """
         Gets the prompt for an agent. Normalizes name (e.g., TutorAgent -> tutor).
+        Checks versioned PromptRepository first before falling back to filesystem.
         """
         key = agent_name.lower().replace("agent", "")
+        try:
+            from backend.services.orchestration.prompt_repository import PromptRepository
+            repo_content = PromptRepository.get_active_prompt_content(key)
+            if repo_content:
+                return repo_content
+        except Exception:
+            pass
         if key not in self._prompts:
             # Fallback to an empty or default prompt if not found
             logger.warning(f"Prompt for {agent_name} ({key}.md) not found.")

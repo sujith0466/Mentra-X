@@ -15,6 +15,7 @@
                 <h1>Platform Operations Dashboard</h1>
                 <p>Real-time view of growth, quality, enrollment health, and course lifecycle readiness.</p>
                 <div class="dash-hero-actions">
+                    <a href="{{ url_for('admin.ai_operations_dashboard') }}" class="btn btn-primary-soft" style="background: linear-gradient(135deg, #6366f1, #06b6d4); color: white; font-weight: 600;">AI Operations Console</a>
                     <a href="{{ url_for('admin.manage_courses') }}" class="btn btn-primary-soft">Course Operations</a>
                     <a href="{{ url_for('admin.manage_students') }}" class="btn btn-secondary-soft">Student Operations</a>
                     <a href="{{ url_for('admin.audit_logs') }}" class="btn btn-secondary-soft">Audit Logs</a>
@@ -33,6 +34,8 @@
             <article class="dash-kpi-card"><p class="dash-kpi-label">Total Enrollments</p><p class="dash-kpi-value">{{ total_enrollments }}</p><p class="dash-kpi-sub">Platform registrations</p></article>
             <article class="dash-kpi-card"><p class="dash-kpi-label">Total Domains</p><p class="dash-kpi-value">{{ total_domains }}</p><p class="dash-kpi-sub">Learning categories</p></article>
         </section>
+
+        {% include 'components/explainability_widget.html' %}
 
         <section class="dash-grid-3">
             <a href="{{ url_for('admin.manage_courses', content='none') }}" class="dash-card-link"><strong>Needs Content</strong><span>Identify courses missing syllabus or videos</span></a>

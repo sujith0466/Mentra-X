@@ -15,7 +15,7 @@ class MemoryClient:
             try:
                 cls._instance = QdrantClient(
                     url=url,
-                    api_key=QdrantConfig.QDRANT_API_KEY,
+                    api_key=QdrantConfig.QDRANT_API_KEY or None,
                     timeout=10.0,
                     prefer_grpc=True
                 )

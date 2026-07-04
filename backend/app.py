@@ -113,8 +113,9 @@ from backend.routes.experience_routes import experience_routes_bp
 from backend.routes.twin_routes import twin_bp
 from backend.routes.assessment_routes import assessment_bp
 from backend.routes.memory_routes import memory_bp
-
-
+from backend.routes.privacy_routes import privacy_bp
+from backend.routes.explainability_routes import explainability_bp
+from backend.routes.dashboard_routes import dashboard_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(student_bp)
@@ -142,7 +143,13 @@ app.register_blueprint(experience_routes_bp)
 app.register_blueprint(twin_bp)
 app.register_blueprint(assessment_bp)
 app.register_blueprint(memory_bp)
+app.register_blueprint(privacy_bp)
+app.register_blueprint(explainability_bp)
+app.register_blueprint(dashboard_bp)
 
+# Register Phase 5 Enterprise Observability Middleware
+from backend.services.observability.middleware import observability_middleware
+observability_middleware(app)
 
 @app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
@@ -903,6 +910,11 @@ with app.app_context():
         db_path = os.path.join(app.instance_path, 'portal.db')
         _repair_legacy_schema(db_path)
     db.create_all()
+    try:
+        from backend.models import ensure_privacy_schema
+        ensure_privacy_schema(db.session)
+    except Exception:
+        pass
     _sync_course_image_references()
 
     try:

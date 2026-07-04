@@ -5,6 +5,7 @@
     <div class="admin-role">Role: {{ role.replace('_', ' ')|title }}</div>
     <nav>
         <a href="{{ url_for('admin.dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('admin.ai_operations_dashboard') }}" style="color: #38bdf8; font-weight: 600;">AI Operations Console</a>
         <a href="{{ url_for('admin.manage_courses') }}">Courses</a>
         <a href="{{ url_for('admin_quiz.quizzes_overview') }}">Quizzes</a>
         <a href="{{ url_for('admin_assignment.assignments_overview') }}">Assignments</a>

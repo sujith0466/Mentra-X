@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentra X — Enterprise AI Operations Console</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/ai_operations_dashboard.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body class="ai-ops-theme">
+
+    <!-- Header & Command Center Bar -->
+    <header class="ai-ops-header">
+        <div class="ai-ops-title-group">
+            <h1>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                    <polyline points="2 17 12 22 22 17"></polyline>
+                    <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+                Mentra X AI Operations
+            </h1>
+            <p>Phase 5 Milestone 6 — Persistent Runtime, Cognitive Swarm & Governance Telemetry</p>
+        </div>
+        
+        <div class="ai-ops-controls">
+            <div class="live-indicator" title="Live telemetry polling every 10 seconds">
+                <span class="live-dot"></span>
+                <span>Live Swarm Telemetry</span>
+            </div>
+            <span style="font-size: 0.8rem; color: #64748b;">Last synced: <strong id="last-updated" style="color: #cbd5e1;">Just now</strong></span>
+            <button id="btn-refresh" class="btn-refresh">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"></path><path d="M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                Sync Telemetry
+            </button>
+            <a href="{{ url_for('admin.dashboard') }}" style="color: #94a3b8; text-decoration: none; font-size: 0.85rem; padding: 0.5rem 1rem; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;">&larr; Back to LMS Admin</a>
+        </div>
+    </header>
+
+    <!-- Polling Error Warning Banner -->
+    <div id="polling-warning" style="display: none; background: rgba(239, 68, 68, 0.2); border-bottom: 1px solid #ef4444; padding: 0.75rem 2.5rem; color: #fca5a5; font-size: 0.85rem; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            <span>Live Polling Degraded: Unable to reach telemetry server. Displaying cached data.</span>
+        </div>
+    </div>
+
+    <!-- Tabbed Navigation Bar -->
+    <nav class="ai-ops-tabs">
+        <button class="tab-btn active" data-tab="overview">Overview</button>
+        <button class="tab-btn" data-tab="runtime">Persistent Runtime</button>
+        <button class="tab-btn" data-tab="providers">AI Providers & Costs</button>
+        <button class="tab-btn" data-tab="prompts">Prompt Governance</button>
+        <button class="tab-btn" data-tab="evaluation">Quality & Explainability</button>
+        <button class="tab-btn" data-tab="privacy">Privacy & GDPR Layer</button>
+        <button class="tab-btn" data-tab="observability">Observability & Traces</button>
+        <button class="tab-btn" data-tab="swarm">Cognitive Swarm Engine</button>
+    </nav>
+
+    <!-- Main Content Container -->
+    <main class="ai-ops-container">
+
+        <!-- TAB 1: EXECUTIVE OVERVIEW -->
+        <section id="tab-overview" class="tab-pane active">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label"><span>Runtime Health</span></div>
+                    <div id="kpi-runtime-status" class="status-badge status-healthy" style="font-size: 1.1rem; padding: 0.4rem 1rem;">HEALTHY</div>
+                    <div class="kpi-subtext">5 core subsystems operational</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label"><span>Active Workflows</span></div>
+                    <div id="kpi-active-workflows" class="kpi-value">5</div>
+                    <div class="kpi-subtext">Multi-agent orchestrations in progress</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label"><span>Running Agents</span></div>
+                    <div id="kpi-running-agents" class="kpi-value">15</div>
+                    <div class="kpi-subtext">Cognitive Swarm active threads</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label"><span>Overall AI Quality</span></div>
+                    <div id="kpi-ai-quality" class="kpi-value">92%</div>
+                    <div class="kpi-subtext">Faithfulness, Hallucination & Safety SLA</div>
+                </div>
+            </div>
+
+            <div class="charts-grid">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Cognitive Swarm Execution State</h3>
+                        <span style="font-size: 0.8rem; color: #64748b;">Real-time workflow distribution</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-overview-swarm"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3>Enterprise AI Quality Percentiles</h3>
+                        <span style="font-size: 0.8rem; color: #64748b;">Evaluation engine benchmarks</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="chart-overview-quality"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: PERSISTENT RUNTIME -->
+        <section id="tab-runtime" class="tab-pane">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label">Workflow Store (SQLite/SQLAlchemy)</div>
+                    <div id="badge-wstore" class="status-badge status-healthy">HEALTHY</div>
+                    <div class="kpi-subtext">State persistence & checkpoint recovery operational</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Event Bus (Kafka/Redis DLQ)</div>
+                    <div id="badge-ebus" class="status-badge status-healthy">HEALTHY</div>
+                    <div class="kpi-subtext">Dead letter queue processing throughput normal</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Prompt Repository</div>
+                    <div id="badge-prepo" class="status-badge status-healthy">HEALTHY</div>
+                    <div class="kpi-subtext">Versioned schema governance & templates locked</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Qdrant Vector Memory</div>
+                    <div id="badge-mem" class="status-badge status-healthy">HEALTHY</div>
+                    <div class="kpi-subtext">5 isolated student collections active</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: AI PROVIDERS & COSTS -->
+        <section id="tab-providers" class="tab-pane">
+            <div class="charts-grid" style="margin-bottom: 2rem;">
+                <div class="glass-card" style="grid-column: 1 / -1;">
+                    <div class="card-header">
+                        <h3>Model Provider Economics & Latency SLA</h3>
+                        <span style="font-size: 0.8rem; color: #64748b;">Mastra vs OpenRouter vs Local Mock</span>
+                    </div>
+                    <div class="chart-container" style="height: 340px;">
+                        <canvas id="chart-providers"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card">
+                <div class="card-header">
+                    <h3>Detailed Provider Telemetry Table</h3>
+                </div>
+                <div class="table-responsive">
+                    <table class="ai-ops-table">
+                        <thead>
+                            <tr>
+                                <th>Provider</th>
+                                <th>Total Requests</th>
+                                <th>Error Count</th>
+                                <th>Tokens Consumed</th>
+                                <th>Estimated Cost (USD)</th>
+                                <th>Avg Latency</th>
+                                <th>Success SLA</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-providers-body">
+                            <!-- Populated dynamically via ai_operations_dashboard.js -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: PROMPT GOVERNANCE -->
+        <section id="tab-prompts" class="tab-pane">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label">Active Prompt Schema</div>
+                    <div id="kpi-prompt-version" class="kpi-value">1.0.0</div>
+                    <div class="kpi-subtext">Locked Enterprise Template</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Total Prompt Tokens</div>
+                    <div id="kpi-prompt-tokens" class="kpi-value">45,000</div>
+                    <div class="kpi-subtext">Aggregated across all deployments</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Avg Cost / Evaluation</div>
+                    <div id="kpi-prompt-cost" class="kpi-value">$0.0125</div>
+                    <div class="kpi-subtext">Highly optimized prompt efficiency</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Rollback Readiness</div>
+                    <div class="status-badge status-healthy">AVAILABLE</div>
+                    <div class="kpi-subtext">Instant version rollback enabled</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: QUALITY & EXPLAINABILITY -->
+        <section id="tab-evaluation" class="tab-pane">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label">Faithfulness Score</div>
+                    <div id="kpi-faithfulness" class="kpi-value">91%</div>
+                    <div class="kpi-subtext">Verified grounded reasoning</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Hallucination Resistance</div>
+                    <div id="kpi-hallucination" class="kpi-value">98%</div>
+                    <div class="kpi-subtext">Strict RAG context checking</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Safety SLA Compliance</div>
+                    <div class="kpi-value" style="color: #34d399;">99%</div>
+                    <div class="kpi-subtext">Zero safety violations detected</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: PRIVACY & GDPR LAYER -->
+        <section id="tab-privacy" class="tab-pane">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label">Active Student Consents</div>
+                    <div id="kpi-active-consents" class="kpi-value">0</div>
+                    <div class="kpi-subtext">GDPR Art. 6 & 7 compliant</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Revoked Consents</div>
+                    <div id="kpi-revoked-consents" class="kpi-value">0</div>
+                    <div class="kpi-subtext">Immediate data isolation enforced</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Audit Chain Integrity</div>
+                    <div id="kpi-privacy-integrity" class="status-badge status-healthy" style="font-size: 1rem;">VERIFIED</div>
+                    <div class="kpi-subtext">SHA-256 tamper-proof hash chain</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Retention Purges Run</div>
+                    <div id="kpi-retention-jobs" class="kpi-value">0</div>
+                    <div class="kpi-subtext">Automated 30-day lifecycle cleanup</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 7: OBSERVABILITY & TRACES -->
+        <section id="tab-observability" class="tab-pane">
+            <div class="glass-card" style="margin-bottom: 2rem;">
+                <div class="card-header">
+                    <h3>OpenTelemetry Subsystem Latency Profile</h3>
+                    <span style="font-size: 0.8rem; color: #64748b;">Average execution time across pipeline steps</span>
+                </div>
+                <div class="chart-container" style="height: 320px;">
+                    <canvas id="chart-observability"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 8: COGNITIVE SWARM ENGINE -->
+        <section id="tab-swarm" class="tab-pane">
+            <div class="kpi-grid">
+                <div class="glass-card">
+                    <div class="kpi-label">Average Orchestration Latency</div>
+                    <div id="kpi-avg-latency" class="kpi-value">850 ms</div>
+                    <div class="kpi-subtext">End-to-end multi-agent execution</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Event Throughput / Min</div>
+                    <div class="kpi-value">45.2</div>
+                    <div class="kpi-subtext">Kafka/Redis event bus messages</div>
+                </div>
+                <div class="glass-card">
+                    <div class="kpi-label">Dead Letter Queue Depth</div>
+                    <div class="kpi-value" style="color: #34d399;">0</div>
+                    <div class="kpi-subtext">No stalled or dropped messages</div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="{{ url_for('static', filename='js/ai_operations_dashboard.js') }}"></script>
+</body>
+</html>
