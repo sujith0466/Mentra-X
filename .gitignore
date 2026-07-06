@@ -5,6 +5,9 @@ __pycache__/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+.tox/
 
 # Virtual environments
 .venv/
@@ -16,7 +19,7 @@ ENV/
 instance/
 *.db
 *.sqlite3
-*.log
+backend/uploads/
 uploads/
 !uploads/.gitkeep
 
@@ -32,17 +35,21 @@ dist/
 *.egg-info/
 .env
 
-# Additional rules
-.env
-.venv/
-venv/
-__pycache__/
-*.pyc
-backend/uploads/
-uploads/
-*.old.pdf
+# Node/React
 node_modules/
+.vite/
+frontend/dist/
+coverage/
 
+# Temporary and Scratch Files
+*.log
+*.tmp
+*.bak
+*.orig
+*.rej
+
+# Test & Configuration
+pytest.ini
 architecture.json
 
 Docs/ADR/
@@ -51,3 +58,9 @@ Docs/Engineering/
 Docs/Errors/
 Docs/Playbooks/
 Docs/Roadmap/
+Docs/Architecture/Phase6
+
+pytest.ini
+
+
+frontend-backup/

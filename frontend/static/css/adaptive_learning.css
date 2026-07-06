@@ -1,0 +1,118 @@
+/*
+Mentra X — Adaptive Learning Intelligence Stylesheet (Phase 6 Layer 6)
+Provides styling for pedagogical teaching level badges, cognitive pace indicators,
+fatigue break modals, and adaptive study roadmaps.
+*/
+
+.level-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.025em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Level 1: Direct - Clean, minimal blue */
+.level-badge.level-1 {
+    background-color: #e0f2fe;
+    color: #0369a1;
+    border: 1px solid #bae6fd;
+}
+
+/* Level 2: Worked Example - Crisp emerald green */
+.level-badge.level-2 {
+    background-color: #d1fae5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+}
+
+/* Level 3: Mistake Analysis - Diagnostic amber/orange */
+.level-badge.level-3 {
+    background-color: #fef3c7;
+    color: #b45309;
+    border: 1px solid #fde68a;
+}
+
+/* Level 4: Visual Analogy - Vibrant purple/violet */
+.level-badge.level-4 {
+    background-color: #ede9fe;
+    color: #6d28d9;
+    border: 1px solid #ddd6fe;
+}
+
+/* Level 5: Alternative Paradigm - Lateral pink/rose */
+.level-badge.level-5 {
+    background-color: #fce7f3;
+    color: #be185d;
+    border: 1px solid #fbcfe8;
+}
+
+/* Style preference indicators */
+.style-tag {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* Fatigue Intervention Modal */
+.fatigue-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.fatigue-modal-card {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    max-width: 450px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    text-align: center;
+}
+
+.fatigue-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.75rem;
+}
+
+.fatigue-modal-body {
+    font-size: 0.95rem;
+    color: #475569;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+}
+
+.fatigue-btn-primary {
+    background: #3b82f6;
+    color: #ffffff;
+    padding: 0.6rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.fatigue-btn-primary:hover {
+    background: #2563eb;
+}

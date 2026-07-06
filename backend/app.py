@@ -116,6 +116,8 @@ from backend.routes.memory_routes import memory_bp
 from backend.routes.privacy_routes import privacy_bp
 from backend.routes.explainability_routes import explainability_bp
 from backend.routes.dashboard_routes import dashboard_bp
+from backend.routes.adaptive_routes import adaptive_bp
+from backend.routes.safety_routes import safety_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(student_bp)
@@ -146,6 +148,8 @@ app.register_blueprint(memory_bp)
 app.register_blueprint(privacy_bp)
 app.register_blueprint(explainability_bp)
 app.register_blueprint(dashboard_bp)
+app.register_blueprint(adaptive_bp)
+app.register_blueprint(safety_bp)
 
 # Register Phase 5 Enterprise Observability Middleware
 from backend.services.observability.middleware import observability_middleware
@@ -792,7 +796,27 @@ def _repair_legacy_schema(database_path):
 # Create database tables and seed default admin user
 @app.before_request
 def before_request():
-    """Run before each request"""
+    """Run before each request: Enterprise React Cutover Interceptor"""
+    if os.getenv('MENTRA_FRONTEND_MODE', 'react').lower() == 'react' and not app.config.get('TESTING'):
+        if request.method == 'GET':
+            path = request.path.lstrip('/')
+            
+            # Allow API, Auth API, Student API, Admin API, static, assets, uploads, and health check endpoints to pass through to standard Flask routing
+            if (path.startswith('api/') or path.startswith('auth/') or 
+                path.startswith('student/api/') or path.startswith('admin/api/') or 
+                path.startswith('static/') or path.startswith('assets/') or 
+                path.startswith('uploads/') or path in ['db-check', 'mongo-check', 'mongo-test-insert']):
+                return None
+            
+            dist_dir = os.path.join(root_dir, 'frontend', 'dist')
+            # Check if direct file in root of dist (e.g., favicon.svg, robots.txt)
+            if path and os.path.isfile(os.path.join(dist_dir, path)):
+                return send_from_directory(dist_dir, path)
+                
+            # For all page navigation requests, serve React SPA index.html
+            spa_index = os.path.join(dist_dir, 'index.html')
+            if os.path.exists(spa_index):
+                return send_from_directory(dist_dir, 'index.html')
 
 @app.context_processor
 def inject_user():
@@ -889,9 +913,25 @@ def chatbot_ask():
             "error": "An error occurred processing your question"
         }), 500
 
+# ============================================
+# REACT SPA STATIC ASSETS ROUTING
+# ============================================
+@app.route('/assets/<path:filename>')
+def serve_spa_assets(filename):
+    """Serve Vite production bundle assets from frontend/dist/assets"""
+    spa_assets_dir = os.path.join(root_dir, 'frontend', 'dist', 'assets')
+    return send_from_directory(spa_assets_dir, filename)
+
 # Error handlers
 @app.errorhandler(404)
 def not_found_error(error):
+    if (request.path.startswith('/api/') or request.path.startswith('/auth/') or 
+        request.path.startswith('/student/api/') or request.path.startswith('/admin/api/')):
+        return jsonify({'error': 'API endpoint not found', 'path': request.path}), 404
+    if os.getenv('MENTRA_FRONTEND_MODE', 'react').lower() == 'react' and not app.config.get('TESTING'):
+        dist_dir = os.path.join(root_dir, 'frontend', 'dist')
+        if os.path.exists(os.path.join(dist_dir, 'index.html')):
+            return send_from_directory(dist_dir, 'index.html')
     return render_template('errors/404.html'), 404
 
 @app.errorhandler(500)

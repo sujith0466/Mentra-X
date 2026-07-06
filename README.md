@@ -6,7 +6,7 @@
 - **Track:** Student Doubt-Solving & Learning Agent
 - **Round-1 Deliverables:** `Docs/Round-1/`
 
-Mentra X is an AI-powered student learning ecosystem built with Flask and SQLite. It combines a full LMS with layered AI systems for learning support, career growth, coding practice, mock interviews, project building, community engagement, and multi-agent assistance.
+Mentra X is an AI-powered enterprise student learning ecosystem built with a React 18 + TypeScript + Vite Single Page Application (SPA) frontend, backed by a Flask REST API monolith and hybrid database persistence (MySQL primary + MongoDB additive logs). It combines a full LMS with layered cognitive AI swarms for learning support, career growth, coding practice, mock interviews, project building, community engagement, and Enkrypt Layer 6 safety governance.
 
 ## Project Overview
 
@@ -117,62 +117,43 @@ Create a `.env` file in the project root with:
 
 If `.env` is missing, Mentra falls back to SQLite and default-safe settings.
 
-## Current Architecture
+## Current Enterprise Architecture
 
-Layer 1
-Core LMS
-
-Layer 2
-Digital Twin
-
-Layer 3
-Semantic Memory
-
-Layer 4
-Mastra Cognitive Swarm
-
-Layer 5
-Enterprise AI Platform
-
-Future
-
-Layer 6
-Adaptive Learning Intelligence
+Layer 1: Core LMS (Auth, Courses, Video Player, RBAC)
+Layer 2: Digital Twin Graph (Cognitive Student Knowledge State)
+Layer 3: Semantic Memory (Qdrant Vector Database Swarm)
+Layer 4: Mastra Cognitive Swarm (Specialized AI Agents)
+Layer 5: Enterprise AI Platform (Explainability, Telemetry, Observability)
+Layer 6: Adaptive Learning Intelligence (TutorDecisionEngine, Opportunity Intelligence)
+Layer 7: Enkrypt Safety Layer 6 Governance (Real-Time Safety Verification & Audit)
+Layer 8: Weakness Intelligence (🔒 Locked & Frozen in Certified Production Baseline)
 
 ## Architecture Overview
 
-Mentra follows a modular Flask architecture:
+Mentra follows a decoupled client-server enterprise architecture:
 
-- `app.py` configures the application, SQLite database, and blueprints
-- route modules define LMS, AI, and community user flows
-- `services/ai/` contains AI-focused feature modules grouped by domain
-- `services/community/` contains community and gamification logic
-- `models.py` stores all SQLAlchemy models
-- Jinja templates render student, admin, public, coding, interview, project, and community pages
+- `frontend/` houses the production React 18 + TypeScript + Vite SPA, styled with Tailwind CSS and Framer Motion, utilizing Zustand and TanStack Query for state management.
+- `app.py` configures the backend WSGI server, SPA catch-all interceptor (`@app.before_request`), database sessions, and REST API blueprints.
+- Route modules under `backend/routes/` define dedicated JSON REST APIs (`/api/*`, `/auth/*`, `/student/api/*`, `/admin/api/*`).
+- `backend/services/` contains modular AI swarms (`services/ai/`), Digital Twin engines (`services/twin/`), Assessment seeders (`services/assessment/`), and Orchestration loops.
+- `backend/models.py` stores SQLAlchemy models for MySQL, while MongoDB handles additive AI telemetry logging.
+- Rollback Layer: Legacy Jinja templates and static assets are preserved inside `frontend/templates/` and `frontend/static/`. Setting `MENTRA_FRONTEND_MODE='legacy'` restores instant server-side rendering without code deploys.
 
 ## Phase Development Timeline
 
-### Completed
-- **Phase 0:** Foundation
-- **Phase 1:** Digital Twin
-- **Phase 2:** Assessment Intelligence
-- **Phase 3:** Semantic Memory (Qdrant)
-- **Phase 4:** Mastra Cognitive Swarm
-- **Phase 5:** Enterprise AI Platform
+### Certified & Completed
+- **Phase 0:** Foundation (✅ Complete)
+- **Phase 1:** Digital Twin (✅ Complete)
+- **Phase 2:** Assessment Intelligence (✅ Complete)
+- **Phase 3:** Semantic Memory (Qdrant) (✅ Complete)
+- **Phase 4:** Mastra Cognitive Swarm (✅ Complete)
+- **Phase 5:** Enterprise AI Platform (✅ Complete)
+- **Phase 6:** Adaptive Learning Intelligence (✅ Complete & Certified)
+- **Phase 7:** Enkrypt Safety Layer 6 Governance (✅ Complete & Certified)
+- **Phase 9:** Production Readiness & React Cutover (✅ Complete & Certified)
 
-### Upcoming
-
-**Phase 6 — Adaptive Learning Intelligence**
-- TutorDecisionEngine
-- LearningStyleDetector
-- DynamicPromptBuilder
-- AdaptiveDifficultyController
-- PersonalizationEngine
-- Opportunity Intelligence
-- Predictive Intervention
-
-**Future**
-- **Phase 7:** Enkrypt Safety Layer
+### Locked Baseline
+- **Phase 8:** Weakness Intelligence (🔒 Locked pending explicit executive authorization)
 
 ## System Modules
 
@@ -218,44 +199,65 @@ Mentra follows a modular Flask architecture:
 ### Requirements
 
 - Python 3.11+ or compatible recent Python version
-- pip
+- Node.js 18+ and npm
+- MySQL 8.0+ and MongoDB 6.0+ (optional for local dev; SQLite fallback supported)
 
-### Install dependencies
+### Install Dependencies
 
 ```powershell
+# 1. Install Backend Dependencies
 python -m pip install -r requirements.txt
+
+# 2. Install Frontend SPA Dependencies
+cd frontend
+npm install
 ```
 
 ## Running the Project
 
-Start the Flask app from the workspace root:
-
+### Production Mode (Serving React SPA via Flask Interceptor)
 ```powershell
+# Build the production React bundle
+cd frontend
+npm run build
+cd ..
+
+# Start Flask WSGI server (defaults to MENTRA_FRONTEND_MODE="react")
+python run.py
+```
+* Access SPA Application: `http://localhost:5000/`
+* Access REST API: `http://localhost:5000/api/v1/...`
+
+### Local Development Mode (Vite Dev Server + Flask API)
+```powershell
+# Terminal 1: Start Flask REST API Backend on port 5000
 python run.py
 
+# Terminal 2: Start Vite Dev Server on port 5173 (proxies API requests to 5000)
+cd frontend
+npm run dev
 ```
-
-The application uses SQLite and stores data in `portal.db` under the instance directory.
 
 ## Running Tests
 
-Run the complete test suite with:
+Run the enterprise regression test suite (196 tests) with:
 
 ```powershell
-python .\run_all_tests.py
+python -m pytest
 ```
 
-You can also run direct unittest discovery:
+Run frontend unit and component tests:
 
 ```powershell
-python -m unittest discover tests -v
+cd frontend
+npx vitest run
 ```
 
 ## Project Structure
 
-- `frontend/`: contains all `static/` assets and Jinja `templates/`
-- `backend/`: contains `app.py`, models, routes, tests, and AI services
-- `Docs/`: phase guides, system architecture, and Round-1 Hackathon deliverables
+- `frontend/`: contains the modern React 18 + TS + Vite SPA (`src/`, `dist/`), alongside restorable legacy assets (`static/`, `templates/`)
+- `backend/`: contains `app.py`, models, REST API controllers, regression tests (`tests/`), and modular AI/twin/assessment services
+- `Docs/`: architecture guides, engineering reports, phase certifications, and baseline freeze documents
 
 ## Startup Catalog Seeding
 

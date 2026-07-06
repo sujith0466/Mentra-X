@@ -13,7 +13,7 @@ class TutorAgent(AgentBase):
             version="1.0.0",
             enabled=True,
             priority=1,
-            allowed_tools=[],
+            allowed_tools=["selectExplanationLevel"],
             allowed_collections=[],
             max_tokens=4096,
             temperature=0.6,
