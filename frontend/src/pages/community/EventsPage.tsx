@@ -37,21 +37,21 @@ export const EventsPage: React.FC = () => {
     },
     {
       id: "ev-2",
-      title: "Mastra Swarm Hackathon: Build an Autonomous Agent in 48 Hours",
+      title: "AI Agent Hackathon: Build an Autonomous Assistant in 48 Hours",
       speaker: "Mentra X DevTools Team",
       date: "July 22, 2026",
       time: "9:00 AM EST Kickoff",
       location: "MIT Stata Center & Discord Stream",
       isVirtual: false,
       attendeesCount: 510,
-      description: "Compete for $10,000 in cloud credits by engineering deterministic multi-agent swarms with verifiable Enkrypt Layer 6 safety boundaries.",
+      description: "Compete for $10,000 in cloud credits by engineering deterministic multi-agent engines with verifiable AI Safety boundaries.",
       isRSVPed: false,
       tag: "Hackathon",
     },
     {
       id: "ev-3",
       title: "Enterprise AI Security Audit & Compliance Panel",
-      speaker: "Sarah Jenkins & Enkrypt Architects",
+      speaker: "Sarah Jenkins & AI Safety Architects",
       date: "August 5, 2026",
       time: "1:00 PM - 2:00 PM EST",
       location: "Virtual Stream",
@@ -190,7 +190,7 @@ export const EventsPage: React.FC = () => {
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Speaker / Host Name</label>
-            <Input placeholder="e.g., Prof. Alex Chen" value={newSpeaker} onChange={(e) => setNewSpeaker(e.target.value)} />
+            <Input placeholder="e.g., Prof. Sarah Jenkins" value={newSpeaker} onChange={(e) => setNewSpeaker(e.target.value)} />
           </div>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Date & Time</label>

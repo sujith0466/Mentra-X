@@ -20,7 +20,7 @@ export interface MemoryTimelineProps {
 
 export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({
   events,
-  title = "Qdrant Vector Memory Log",
+  title = "Personalized Learning Memory Log",
   className,
 }) => {
   return (

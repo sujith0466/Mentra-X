@@ -22,7 +22,7 @@ export interface ExplainabilityPanelProps {
 export const ExplainabilityPanel: React.FC<ExplainabilityPanelProps> = ({
   score,
   steps,
-  model = "Enkrypt Multi-Agent Validator",
+  model = "AI Safety Multi-Agent Validator",
   className,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);

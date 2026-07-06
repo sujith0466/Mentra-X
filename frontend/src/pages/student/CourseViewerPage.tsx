@@ -13,12 +13,12 @@ export const CourseViewerPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<"video" | "notes" | "tutor">("tutor");
   const [question, setQuestion] = useState("");
   const [tutorReply, setTutorReply] = useState(
-    "Welcome to Module 3! In this lesson, we will implement deterministic routing in Mastra swarms. Feel free to ask me for code examples or syllabus clarifications."
+    "Welcome to Module 3! In this lesson, we will implement deterministic routing in intelligent multi-agent workflows. Feel free to ask me for code examples or syllabus clarifications."
   );
 
   const handleAskTutor = () => {
     if (!question.trim()) return;
-    setTutorReply(`Analyzing query: "${question}"... Here is how you configure the routing schema in Mastra:\n\n\`\`\`ts\nexport const router = createRouter({\n  tools: [qdrantSearchTool, enkryptValidateTool],\n  strategy: 'deterministic'\n});\n\`\`\`\n\nThis ensures 0% hallucination during agent execution.`);
+    setTutorReply(`Analyzing query: "${question}"... Here is how you configure the routing schema in AI workflows:\n\n\`\`\`ts\nexport const router = createRouter({\n  tools: [vectorSearchTool, safetyValidateTool],\n  strategy: 'deterministic'\n});\n\`\`\`\n\nThis ensures 0% hallucination during agent execution.`);
     setQuestion("");
   };
 
@@ -66,7 +66,7 @@ export const CourseViewerPage: React.FC = () => {
                     : "border-transparent text-slate-400 hover:text-white"
                 }`}
               >
-                {tab === "tutor" ? "🤖 Mastra AI Tutor" : tab === "notes" ? "📝 My Notes" : "📺 Lecture Transcript"}
+                {tab === "tutor" ? "🤖 Intelligent AI Tutor" : tab === "notes" ? "📝 My Notes" : "📺 Lecture Transcript"}
               </button>
             ))}
           </div>
@@ -74,7 +74,7 @@ export const CourseViewerPage: React.FC = () => {
           {activeTab === "tutor" && (
             <div className="space-y-4">
               <AIResponseCard
-                title="Mastra Interactive Tutor"
+                title="Intelligent Interactive Tutor"
                 content={tutorReply}
                 confidenceScore={0.99}
               />
@@ -108,7 +108,7 @@ export const CourseViewerPage: React.FC = () => {
             <Card variant="default" className="p-4 space-y-2 text-xs text-slate-300 font-mono leading-relaxed">
               <p>[00:00] Welcome to Module 3 of Advanced Agentic Coding.</p>
               <p>[01:15] When coordinating multiple autonomous LLM agents, non-deterministic routing can cause infinite loops or tool execution failures.</p>
-              <p>[03:40] To mitigate this, we introduce the Enkrypt interceptor pattern...</p>
+              <p>[03:40] To mitigate this, we introduce the AI Safety verification pattern...</p>
             </Card>
           )}
         </div>
@@ -124,8 +124,8 @@ export const CourseViewerPage: React.FC = () => {
                 { id: 1, title: "Introduction to Swarms", status: "completed" },
                 { id: 2, title: "Tool Execution & Routing", status: "completed" },
                 { id: 3, title: "Deterministic Tool Execution", status: "active" },
-                { id: 4, title: "Qdrant Vector Memory Integration", status: "locked" },
-                { id: 5, title: "Enkrypt Safety Interception", status: "locked" },
+                { id: 4, title: "Vector Memory Integration", status: "locked" },
+                { id: 5, title: "AI Safety Interception", status: "locked" },
               ].map((mod) => (
                 <div
                   key={mod.id}

@@ -52,12 +52,12 @@ export const AssessmentPage: React.FC = () => {
     {
       id: 4,
       domain: "Cognitive AI Swarms & Tool Routing",
-      question: "What is the primary function of deterministic tool calling inside a Mastra multi-agent swarm?",
+      question: "What is the primary function of deterministic tool calling inside an intelligent multi-agent system?",
       options: [
         "To randomly guess Python syntax errors.",
         "To allow specialized agents to invoke verifiable external APIs and database queries without hallucinating free-form text.",
         "To encrypt CSS stylesheets.",
-        "To bypass Enkrypt Layer 6 security governance.",
+        "To bypass AI Safety Verification governance.",
       ],
       correct: 1,
       difficulty: "Expert",
@@ -100,7 +100,7 @@ export const AssessmentPage: React.FC = () => {
           Cognitive Skill <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Assessment</span>
         </h1>
         <p className="text-sm text-slate-300 max-w-xl mx-auto">
-          Our adaptive assessment calibrates your initial vector embeddings in Qdrant, enabling our cognitive tutoring swarms to personalize your learning trajectory.
+          Our adaptive assessment calibrates your initial learning embeddings in your Personalized Learning Memory, enabling our AI tutors to personalize your learning trajectory.
         </p>
       </div>
 
@@ -129,8 +129,8 @@ export const AssessmentPage: React.FC = () => {
                   <p className="text-xs text-slate-400">Untimed Socratic evaluation designed to measure depth over speed.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-obsidian-900/80 border border-white/10">
-                  <Badge variant="info" className="mb-2">Vector Sync</Badge>
-                  <p className="text-xs text-slate-400">Directly initializes your 1536-dimensional Qdrant knowledge state.</p>
+                  <Badge variant="info" className="mb-2">Memory Sync</Badge>
+                  <p className="text-xs text-slate-400">Directly initializes your 1536-dimensional personalized learning memory state.</p>
                 </div>
                 <div className="p-4 rounded-xl bg-obsidian-900/80 border border-white/10">
                   <Badge variant="success" className="mb-2">Verified DNA</Badge>
@@ -250,7 +250,7 @@ export const AssessmentPage: React.FC = () => {
                 <Badge variant="success" className="px-3 py-1">Digital Twin Seeded Successfully</Badge>
                 <h2 className="text-3xl font-extrabold text-white">Assessment Mastery Score: {calculateScore()}%</h2>
                 <p className="text-sm text-slate-300 max-w-lg mx-auto">
-                  Your responses have been compiled into high-dimensional embeddings and synchronized with Qdrant vector memory.
+                  Your responses have been compiled into high-dimensional embeddings and synchronized with your Personalized Learning Memory.
                 </p>
               </div>
 

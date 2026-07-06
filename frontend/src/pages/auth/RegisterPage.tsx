@@ -35,8 +35,8 @@ export const RegisterPage: React.FC = () => {
   return (
     <Card variant="glass" className="w-full space-y-6 p-8 shadow-2xl">
       <div className="text-center space-y-1">
-        <h2 className="text-2xl font-bold text-white">Create Enterprise Account</h2>
-        <p className="text-xs text-slate-400">Initialize your personal AI Digital Twin and learning graph.</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create Enterprise Account</h2>
+        <p className="text-xs text-slate-600 dark:text-slate-400">Initialize your personal AI Digital Twin and learning graph.</p>
       </div>
 
       <form onSubmit={handleRegister} className="space-y-4">
@@ -68,26 +68,26 @@ export const RegisterPage: React.FC = () => {
         />
 
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-300">Account Role</label>
+          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Account Role</label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setRole("student")}
               className={`p-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 role === "student"
-                  ? "bg-primary-600/20 border-primary-500 text-white shadow-sm"
-                  : "bg-obsidian-900 border-obsidian-600 text-slate-400 hover:text-white"
+                  ? "bg-primary-600/20 border-primary-500 text-slate-900 dark:text-white shadow-sm"
+                  : "bg-slate-100 dark:bg-obsidian-900 border-slate-300 dark:border-obsidian-600 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <BrainCircuit className="w-4 h-4 text-indigo-400" /> Student / Learner
+              <BrainCircuit className="w-4 h-4 text-indigo-500 dark:text-indigo-400" /> Student / Learner
             </button>
             <button
               type="button"
               onClick={() => setRole("instructor")}
               className={`p-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
                 role === "instructor"
-                  ? "bg-primary-600/20 border-primary-500 text-white shadow-sm"
-                  : "bg-obsidian-900 border-obsidian-600 text-slate-400 hover:text-white"
+                  ? "bg-primary-600/20 border-primary-500 text-slate-900 dark:text-white shadow-sm"
+                  : "bg-slate-100 dark:bg-obsidian-900 border-slate-300 dark:border-obsidian-600 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <UserPlus className="w-4 h-4 text-ai-violet" /> Instructor / Faculty
@@ -95,14 +95,14 @@ export const RegisterPage: React.FC = () => {
           </div>
         </div>
 
-        <Button type="submit" size="lg" className="w-full mt-4" isLoading={isLoading} leftIcon={<UserPlus className="w-4 h-4" />}>
+        <Button type="submit" size="lg" className="w-full mt-4 font-bold" isLoading={isLoading} leftIcon={<UserPlus className="w-4 h-4" />}>
           Register & Initialize Twin
         </Button>
       </form>
 
-      <p className="text-xs text-center text-slate-400">
+      <p className="text-xs text-center text-slate-600 dark:text-slate-400">
         Already registered?{" "}
-        <Link to="/login" className="text-primary-500 font-semibold hover:underline">
+        <Link to="/login" className="text-primary-600 dark:text-primary-500 font-semibold hover:underline">
           Sign In here
         </Link>
       </p>

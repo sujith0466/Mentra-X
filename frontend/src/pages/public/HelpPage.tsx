@@ -33,7 +33,7 @@ export const HelpPage: React.FC = () => {
     },
     {
       title: "AI Tutor & Study Planner",
-      description: "Troubleshooting Mastra cognitive tutoring interactions or adjusting study schedule parameters.",
+      description: "Troubleshooting intelligent AI tutoring interactions or adjusting study schedule parameters.",
       icon: MessageSquare,
       link: "/faq",
     },

@@ -37,11 +37,11 @@ export const PricingPage: React.FC = () => {
       features: [
         "Unlimited Access to All Enterprise Courses",
         "Real-Time Adaptive Digital Twin Mutation",
-        "Unlimited Mastra Cognitive Swarm Tutoring",
+        "Unlimited Intelligent AI Tutoring Assistant",
         "Interactive Coding Arena & Debug Assistant",
         "AI Career Roadmap & Mock Interview Scoring",
-        "Qdrant Semantic Memory Timeline Sync",
-        "Priority Enkrypt Layer 6 Verification",
+        "Personalized Learning Memory Timeline Sync",
+        "Priority AI Safety Verification",
       ],
       cta: "Start 14-Day Pro Trial",
       link: "/register?plan=pro",
@@ -166,8 +166,8 @@ export const PricingPage: React.FC = () => {
         <Card variant="glass" className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div className="space-y-2">
             <Shield className="w-8 h-8 text-indigo-400 mx-auto" />
-            <h4 className="text-sm font-bold text-white">Enkrypt Protected</h4>
-            <p className="text-xs text-slate-400">All data encrypted at rest and audited by Layer 6 safety monitors.</p>
+            <h4 className="text-sm font-bold text-white">Safety Protected</h4>
+            <p className="text-xs text-slate-400">All data encrypted at rest and audited by AI Safety monitors.</p>
           </div>
           <div className="space-y-2">
             <Zap className="w-8 h-8 text-cyan-400 mx-auto" />

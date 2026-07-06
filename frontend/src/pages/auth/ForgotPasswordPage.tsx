@@ -24,7 +24,7 @@ export const ForgotPasswordPage: React.FC = () => {
           </div>
           <h1 className="text-2xl font-extrabold text-white">Reset Account Password</h1>
           <p className="text-sm text-slate-400">
-            Enter your student or faculty email address and we will dispatch a secure Enkrypt verification link.
+            Enter your student or faculty email address and we will dispatch a secure AI verification link.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export const ForgotPasswordPage: React.FC = () => {
           </Link>
           <span className="inline-flex items-center gap-1 text-emerald-400">
             <Shield className="w-3.5 h-3.5" />
-            Enkrypt SSL
+            Secure SSL
           </span>
         </div>
       </Card>

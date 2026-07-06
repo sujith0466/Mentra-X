@@ -14,8 +14,8 @@ export const InterviewPrepPage: React.FC = () => {
 
   const questions = [
     "How do you handle tool execution failures when an autonomous agent encounters rate limits?",
-    "Explain how Qdrant HNSW indexing differs from standard inverted index keyword search.",
-    "Describe the role of Enkrypt Layer 6 in preventing PII leakage during LLM inference.",
+    "Explain how vector similarity indexing differs from standard inverted index keyword search.",
+    "Describe the role of AI Safety Verification in preventing PII leakage during AI inference.",
   ];
 
   const handleStart = (topic: string) => {
@@ -36,7 +36,7 @@ export const InterviewPrepPage: React.FC = () => {
         <div>
           <Badge variant="purple" size="sm">Mock Technical Interviewer</Badge>
           <h1 className="text-3xl font-extrabold text-white mt-1">AI Mock Interview Simulator</h1>
-          <p className="text-sm text-slate-400 mt-1">Practice system design and agentic coding questions with real-time Enkrypt feedback.</p>
+          <p className="text-sm text-slate-400 mt-1">Practice system design and coding questions with real-time AI safety feedback.</p>
         </div>
       </div>
 
@@ -92,10 +92,10 @@ export const InterviewPrepPage: React.FC = () => {
           {feedback && (
             <div className="space-y-4">
               <AIResponseCard
-                title="Mastra Interview Evaluation Agent"
+                title="AI Interview Evaluation Assistant"
                 content={feedback}
                 confidenceScore={0.96}
-                modelName="Gemini-2.5-Interview-Pro"
+                modelName="AI Interviewer v2.5"
               />
               <div className="flex justify-end">
                 <Button

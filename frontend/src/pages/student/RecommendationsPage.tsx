@@ -34,7 +34,7 @@ export const RecommendationsPage: React.FC = () => {
       type: "Career Milestone",
       title: "AI Security Systems Architect Roadmap",
       matchScore: "96% Match",
-      reason: "Aligns with your top scores in Enkrypt Layer 6 safety protocols and full-stack enterprise systems development.",
+      reason: "Aligns with your top scores in AI safety verification protocols and full-stack enterprise systems development.",
       badge: "Career Track",
       variant: "gradient" as const,
       link: "/student/career/resume",
@@ -49,10 +49,10 @@ export const RecommendationsPage: React.FC = () => {
         <div>
           <Badge variant="info" className="mb-2">
             <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
-            Mastra Swarm Intelligence
+            Intelligent Learning Engine
           </Badge>
           <h1 className="text-3xl font-extrabold text-white">Personalized Digital Twin Recommendations</h1>
-          <p className="text-sm text-slate-400">Curated learning paths and career milestones generated in real-time from your Qdrant knowledge state.</p>
+          <p className="text-sm text-slate-400">Curated learning paths and career milestones generated in real-time from your personalized learning memory state.</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="success" className="px-3 py-1.5 text-xs">
@@ -70,7 +70,7 @@ export const RecommendationsPage: React.FC = () => {
             How Your Recommendations are Generated
           </h2>
           <p className="text-sm text-slate-300 leading-relaxed">
-            Every lesson video watched, quiz completed, and code compiled updates your 1536-dimensional vector profile in Qdrant. Our Mastra swarm agents continuously analyze this semantic memory against enterprise job requirements to recommend optimal next steps.
+            Every lesson video watched, quiz completed, and code compiled updates your 1536-dimensional learning profile in your Personalized Learning Memory. Our AI engines continuously analyze this semantic memory against enterprise job requirements to recommend optimal next steps.
           </p>
         </div>
         <div className="flex justify-center md:justify-end">

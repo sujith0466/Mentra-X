@@ -13,15 +13,15 @@ export const DigitalTwinPage: React.FC = () => {
   const { user } = useAuthStore();
 
   const memoryEvents = [
-    { id: 1, timestamp: "10 mins ago", concept: "Mastra Swarm Routing", retrievalScore: 0.99, summary: "Indexed deterministic tool router definitions with 0% hallucination variance." },
-    { id: 2, timestamp: "2 hours ago", concept: "Qdrant HNSW Parameters", retrievalScore: 0.94, summary: "Vector similarity search heuristics reviewed during Module 3 lab session." },
-    { id: 3, timestamp: "Yesterday", concept: "Enkrypt Safety Interception", retrievalScore: 0.98, summary: "Passed 36/36 ESDLC regression checks during enterprise security verification." },
+    { id: 1, timestamp: "10 mins ago", concept: "Intelligent Swarm Routing", retrievalScore: 0.99, summary: "Indexed deterministic tool router definitions with 0% hallucination variance." },
+    { id: 2, timestamp: "2 hours ago", concept: "Vector Similarity Parameters", retrievalScore: 0.94, summary: "Vector similarity search heuristics reviewed during Module 3 lab session." },
+    { id: 3, timestamp: "Yesterday", concept: "AI Safety Interception", retrievalScore: 0.98, summary: "Passed 36/36 safety regression checks during enterprise verification." },
   ];
 
   const reasoningSteps = [
     { step: 1, title: "Syllabus Embedding Alignment", detail: "Compared student notes against authoritative course syllabus embedding #4092.", status: "passed" as const },
     { step: 2, title: "Velocity & Retention Calculation", detail: "Computed exponential moving average of quiz accuracy over last 14 days (2.8x velocity).", status: "passed" as const },
-    { step: 3, title: "Hallucination & Safety Boundary", detail: "Enkrypt Layer 6 verified zero synthetic or off-topic knowledge assertions.", status: "passed" as const },
+    { step: 3, title: "Hallucination & Safety Boundary", detail: "AI Safety Verification confirmed zero synthetic or off-topic knowledge assertions.", status: "passed" as const },
   ];
 
   return (
@@ -51,12 +51,12 @@ export const DigitalTwinPage: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <MemoryTimeline events={memoryEvents} title="Recent Cognitive Memory Index (Qdrant Vector DB)" />
+          <MemoryTimeline events={memoryEvents} title="Recent Cognitive Memory Index (Personalized Learning Memory)" />
 
           <ExplainabilityPanel
             score={0.965}
             steps={reasoningSteps}
-            model="Enkrypt Cognitive Verifier v6.2"
+            model="Cognitive Verifier v6.2"
           />
         </div>
 
@@ -72,11 +72,11 @@ export const DigitalTwinPage: React.FC = () => {
             <div className="pt-4 border-t border-obsidian-600 space-y-2 text-xs text-slate-400">
               <div className="flex justify-between">
                 <span>Vector Dimension:</span>
-                <span className="font-mono text-white">1536 (OpenAI / Gemini)</span>
+                <span className="font-mono text-white">1536 (High-Dimensional Embedding)</span>
               </div>
               <div className="flex justify-between">
                 <span>Memory Persistence:</span>
-                <span className="font-mono text-emerald-400">Permanent (Qdrant Cloud)</span>
+                <span className="font-mono text-emerald-400">Permanent (Secure Memory Cloud)</span>
               </div>
             </div>
           </Card>

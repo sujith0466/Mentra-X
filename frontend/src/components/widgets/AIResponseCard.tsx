@@ -15,11 +15,11 @@ export interface AIResponseCardProps {
 }
 
 export const AIResponseCard: React.FC<AIResponseCardProps> = ({
-  title = "Mastra AI Tutor",
+  title = "Intelligent AI Tutor",
   content,
   safetyStatus = "APPROVE",
   confidenceScore,
-  modelName = "gemini-2.5-flash",
+  modelName = "Adaptive Intelligence v2.5",
   onFeedback,
   className,
 }) => {

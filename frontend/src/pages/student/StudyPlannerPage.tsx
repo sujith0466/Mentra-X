@@ -10,8 +10,8 @@ export const StudyPlannerPage: React.FC = () => {
   const [generating, setGenerating] = useState(false);
 
   const schedule = [
-    { day: "Today (Monday)", tasks: [{ title: "Complete Module 3 Video Lecture", time: "10:00 AM - 11:30 AM", course: "Agentic Coding", status: "done" }, { title: "Run Qdrant Vector Memory Sandbox", time: "2:00 PM - 3:00 PM", course: "Vector Systems", status: "pending" }] },
-    { day: "Tomorrow (Tuesday)", tasks: [{ title: "Review Enkrypt Safety Interceptors", time: "9:30 AM - 11:00 AM", course: "Security", status: "pending" }, { title: "Mock Technical Interview Practice", time: "4:00 PM - 5:00 PM", course: "Career Prep", status: "pending" }] },
+    { day: "Today (Monday)", tasks: [{ title: "Complete Module 3 Video Lecture", time: "10:00 AM - 11:30 AM", course: "Agentic Coding", status: "done" }, { title: "Run Vector Memory Sandbox", time: "2:00 PM - 3:00 PM", course: "Vector Systems", status: "pending" }] },
+    { day: "Tomorrow (Tuesday)", tasks: [{ title: "Review AI Safety Interceptors", time: "9:30 AM - 11:00 AM", course: "Security", status: "pending" }, { title: "Mock Technical Interview Practice", time: "4:00 PM - 5:00 PM", course: "Career Prep", status: "pending" }] },
     { day: "Wednesday", tasks: [{ title: "Kubernetes Cluster Autoscaling Lab", time: "1:00 PM - 4:00 PM", course: "Cloud Architecture", status: "pending" }] },
   ];
 
@@ -36,7 +36,7 @@ export const StudyPlannerPage: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <AIResponseCard
-            title="Mastra Scheduler Swarm"
+            title="AI Study Scheduler"
             content="I optimized your weekly schedule by moving the Kubernetes lab to Wednesday afternoon, when your cognitive retention velocity for systems architecture is historically 22% higher."
             confidenceScore={0.98}
           />
@@ -79,7 +79,7 @@ export const StudyPlannerPage: React.FC = () => {
         <div className="space-y-6">
           <RecommendationCard
             title="Focus Block: 45 Min Pomodoro"
-            description="Your Digital Twin recommends a 45-minute uninterrupted study block for Qdrant vector indexing before your afternoon lab."
+            description="Your Digital Twin recommends a 45-minute uninterrupted study block for vector memory indexing before your afternoon lab."
             category="Optimal Timing"
             priority="high"
           />

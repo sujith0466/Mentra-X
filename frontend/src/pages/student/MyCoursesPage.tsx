@@ -10,8 +10,8 @@ export const MyCoursesPage: React.FC = () => {
   const myCourses = [
     { id: "ai-101", title: "Advanced Agentic Coding & Orchestration", category: "AI & Machine Learning", completed: 8, total: 12, status: "In Progress", grade: "A (94%)" },
     { id: "cs-202", title: "Enterprise Cloud Architecture & Distributed Systems", category: "Cloud & Systems", completed: 5, total: 8, status: "In Progress", grade: "A- (91%)" },
-    { id: "ml-303", title: "Vector Memory Systems & Qdrant Engineering", category: "AI & Machine Learning", completed: 9, total: 10, status: "Almost Complete", grade: "A+ (98%)" },
-    { id: "sec-404", title: "AI Safety & Enkrypt Governance Layer Implementation", category: "Security & Governance", completed: 6, total: 6, status: "Completed", grade: "A+ (100%)" },
+    { id: "ml-303", title: "Vector Memory Systems & Similarity Engineering", category: "AI & Machine Learning", completed: 9, total: 10, status: "Almost Complete", grade: "A+ (98%)" },
+    { id: "sec-404", title: "AI Safety & Governance Verification Implementation", category: "Security & Governance", completed: 6, total: 6, status: "Completed", grade: "A+ (100%)" },
   ];
 
   return (

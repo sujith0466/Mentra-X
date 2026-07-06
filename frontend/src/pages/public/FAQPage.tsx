@@ -15,19 +15,19 @@ export const FAQPage: React.FC = () => {
       id: 1,
       category: "ai",
       question: "How does the Cognitive Digital Twin graph track my academic progress?",
-      answer: "The Digital Twin graph is seeded with your initial skill profile during onboarding. As you complete video lectures, practice quizzes, and coding challenges, real-time telemetry updates your knowledge state vectors in Qdrant. This allows our Mastra swarm tutoring agents to precisely identify concepts requiring reinforcement without repeating already mastered material.",
+      answer: "The Digital Twin graph is seeded with your initial skill profile during onboarding. As you complete video lectures, practice quizzes, and coding challenges, real-time telemetry updates your knowledge state vectors in your Personalized Learning Memory. This allows our intelligent AI tutoring engines to precisely identify concepts requiring reinforcement without repeating already mastered material.",
     },
     {
       id: 2,
       category: "ai",
-      question: "What is Mastra Cognitive Swarm tutoring and how is it different from standard ChatGPT?",
-      answer: "Instead of a single monolithic LLM prompt, Mentra X utilizes Mastra to orchestrate specialized cognitive swarms (Career AI, Tutor AI, DevTools AI, and Community AI). Each agent has dedicated tool access, deterministic memory context, and is governed by Enkrypt Layer 6 safety monitors to eliminate hallucinations and ensure pedagogical accuracy.",
+      question: "What is Intelligent Multi-Agent tutoring and how is it different from standard ChatGPT?",
+      answer: "Instead of a single monolithic LLM prompt, Mentra X utilizes advanced orchestration to coordinate specialized AI assistants (Career AI, Tutor AI, DevTools AI, and Community AI). Each assistant has dedicated tool access, deterministic memory context, and is governed by real-time AI Safety Verification monitors to eliminate hallucinations and ensure pedagogical accuracy.",
     },
     {
       id: 3,
       category: "security",
-      question: "How does Enkrypt Layer 6 protect my student data and AI interactions?",
-      answer: "Enkrypt Layer 6 acts as an immutable real-time interceptor between all user inputs and AI model executions. It performs continuous similarity scoring, PII redaction, and prompt injection filtering. Every response generated is accompanied by a verifiable safety badge and audit log entry.",
+      question: "How does AI Safety Verification protect my student data and AI interactions?",
+      answer: "AI Safety Verification acts as an immutable real-time interceptor between all user inputs and AI model executions. It performs continuous similarity scoring, PII redaction, and prompt injection filtering. Every response generated is accompanied by a verifiable safety badge and audit log entry.",
     },
     {
       id: 4,
@@ -45,7 +45,7 @@ export const FAQPage: React.FC = () => {
       id: 6,
       category: "security",
       question: "Is Mentra X GDPR compliant and can I export my learning memory?",
-      answer: "Absolutely. In compliance with enterprise governance standards, students have full sovereignty over their data. You can export your entire conversation history, coding logs, and Qdrant vector embeddings, or request permanent deletion directly from your account settings.",
+      answer: "Absolutely. In compliance with enterprise governance standards, students have full sovereignty over their data. You can export your entire conversation history, coding logs, and learning memory embeddings, or request permanent deletion directly from your account settings.",
     },
   ];
 

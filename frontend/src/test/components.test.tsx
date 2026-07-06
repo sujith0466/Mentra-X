@@ -26,16 +26,16 @@ describe('Enterprise Atomic Component Library', () => {
     render(
       <Card variant="glass">
         <CardTitle>AI Assistant</CardTitle>
-        <CardDescription>Powered by Mastra Swarm</CardDescription>
+        <CardDescription>Powered by AI Swarm</CardDescription>
       </Card>
     );
     expect(screen.getByText('AI Assistant')).toBeDefined();
-    expect(screen.getByText('Powered by Mastra Swarm')).toBeDefined();
+    expect(screen.getByText('Powered by AI Swarm')).toBeDefined();
   });
 
   it('renders SafetyBadge with APPROVE status', () => {
     render(<SafetyBadge status="APPROVE" score={0.98} />);
-    expect(screen.getByText('Enkrypt Approved')).toBeDefined();
+    expect(screen.getByText('Safety Approved')).toBeDefined();
     expect(screen.getByText('98%')).toBeDefined();
   });
 

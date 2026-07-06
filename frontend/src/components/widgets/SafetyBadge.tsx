@@ -19,14 +19,14 @@ export const SafetyBadge: React.FC<SafetyBadgeProps> = ({
 }) => {
   const configs: Record<string, { label: string; bg: string; text: string; border: string; icon: any }> = {
     APPROVE: {
-      label: "Enkrypt Approved",
+      label: "Safety Approved",
       bg: "bg-emerald-500/10",
       text: "text-emerald-300",
       border: "border-emerald-500/30",
       icon: ShieldCheck,
     },
     VERIFIED: {
-      label: "Enkrypt Verified",
+      label: "Safety Verified",
       bg: "bg-cyan-500/10",
       text: "text-cyan-300",
       border: "border-cyan-500/30",

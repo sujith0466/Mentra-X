@@ -30,7 +30,7 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Enkrypt Safety Layer 6</h3>
+          <h3 className="text-lg font-bold text-white">AI Safety Verification Layer</h3>
           <p className="text-sm text-slate-300 leading-relaxed">
             All AI interactions pass through rigorous multi-agent governance interceptors that verify cosine similarity against authoritative course syllabi, eliminating AI hallucinations and PII leaks.
           </p>
@@ -40,7 +40,7 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
             <Zap className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Mastra AI Orchestration Swarms</h3>
+          <h3 className="text-lg font-bold text-white">Intelligent AI Orchestration Engines</h3>
           <p className="text-sm text-slate-300 leading-relaxed">
             Our multi-agent swarms dynamically route complex coding questions, architecture reviews, and resume analysis to specialized LLM agents for deterministic, high-accuracy execution.
           </p>
@@ -50,7 +50,7 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
             <Server className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Qdrant Vector Memory</h3>
+          <h3 className="text-lg font-bold text-white">Personalized Vector Memory</h3>
           <p className="text-sm text-slate-300 leading-relaxed">
             We utilize high-performance vector databases to maintain long-term semantic memory across semesters, ensuring tutoring agents never lose context of prior student milestones.
           </p>

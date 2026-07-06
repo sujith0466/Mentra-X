@@ -13,10 +13,10 @@ export const CourseCatalogPage: React.FC = () => {
   const categories = ["All", "AI & Machine Learning", "Cloud & Systems", "Software Engineering", "Security & Governance"];
 
   const courses = [
-    { id: "ai-101", title: "Advanced Agentic Coding & Orchestration", category: "AI & Machine Learning", desc: "Master Mastra swarms, multi-agent workflows, and tool execution.", level: "Advanced", modules: 12, duration: "24 hours", rating: "4.9 (180 reviews)" },
+    { id: "ai-101", title: "Advanced Agentic Coding & Orchestration", category: "AI & Machine Learning", desc: "Master intelligent AI engines, multi-agent workflows, and tool execution.", level: "Advanced", modules: 12, duration: "24 hours", rating: "4.9 (180 reviews)" },
     { id: "cs-202", title: "Enterprise Cloud Architecture & Distributed Systems", category: "Cloud & Systems", desc: "Design fault-tolerant, high-concurrency microservices on AWS/GCP.", level: "Intermediate", modules: 8, duration: "16 hours", rating: "4.8 (142 reviews)" },
-    { id: "ml-303", title: "Vector Memory Systems & Qdrant Engineering", category: "AI & Machine Learning", desc: "Build semantic search engines, hybrid search, and RAG pipelines.", level: "Advanced", modules: 10, duration: "20 hours", rating: "4.95 (210 reviews)" },
-    { id: "sec-404", title: "AI Safety & Enkrypt Governance Layer Implementation", category: "Security & Governance", desc: "Implement output interceptors, PII redaction, and compliance auditing.", level: "Advanced", modules: 6, duration: "12 hours", rating: "5.0 (95 reviews)" },
+    { id: "ml-303", title: "Vector Memory Systems & Similarity Engineering", category: "AI & Machine Learning", desc: "Build semantic search engines, hybrid search, and RAG pipelines.", level: "Advanced", modules: 10, duration: "20 hours", rating: "4.95 (210 reviews)" },
+    { id: "sec-404", title: "AI Safety & Governance Verification Implementation", category: "Security & Governance", desc: "Implement output interceptors, PII redaction, and compliance auditing.", level: "Advanced", modules: 6, duration: "12 hours", rating: "5.0 (95 reviews)" },
     { id: "se-505", title: "Modern Enterprise Frontend Architecture with React 18", category: "Software Engineering", desc: "Build production SPA architectures with TanStack Query and Zustand.", level: "Intermediate", modules: 14, duration: "28 hours", rating: "4.85 (310 reviews)" },
   ];
 
@@ -82,7 +82,7 @@ export const CourseCatalogPage: React.FC = () => {
 
               <div className="pt-4 mt-4 border-t border-obsidian-600 flex items-center justify-between">
                 <span className="text-xs font-semibold text-emerald-400 flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" /> Enkrypt Validated
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Safety Validated
                 </span>
                 <Link to={`/course/${course.id}`}>
                   <Button size="sm" variant="primary">View Syllabus</Button>

@@ -44,7 +44,7 @@ export const Drawer: React.FC<DrawerProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-obsidian-900/80 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/60 dark:bg-obsidian-900/80 backdrop-blur-sm"
           />
           <div className={cn("fixed inset-y-0 flex max-w-full", position === "right" ? "right-0 pl-10" : "left-0 pr-10")}>
             <motion.div
@@ -54,16 +54,16 @@ export const Drawer: React.FC<DrawerProps> = ({
               exit="exit"
               transition={{ type: "spring", damping: 25, stiffness: 250 }}
               className={cn(
-                "w-screen max-w-md bg-obsidian-800 border-l border-obsidian-600 shadow-2xl flex flex-col z-10",
+                "w-screen max-w-md bg-white dark:bg-obsidian-800 border-l border-slate-200 dark:border-obsidian-600 shadow-2xl flex flex-col z-10",
                 position === "left" && "border-r border-l-0",
                 className
               )}
             >
-              <div className="flex items-center justify-between px-6 py-4 border-b border-obsidian-600">
-                {title && <h3 className="text-lg font-semibold text-white">{title}</h3>}
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-obsidian-600">
+                {title && <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>}
                 <button
                   onClick={onClose}
-                  className="text-slate-400 hover:text-white rounded-lg p-1 hover:bg-white/5 transition-colors"
+                  className="text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg p-1 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>

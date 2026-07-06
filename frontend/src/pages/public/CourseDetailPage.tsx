@@ -12,13 +12,13 @@ export const CourseDetailPage: React.FC = () => {
 
   const courseTitle = id === "ai-101" ? "Advanced Agentic Coding & Orchestration" :
                      id === "cs-202" ? "Enterprise Cloud Architecture & Distributed Systems" :
-                     "Vector Memory Systems & Qdrant Engineering";
+                     "Vector Memory Systems & Similarity Engineering";
 
   const syllabus = [
     { mod: 1, title: "Introduction to Agentic Swarm Architectures", desc: "Understanding multi-agent topologies and task delegation loops.", status: "completed" },
-    { mod: 2, title: "Mastra Swarm Tool Execution & Routing", desc: "Implementing cognitive routers and deterministic tool interfaces.", status: "completed" },
-    { mod: 3, title: "Qdrant Vector Memory Integration", desc: "Building persistent retrieval-augmented memory for autonomous agents.", status: "in_progress" },
-    { mod: 4, title: "Enkrypt Safety Layer Interception", desc: "Applying PII filters, hallucination detection, and policy compliance.", status: "locked" },
+    { mod: 2, title: "Multi-Agent Engine Tool Execution & Routing", desc: "Implementing cognitive routers and deterministic tool interfaces.", status: "completed" },
+    { mod: 3, title: "Personalized Vector Memory Integration", desc: "Building persistent retrieval-augmented memory for autonomous agents.", status: "in_progress" },
+    { mod: 4, title: "AI Safety Verification Interception", desc: "Applying PII filters, hallucination detection, and policy compliance.", status: "locked" },
     { mod: 5, title: "Production Deployment on Kubernetes", desc: "Scaling agent swarms with horizontal pod autoscaling and observability.", status: "locked" },
   ];
 
@@ -113,7 +113,7 @@ export const CourseDetailPage: React.FC = () => {
                 <span className="font-semibold text-white">Enterprise Certified</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-cyan-400" /> Enkrypt Layer</span>
+                <span className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-cyan-400" /> Safety Verification</span>
                 <span className="font-semibold text-emerald-400">100% Validated</span>
               </div>
             </div>

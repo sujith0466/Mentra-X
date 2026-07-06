@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export interface UserProfile {
   id: number | string;
@@ -15,15 +16,22 @@ export interface AuthState {
   logout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
-  user: {
-    id: "stu_101",
-    name: "Sujith Kumar",
-    email: "sujith@mentrax.ai",
-    role: "student",
-    twin_id: "twin_alpha_99",
-  },
-  isAuthenticated: true,
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
-  logout: () => set({ user: null, isAuthenticated: false }),
-}));
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: {
+        id: "stu_101",
+        name: "Sujith Kumar",
+        email: "sujith@mentrax.ai",
+        role: "student",
+        twin_id: "twin_alpha_99",
+      },
+      isAuthenticated: true,
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      logout: () => set({ user: null, isAuthenticated: false }),
+    }),
+    {
+      name: "mentra-auth-storage",
+    }
+  )
+);

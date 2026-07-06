@@ -4,32 +4,34 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Link, useParams } from "react-router-dom";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export const CommunityPostDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const { user } = useAuthStore();
 
   const [post, setPost] = useState({
     id: id || "post-1",
-    title: "Optimal chunk size for embedding PDF textbooks into Qdrant?",
+    title: "Optimal chunk size for embedding PDF textbooks into Vector Memory?",
     author: "Elena Rostova",
     authorLevel: "Level 7 Scholar",
     category: "Vector Databases",
     timeAgo: "3 hours ago",
     upvotes: 42,
     content: `When building an enterprise document ingestion pipeline for our campus knowledge base, we are processing 500-page computer science textbooks. We are using OpenAI's text-embedding-3-large model (3072 dimensions, reduced to 1536 via MTEB normalization).\n\nWhat is the recommended balance between chunk token size and overlap? If chunks are too small (e.g., 256 tokens), we lose the broader architectural context of algorithmic proofs. If they are too large (e.g., 2048 tokens), Qdrant cosine similarity scores get diluted by irrelevant intro/outro text.\n\nHere is our current LangChain splitter setup:\n\`\`\`python\ntext_splitter = RecursiveCharacterTextSplitter(\n    chunk_size=1024,\n    chunk_overlap=128,\n    separators=["\\n\\n", "\\n", " ", ""]\n)\n\`\`\`\nShould we implement hierarchical parent-document retrieval instead?`,
-    tags: ["Qdrant", "RAG", "Embeddings", "LangChain"],
+    tags: ["VectorDB", "RAG", "Embeddings", "LangChain"],
   });
 
   const [replies, setReplies] = useState([
     {
       id: "rep-1",
-      author: "Mastra Swarm Agent (Tutor AI)",
+      author: "Intelligent AI Tutor Assistant",
       authorLevel: "Autonomous AI Mentor",
       isAI: true,
       isVerified: true,
       timeAgo: "2 hours ago",
       upvotes: 28,
-      content: `### Enkrypt Verified Swarm Synthesis\n\nFor dense academic textbooks with mathematical proofs, standard fixed-size chunking often dilutes vector similarity. We recommend a **Hierarchical Parent-Document Retrieval (PDR)** pattern combined with Qdrant payload filtering:\n\n1. **Child Chunks (256–512 tokens, 64 token overlap):** Embed these small chunks into Qdrant for high-precision vector similarity math.\n2. **Parent Document Store:** Store the larger section (e.g., 2048 tokens or entire chapter markdown) in your relational MySQL or document table.\n3. **Query Execution:** When Qdrant retrieves top-k child embeddings, use their payload \`parent_id\` to inject the full chapter context into the LLM prompt window.\n\nThis gives you sub-millisecond precision retrieval without sacrificing pedagogical context!`,
+      content: `### Safety Verified Synthesis\n\nFor dense academic textbooks with mathematical proofs, standard fixed-size chunking often dilutes vector similarity. We recommend a **Hierarchical Parent-Document Retrieval (PDR)** pattern combined with vector payload filtering:\n\n1. **Child Chunks (256–512 tokens, 64 token overlap):** Embed these small chunks into vector memory for high-precision similarity math.\n2. **Parent Document Store:** Store the larger section (e.g., 2048 tokens or entire chapter markdown) in your relational MySQL or document table.\n3. **Query Execution:** When the vector index retrieves top-k child embeddings, use their payload \`parent_id\` to inject the full chapter context into the LLM prompt window.\n\nThis gives you sub-millisecond precision retrieval without sacrificing pedagogical context!`,
     },
     {
       id: "rep-2",
@@ -39,7 +41,7 @@ export const CommunityPostDetailPage: React.FC = () => {
       isVerified: false,
       timeAgo: "1 hour ago",
       upvotes: 11,
-      content: `I second the AI Swarm's recommendation on Parent-Document retrieval! We implemented this exact pattern for our Systems Architecture syllabus. One additional tip: make sure to prepend section headers (e.g., "Chapter 4: AVL Trees - Section 4.2: Balancing") to every child chunk before embedding. It boosts Qdrant retrieval scores by almost 15%!`,
+      content: `I second the AI Mentor's recommendation on Parent-Document retrieval! We implemented this exact pattern for our Systems Architecture syllabus. One additional tip: make sure to prepend section headers (e.g., "Chapter 4: AVL Trees - Section 4.2: Balancing") to every child chunk before embedding. It boosts vector retrieval scores by almost 15%!`,
     },
   ]);
 
@@ -54,7 +56,7 @@ export const CommunityPostDetailPage: React.FC = () => {
     setTimeout(() => {
       const added = {
         id: `rep-${Date.now()}`,
-        author: "Alex Chen (You)",
+        author: `${user?.name || "Sujith Kumar"} (You)`,
         authorLevel: "Level 8 Scholar",
         isAI: false,
         isVerified: false,
@@ -116,7 +118,7 @@ export const CommunityPostDetailPage: React.FC = () => {
           </div>
           <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
             <CheckCircle2 className="w-4 h-4" />
-            Active Discussion &bull; Enkrypt Audited
+            Active Discussion &bull; Safety Audited
           </span>
         </div>
       </Card>
@@ -164,7 +166,7 @@ export const CommunityPostDetailPage: React.FC = () => {
                 <div className="pt-2 flex items-center justify-between text-[10px] text-emerald-400 font-mono">
                   <span className="inline-flex items-center gap-1">
                     <Shield className="w-3.5 h-3.5" />
-                    Generated by Mastra Swarm (Tutor AI) &bull; Verified by Enkrypt Layer 6
+                    Generated by Intelligent Engine (Tutor AI) &bull; Verified by AI Safety Layer
                   </span>
                   <span>Confidence Score: 0.99</span>
                 </div>

@@ -13,9 +13,9 @@ export const AITutorPage: React.FC = () => {
   const [chatLog, setChatLog] = useState([
     {
       sender: "ai",
-      text: `Hello ${user?.name || "Student"}! I am your autonomous Mastra swarm tutoring agent. How can I assist with your computer science or AI coursework today?`,
+      text: `Hello ${user?.name || "Student"}! I am your intelligent AI tutoring assistant. How can I assist with your computer science or coursework today?`,
       timestamp: "Just now",
-      badge: "Enkrypt Verified",
+      badge: "Safety Verified",
     },
   ]);
   const [isThinking, setIsThinking] = useState(false);
@@ -26,7 +26,7 @@ export const AITutorPage: React.FC = () => {
   const flashcards = [
     { front: "What is the vanishing gradient problem in deep neural networks?", back: "When gradients become exponentially small as they propagate backward through many layers, preventing weights in early layers from updating effectively." },
     { front: "What is the primary difference between ACID and BASE database transactions?", back: "ACID guarantees immediate consistency and durability (MySQL), while BASE prioritizes high availability and eventual consistency in distributed systems." },
-    { front: "How does Qdrant HNSW indexing achieve sub-millisecond similarity search?", back: "By constructing multi-layered skip lists where upper layers route queries across long vector distances and lower layers perform fine-grained neighbor search." },
+    { front: "How does High-Dimensional Vector indexing achieve sub-millisecond similarity search?", back: "By constructing multi-layered skip lists where upper layers route queries across long vector distances and lower layers perform fine-grained neighbor search." },
   ];
 
   // Debug Assistant State
@@ -46,9 +46,9 @@ export const AITutorPage: React.FC = () => {
     setTimeout(() => {
       const aiReply = {
         sender: "ai",
-        text: `Socratic Insight: To answer "${userMsg.text}", let's consider how this concept maps to your Qdrant mastery embedding. Have you considered analyzing the time complexity of the underlying matrix multiplication first?`,
+        text: `Socratic Insight: To answer "${userMsg.text}", let's consider how this concept maps to your personalized learning embedding. Have you considered analyzing the time complexity of the underlying matrix multiplication first?`,
         timestamp: "Just now",
-        badge: "Enkrypt Layer 6 OK",
+        badge: "AI Safety Verification OK",
       };
       setChatLog((prev) => [...prev, aiReply]);
       setIsThinking(false);
@@ -59,7 +59,7 @@ export const AITutorPage: React.FC = () => {
     setDebugging(true);
     setDebugOutput(null);
     setTimeout(() => {
-      setDebugOutput("Enkrypt DevTools AI Diagnosis:\n\n[Line 3] Bug Detected: Unscaled dot-product attention.\nFix: Divide dot-product by np.sqrt(d_k) before passing into softmax to prevent exploding gradients under high dimensional embedding vectors.");
+      setDebugOutput("AI Code Diagnostic:\n\n[Line 3] Bug Detected: Unscaled dot-product attention.\nFix: Divide dot-product by np.sqrt(d_k) before passing into softmax to prevent exploding gradients under high dimensional embedding vectors.");
       setDebugging(false);
     }, 1500);
   };
@@ -73,8 +73,8 @@ export const AITutorPage: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
             24/7 Cognitive Learning Assistant
           </Badge>
-          <h1 className="text-3xl font-extrabold text-white">Mastra AI Tutoring Swarm</h1>
-          <p className="text-sm text-slate-400">Interactive Socratic doubt solving, flashcard revision, and code debugging with real-time Enkrypt verification.</p>
+          <h1 className="text-3xl font-extrabold text-white">Intelligent AI Tutoring Engine</h1>
+          <p className="text-sm text-slate-400">Interactive Socratic doubt solving, flashcard revision, and code debugging with real-time AI safety verification.</p>
         </div>
         <div className="flex gap-2">
           {["doubt", "quiz", "revision", "debug"].map((tab) => {
@@ -132,7 +132,7 @@ export const AITutorPage: React.FC = () => {
             {isThinking && (
               <div className="flex items-center gap-2 text-xs text-indigo-400 animate-pulse pl-2 pt-2">
                 <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Mastra swarm agent querying syllabus embedding vectors...</span>
+                <span>AI tutoring engine querying syllabus embedding vectors...</span>
               </div>
             )}
           </div>
@@ -218,20 +218,20 @@ export const AITutorPage: React.FC = () => {
 
           <Card variant="gradient" className="p-6 flex flex-col justify-between space-y-4">
             <div className="space-y-3">
-              <Badge variant="success">Enkrypt DevTools AI Output</Badge>
+              <Badge variant="success">AI Code Diagnostic Output</Badge>
               {debugOutput ? (
                 <div className="p-4 rounded-xl bg-obsidian-950/90 border border-white/10 font-mono text-xs text-slate-300 whitespace-pre-line leading-relaxed">
                   {debugOutput}
                 </div>
               ) : (
                 <div className="h-64 flex items-center justify-center text-center text-slate-400 text-xs">
-                  Click "Diagnose Code" to execute Mastra swarm analysis.
+                  Click "Diagnose Code" to execute intelligent code analysis.
                 </div>
               )}
             </div>
             <div className="text-[10px] text-slate-400 flex items-center justify-between border-t border-white/10 pt-3">
               <span>Zero Hallucination Guarantee</span>
-              <span className="text-emerald-400 font-semibold">Enkrypt Layer 6 Active</span>
+              <span className="text-emerald-400 font-semibold">AI Safety Verification Active</span>
             </div>
           </Card>
         </div>
@@ -245,7 +245,7 @@ export const AITutorPage: React.FC = () => {
           <div className="space-y-2">
             <h3 className="text-2xl font-bold text-white">Adaptive Practice Quiz Generator</h3>
             <p className="text-sm text-slate-300">
-              Generate a custom 5-question evaluation tailored to your weakest Qdrant vector concepts.
+              Generate a custom 5-question evaluation tailored to your weakest vector memory concepts.
             </p>
           </div>
           <Button variant="primary" onClick={() => alert("Practice Quiz generated! Transferring to Assessment engine...")} className="px-8 py-3.5">

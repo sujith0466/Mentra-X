@@ -53,7 +53,7 @@ import { AIMonitoringPage } from "@/pages/admin/AIMonitoringPage";
 import { EnkryptDashboardPage } from "@/pages/admin/EnkryptDashboardPage";
 
 const LoadingFallback = () => (
-  <div className="min-h-screen bg-obsidian-900 flex items-center justify-center text-slate-400 font-mono text-sm">
+  <div className="min-h-screen bg-slate-50 dark:bg-obsidian-900 flex items-center justify-center text-slate-600 dark:text-slate-400 font-mono text-sm">
     <div className="flex flex-col items-center space-y-3">
       <div className="w-8 h-8 rounded-full border-2 border-indigo-500 border-t-transparent animate-spin" />
       <span>Loading Mentra X Enterprise Workspace...</span>

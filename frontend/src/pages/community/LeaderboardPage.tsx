@@ -3,6 +3,7 @@ import { Award, Trophy, Medal, Sparkles, Flame, GitPullRequest, Search, ShieldCh
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface StudentRank {
   rank: number;
@@ -18,15 +19,16 @@ interface StudentRank {
 type name = string;
 
 export const LeaderboardPage: React.FC = () => {
+  const { user } = useAuthStore();
   const [filter, setFilter] = useState<"global" | "campus" | "streak">("global");
   const [searchQuery, setSearchQuery] = useState("");
 
   const leaderboard: StudentRank[] = [
     { rank: 1, name: "Marcus Vance", campus: "MIT AI Lab", level: "Level 10 Master", xp: 48500, streakDays: 142, prCount: 34, badge: "Grand Architect" },
     { rank: 2, name: "Elena Rostova", campus: "Stanford CS Campus", level: "Level 9 Architect", xp: 44200, streakDays: 98, prCount: 28, badge: "Vector Pioneer" },
-    { rank: 3, name: "David Kim", campus: "UC Berkeley Tech", level: "Level 9 Architect", xp: 41150, streakDays: 115, prCount: 22, badge: "Swarm Specialist" },
-    { rank: 4, name: "Alex Chen (You)", campus: "Campus Enterprise", level: "Level 8 Scholar", xp: 38900, streakDays: 64, prCount: 18, badge: "DNA Seeder" },
-    { rank: 5, name: "Aria Montgomery", campus: "Oxford AI Institute", level: "Level 8 Scholar", xp: 35400, streakDays: 72, prCount: 15, badge: "Enkrypt Audited" },
+    { rank: 3, name: "David Kim", campus: "UC Berkeley Tech", level: "Level 9 Architect", xp: 41150, streakDays: 115, prCount: 22, badge: "AI Specialist" },
+    { rank: 4, name: `${user?.name || "Sujith Kumar"} (You)`, campus: "Campus Enterprise", level: "Level 8 Scholar", xp: 38900, streakDays: 64, prCount: 18, badge: "DNA Seeder" },
+    { rank: 5, name: "Aria Montgomery", campus: "Oxford AI Institute", level: "Level 8 Scholar", xp: 35400, streakDays: 72, prCount: 15, badge: "Safety Audited" },
     { rank: 6, name: "Kenji Sato", campus: "Tokyo Tech AI", level: "Level 7 Scholar", xp: 31200, streakDays: 45, prCount: 12, badge: "Full-Stack Dev" },
     { rank: 7, name: "Sarah Jenkins", campus: "Georgia Tech", level: "Level 6 Student", xp: 27800, streakDays: 31, prCount: 9, badge: "Code Arena Pro" },
   ];
@@ -47,12 +49,12 @@ export const LeaderboardPage: React.FC = () => {
             Global Student Telemetry Rankings
           </Badge>
           <h1 className="text-3xl font-extrabold text-white">Academic XP Leaderboard</h1>
-          <p className="text-sm text-slate-400">Ranked by Qdrant vector mastery velocity, coding arena submissions, and study streaks.</p>
+          <p className="text-sm text-slate-400">Ranked by vector memory mastery velocity, coding arena submissions, and study streaks.</p>
         </div>
         <div className="flex items-center gap-2">
           <Badge variant="success" className="px-3 py-1.5">
             <ShieldCheck className="w-4 h-4 mr-1.5 inline" />
-            Enkrypt Verified Telemetry
+            Safety Verified Telemetry
           </Badge>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { AIResponseCard } from "@/components/widgets/AIResponseCard";
 
 export const CodingArenaPage: React.FC = () => {
   const [code, setCode] = useState(
-    `// Implement a Mastra Tool that queries Qdrant vector memory\nexport async function searchVectorMemory(query: string, limit: number = 5) {\n  // TODO: Add Qdrant cosine similarity query logic here\n  return [{ id: 1, score: 0.98, text: "Sample embedding" }];\n}`
+    `// Implement an AI Tool that queries vector memory\nexport async function searchVectorMemory(query: string, limit: number = 5) {\n  // Add similarity query logic here\n  return [{ id: 1, score: 0.98, text: "Sample embedding" }];\n}`
   );
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState<string | null>(null);
@@ -20,8 +20,8 @@ export const CodingArenaPage: React.FC = () => {
 
     setTimeout(() => {
       setIsRunning(false);
-      setOutput(`[SUCCESS]: Tool compiled cleanly.\n[EXECUTION]: Returned 1 mock embedding with similarity score 0.980.\n[ENKRYPT_VERIFY]: Memory boundaries checked and approved.`);
-      setAiFeedback(`Great job! Your tool signature matches the Enkrypt contract. To optimize for high throughput, make sure to add a connection pool singleton for the Qdrant client.`);
+      setOutput(`[SUCCESS]: Tool compiled cleanly.\n[EXECUTION]: Returned 1 mock embedding with similarity score 0.980.\n[SAFETY_VERIFY]: Memory boundaries checked and approved.`);
+      setAiFeedback(`Great job! Your tool signature matches the safety contract. To optimize for high throughput, make sure to add a connection pool singleton for the vector database client.`);
     }, 1000);
   };
 
@@ -31,9 +31,9 @@ export const CodingArenaPage: React.FC = () => {
         <div>
           <div className="flex items-center space-x-2">
             <Badge variant="cyan">Developer Arena</Badge>
-            <Badge variant="success">Enkrypt Sandbox Active</Badge>
+            <Badge variant="success">AI Safety Sandbox Active</Badge>
           </div>
-          <h1 className="text-2xl font-bold text-white mt-1">Interactive Coding Challenge #4: Qdrant Retrieval Tool</h1>
+          <h1 className="text-2xl font-bold text-white mt-1">Interactive Coding Challenge #4: Vector Retrieval Tool</h1>
         </div>
         <div className="flex items-center space-x-3">
           <Button size="sm" variant="outline" onClick={() => setCode(`// Reset code\nexport async function searchVectorMemory(query: string) {}`)} leftIcon={<RefreshCw className="w-3.5 h-3.5" />}>
@@ -67,16 +67,16 @@ export const CodingArenaPage: React.FC = () => {
               {output && <Badge variant="success">Exit Code: 0</Badge>}
             </div>
             <div className="bg-obsidian-950 border border-obsidian-600 rounded-lg p-4 font-mono text-xs text-slate-300 flex-1 overflow-y-auto whitespace-pre-wrap">
-              {output ? output : "// Click 'Run & Submit Solution' to execute code in the Enkrypt sandbox."}
+              {output ? output : "// Click 'Run & Submit Solution' to execute code in the AI safety sandbox."}
             </div>
           </Card>
 
           {aiFeedback && (
             <AIResponseCard
-              title="Mastra Code Review Agent"
+              title="AI Code Review Assistant"
               content={aiFeedback}
               confidenceScore={0.99}
-              modelName="Gemini-2.5-Code-Audit"
+              modelName="AI Code Audit v2.5"
             />
           )}
         </div>

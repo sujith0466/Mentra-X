@@ -19,10 +19,10 @@ export const CareerResumePage: React.FC = () => {
   };
 
   const skillGaps = [
-    { label: "React 18 & TypeScript", value: 95, color: "from-emerald-500 to-teal-400" },
-    { label: "Mastra Swarm Orchestration", value: 85, color: "from-primary-600 to-indigo-400" },
-    { label: "Qdrant Vector Engineering", value: 80, color: "from-ai-violet to-purple-500" },
-    { label: "Kubernetes Enterprise Scaling", value: 65, color: "from-amber-500 to-orange-400" },
+    { label: "Modern Web Architecture", value: 95, color: "from-emerald-500 to-teal-400" },
+    { label: "Intelligent Swarm Orchestration", value: 85, color: "from-primary-600 to-indigo-400" },
+    { label: "Vector Memory Engineering", value: 80, color: "from-ai-violet to-purple-500" },
+    { label: "Cloud Enterprise Scaling", value: 65, color: "from-amber-500 to-orange-400" },
   ];
 
   return (
@@ -44,10 +44,10 @@ export const CareerResumePage: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-6">
             <AIResponseCard
-              title="Mastra Career Diagnostic Report"
-              content="Your resume demonstrates strong competency in frontend architecture and state management. To reach the Principal AI Solutions Architect salary band ($240k+), we recommend closing your skill gap in Kubernetes cluster autoscaling."
+              title="AI Career Diagnostic Report"
+              content="Your resume demonstrates strong competency in full-stack architecture and state management. To reach the Principal AI Solutions Architect salary band ($240k+), we recommend closing your skill gap in cloud cluster autoscaling."
               confidenceScore={0.97}
-              modelName="Gemini-2.5-Pro-Career"
+              modelName="AI Career Advisor v2.5"
             />
 
             <ChartComponent
@@ -62,9 +62,9 @@ export const CareerResumePage: React.FC = () => {
               </h3>
               <div className="space-y-4">
                 {[
-                  { step: "Step 1: Immediate Action", desc: "Complete Module 4 of Vector Memory Systems to achieve 90%+ Qdrant competency.", status: "In Progress" },
-                  { step: "Step 2: Portfolio Polish", desc: "Deploy your Enkrypt Safety Layer demo to Vercel and link it in your GitHub README.", status: "Recommended" },
-                  { step: "Step 3: Mock Technical Interview", desc: "Run a 30-minute system design simulation with our Mastra Interview Agent.", status: "Unlocked" },
+                  { step: "Step 1: Immediate Action", desc: "Complete Module 4 of Vector Memory Systems to achieve 90%+ vector memory competency.", status: "In Progress" },
+                  { step: "Step 2: Portfolio Polish", desc: "Deploy your AI Safety Verification demo to cloud and link it in your portfolio.", status: "Recommended" },
+                  { step: "Step 3: Mock Technical Interview", desc: "Run a 30-minute system design simulation with our AI Interview Assistant.", status: "Unlocked" },
                 ].map((item, idx) => (
                   <div key={idx} className="p-4 rounded-xl bg-obsidian-900 border border-obsidian-600 flex items-start justify-between">
                     <div>

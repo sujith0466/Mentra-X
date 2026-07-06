@@ -3,6 +3,10 @@ import ReactDOM from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import "./index.css";
+import { useUIStore } from "./store/useUIStore";
+
+// Initialize theme on startup
+useUIStore.getState().initTheme();
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,3 +25,4 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     </QueryClientProvider>
   </React.StrictMode>
 );
+

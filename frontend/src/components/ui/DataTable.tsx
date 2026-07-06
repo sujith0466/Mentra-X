@@ -67,16 +67,16 @@ export function DataTable<T extends Record<string, any>>({
           />
         </div>
       )}
-      <div className="w-full overflow-x-auto rounded-xl border border-obsidian-600 bg-obsidian-800">
+      <div className="w-full overflow-x-auto rounded-xl border border-slate-200 dark:border-obsidian-600 bg-white dark:bg-obsidian-800">
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-obsidian-600 bg-obsidian-900/50">
+            <tr className="border-b border-slate-200 dark:border-obsidian-600 bg-slate-50 dark:bg-obsidian-900/50">
               {columns.map((col) => (
                 <th
                   key={String(col.key)}
                   onClick={() => col.sortable && handleSort(String(col.key))}
-                  className={`px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-300 ${
-                    col.sortable ? "cursor-pointer select-none hover:text-white" : ""
+                  className={`px-6 py-3.5 text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-slate-300 ${
+                    col.sortable ? "cursor-pointer select-none hover:text-slate-900 dark:hover:text-white" : ""
                   }`}
                 >
                   <div className="flex items-center space-x-1.5">
@@ -95,15 +95,15 @@ export function DataTable<T extends Record<string, any>>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-obsidian-600/50">
+          <tbody className="divide-y divide-slate-200 dark:divide-obsidian-600/50">
             {sortedData.length > 0 ? (
               sortedData.map((item, idx) => (
                 <tr
                   key={idx}
-                  className="hover:bg-white/[0.02] transition-colors"
+                  className="hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
                 >
                   {columns.map((col) => (
-                    <td key={String(col.key)} className="px-6 py-4 text-sm text-slate-200">
+                    <td key={String(col.key)} className="px-6 py-4 text-sm text-slate-800 dark:text-slate-200">
                       {col.render
                         ? col.render(item, idx)
                         : item[String(col.key)] !== undefined

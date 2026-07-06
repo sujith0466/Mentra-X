@@ -7,15 +7,18 @@ import { Badge } from "@/components/ui/Badge";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export const ProfilePage: React.FC = () => {
-  const { user } = useAuthStore();
-  const [name, setName] = useState(user?.name || "Alex Chen");
-  const [email, setEmail] = useState(user?.email || "alex.chen@campus.edu");
-  const [bio, setBio] = useState("Computer Science undergraduate specializing in Artificial Intelligence and Full-Stack Systems.");
-  const [githubUrl, setGithubUrl] = useState("https://github.com/alexchen-ai");
+  const { user, setUser } = useAuthStore();
+  const [name, setName] = useState(user?.name || "Sujith Kumar");
+  const [email, setEmail] = useState(user?.email || "sujith@mentrax.ai");
+  const [bio, setBio] = useState("Computer Science engineering student specializing in Enterprise Architecture & AI Engineering.");
+  const [githubUrl, setGithubUrl] = useState("https://github.com/sujith0466");
   const [saved, setSaved] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    if (user && setUser) {
+      setUser({ ...user, name, email });
+    }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };

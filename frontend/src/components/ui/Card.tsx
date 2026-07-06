@@ -10,12 +10,12 @@ export interface CardProps extends HTMLMotionProps<"div"> {
 export const Card = React.forwardRef<HTMLDivElement, CardProps>(
   ({ className, variant = "default", children, ...props }, ref) => {
     const variants = {
-      default: "bg-obsidian-800 border border-obsidian-600 rounded-xl p-6 shadow-enterprise",
-      glass: "bg-obsidian-800/80 backdrop-blur-md border border-white/10 rounded-xl p-6 shadow-glass",
-      glow: "bg-obsidian-800 border border-indigo-500/30 rounded-xl p-6 shadow-glow",
-      gradient: "bg-gradient-to-tr from-obsidian-800 via-obsidian-900 to-indigo-950/40 border border-indigo-500/30 rounded-xl p-6 shadow-glow",
+      default: "bg-white dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-600 rounded-xl p-6 shadow-sm dark:shadow-enterprise transition-all duration-200",
+      glass: "bg-white/80 dark:bg-obsidian-800/80 backdrop-blur-md border border-slate-200/80 dark:border-white/10 rounded-xl p-6 shadow-sm dark:shadow-glass transition-all duration-200",
+      glow: "bg-white dark:bg-obsidian-800 border border-indigo-500/30 rounded-xl p-6 shadow-md dark:shadow-glow transition-all duration-200",
+      gradient: "bg-gradient-to-tr from-slate-50 via-white to-indigo-50/60 dark:from-obsidian-800 dark:via-obsidian-900 dark:to-indigo-950/40 border border-indigo-500/30 rounded-xl p-6 shadow-sm dark:shadow-glow transition-all duration-200",
       interactive:
-        "bg-obsidian-800 border border-obsidian-600 rounded-xl p-6 shadow-enterprise cursor-pointer hover:border-indigo-500/50 hover:shadow-glow transition-all duration-200",
+        "bg-white dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-600 rounded-xl p-6 shadow-sm dark:shadow-enterprise cursor-pointer hover:border-indigo-500/50 hover:shadow-md dark:hover:shadow-glow transition-all duration-200",
     };
 
     return (
@@ -34,19 +34,19 @@ export const Card = React.forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = "Card";
 
 export const CardHeader = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex flex-col space-y-1.5 pb-4 border-b border-obsidian-600/50 mb-4", className)} {...props}>
+  <div className={cn("flex flex-col space-y-1.5 pb-4 border-b border-slate-200 dark:border-obsidian-600/50 mb-4", className)} {...props}>
     {children}
   </div>
 );
 
 export const CardTitle = ({ className, children, ...props }: React.HTMLAttributes<HTMLHeadingElement>) => (
-  <h3 className={cn("text-lg font-semibold leading-none tracking-tight text-white", className)} {...props}>
+  <h3 className={cn("text-lg font-semibold leading-none tracking-tight text-slate-900 dark:text-white", className)} {...props}>
     {children}
   </h3>
 );
 
 export const CardDescription = ({ className, children, ...props }: React.HTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn("text-sm text-slate-400", className)} {...props}>
+  <p className={cn("text-sm text-slate-600 dark:text-slate-400", className)} {...props}>
     {children}
   </p>
 );
@@ -58,7 +58,8 @@ export const CardContent = ({ className, children, ...props }: React.HTMLAttribu
 );
 
 export const CardFooter = ({ className, children, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("flex items-center pt-4 border-t border-obsidian-600/50 mt-4", className)} {...props}>
+  <div className={cn("flex items-center pt-4 border-t border-slate-200 dark:border-obsidian-600/50 mt-4", className)} {...props}>
     {children}
   </div>
 );
+

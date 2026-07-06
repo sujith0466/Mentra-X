@@ -20,7 +20,7 @@ export const AnalyticsPage: React.FC = () => {
     { label: "AI & Neural Networks", value: 42 },
     { label: "Full-Stack Enterprise", value: 28 },
     { label: "Vector Databases", value: 18 },
-    { label: "Cybersecurity & Enkrypt", value: 12 },
+    { label: "Cybersecurity & AI Safety", value: 12 },
   ];
 
   return (
@@ -137,7 +137,7 @@ export const AnalyticsPage: React.FC = () => {
                 <td className="py-3 px-4 text-right"><Badge variant="success">Optimal</Badge></td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-bold text-white">SEC-502: Enkrypt Safety & Governance</td>
+                <td className="py-3 px-4 font-bold text-white">SEC-502: AI Safety & Governance</td>
                 <td className="py-3 px-4">2,950</td>
                 <td className="py-3 px-4 font-bold text-emerald-400">94.1%</td>
                 <td className="py-3 px-4">8.1 queries / student</td>

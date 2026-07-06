@@ -26,18 +26,18 @@ export const NotesPage: React.FC = () => {
     },
     {
       id: "2",
-      title: "Qdrant HNSW Graph Indexing & Distance Metrics",
+      title: "Vector Graph Indexing & Distance Metrics",
       course: "CS-305: Enterprise Vector Databases",
       content: "Hierarchical Navigable Small World (HNSW) graphs construct multi-layer skip lists for high-dimensional vectors. Cosine distance is optimal for normalized embeddings, while Euclidean distance is sensitive to vector magnitude.",
-      tags: ["VectorDB", "Qdrant", "Algorithms"],
+      tags: ["VectorMemory", "Indexing", "Algorithms"],
       lastUpdated: "Yesterday",
     },
     {
       id: "3",
-      title: "Enkrypt Layer 6 Prompt Injection Defense Strategies",
+      title: "AI Safety Prompt Injection Defense Strategies",
       course: "SEC-502: AI Safety & Governance",
       content: "Never rely solely on system prompt instructions for security. Implement external immutable validation layers that evaluate embedding distance and semantic intent before prompt dispatch.",
-      tags: ["Security", "Enkrypt", "Governance"],
+      tags: ["Security", "AI Safety", "Governance"],
       lastUpdated: "3 days ago",
     },
   ]);
@@ -99,7 +99,7 @@ export const NotesPage: React.FC = () => {
     setSummarizing(true);
     setTimeout(() => {
       setSummarizing(false);
-      alert("AI Swarm Summary:\n" + activeNote.content.substring(0, 120) + "...\n\n[Synchronized with Qdrant vector memory]");
+      alert("AI Summary:\n" + activeNote.content.substring(0, 120) + "...\n\n[Synchronized with Personalized Learning Memory]");
     }, 1200);
   };
 
@@ -243,7 +243,7 @@ export const NotesPage: React.FC = () => {
                 </div>
                 <span className="inline-flex items-center gap-1 text-emerald-400">
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  Synced with Qdrant Vector DB
+                  Synced with Personalized Learning Memory
                 </span>
               </div>
             </Card>

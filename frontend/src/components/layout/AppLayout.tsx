@@ -18,7 +18,7 @@ export const AppLayout: React.FC = () => {
     {
       id: 1,
       role: "ai",
-      content: "Hello Sujith! I am your Mastra AI Assistant. Your Digital Twin is synced and Enkrypt Safety Layer 6 is active. How can I assist your studies today?",
+      content: `Hello ${user?.name || "Student"}! I am your Intelligent AI Assistant. Your Digital Twin is synced and AI Safety Verification is active. How can I assist your studies today?`,
     },
   ]);
   const [inputVal, setInputVal] = useState("");
@@ -34,7 +34,7 @@ export const AppLayout: React.FC = () => {
       const aiReply = {
         id: Date.now() + 1,
         role: "ai" as const,
-        content: `I analyzed your query: "${userMsg.content}" through the Qdrant semantic vector memory. I recommend reviewing Module 3 of the Cloud Architecture syllabus to reinforce your understanding.`,
+        content: `I analyzed your query: "${userMsg.content}" through your personalized learning memory. I recommend reviewing Module 3 of the Cloud Architecture syllabus to reinforce your understanding.`,
       };
       setMessages((prev) => [...prev, aiReply]);
     }, 1000);
@@ -54,14 +54,14 @@ export const AppLayout: React.FC = () => {
         </main>
       </div>
 
-      <Drawer isOpen={isChatOpen} onClose={toggleChat} title="Mastra AI Tutoring Swarm" position="right">
+      <Drawer isOpen={isChatOpen} onClose={toggleChat} title="Intelligent AI Tutoring Assistant" position="right">
         <div className="flex flex-col h-[calc(100vh-8rem)] justify-between space-y-4">
           <div className="flex items-center justify-between p-2 rounded-lg bg-obsidian-900 border border-white/5 text-xs text-slate-400">
             <span className="flex items-center gap-1.5 text-indigo-400">
-              <Sparkles className="w-3.5 h-3.5" /> Swarm Model: Gemini-2.5-Flash
+              <Sparkles className="w-3.5 h-3.5" /> AI Engine: Adaptive Intelligence v2.5
             </span>
             <span className="flex items-center gap-1 text-cyan-400">
-              <ShieldCheck className="w-3.5 h-3.5" /> Enkrypt Validated
+              <ShieldCheck className="w-3.5 h-3.5" /> Safety Validated
             </span>
           </div>
 

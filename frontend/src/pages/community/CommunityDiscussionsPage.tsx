@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { Link } from "react-router-dom";
 import { Modal } from "@/components/ui/Modal";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface DiscussionPost {
   id: string;
@@ -22,10 +23,11 @@ interface DiscussionPost {
 }
 
 export const CommunityDiscussionsPage: React.FC = () => {
+  const { user } = useAuthStore();
   const [posts, setPosts] = useState<DiscussionPost[]>([
     {
       id: "post-1",
-      title: "Optimal chunk size for embedding PDF textbooks into Qdrant?",
+      title: "Optimal chunk size for embedding PDF textbooks into Vector Memory?",
       author: "Elena Rostova",
       authorLevel: "Level 7 Scholar",
       category: "Vector Databases",
@@ -34,33 +36,33 @@ export const CommunityDiscussionsPage: React.FC = () => {
       commentsCount: 14,
       isAIAnswered: true,
       timeAgo: "3 hours ago",
-      tags: ["Qdrant", "RAG", "Embeddings"],
+      tags: ["VectorDB", "RAG", "Embeddings"],
     },
     {
       id: "post-2",
-      title: "How to prevent recursive tool calling loops in Mastra swarms?",
+      title: "How to prevent recursive tool calling loops in multi-agent workflows?",
       author: "Marcus Vance",
       authorLevel: "Level 9 Architect",
-      category: "Mastra Swarms",
+      category: "AI Architectures",
       snippet: "My DevTools AI agent occasionally enters an infinite retry loop when an external API returns a 429 rate limit. What is the recommended fallback pattern in Python?",
       upvotes: 29,
       commentsCount: 8,
       isAIAnswered: true,
       timeAgo: "5 hours ago",
-      tags: ["Mastra", "Python", "Agents"],
+      tags: ["Orchestration", "Python", "Agents"],
     },
     {
       id: "post-3",
-      title: "Understanding Enkrypt Layer 6 cosine similarity thresholds",
+      title: "Understanding AI Safety cosine similarity thresholds",
       author: "Sarah Jenkins",
       authorLevel: "Level 5 Student",
       category: "AI Security",
-      snippet: "Why did my prompt get flagged by Layer 6 when asking for a mock SQL injection script for my cybersecurity assignment? Can we adjust confidence boundaries?",
+      snippet: "Why did my prompt get flagged by safety verification when asking for a mock SQL injection script for my cybersecurity assignment? Can we adjust confidence boundaries?",
       upvotes: 18,
       commentsCount: 5,
       isAIAnswered: false,
       timeAgo: "1 day ago",
-      tags: ["Enkrypt", "Security", "ESDLC"],
+      tags: ["Safety", "Security", "ESDLC"],
     },
   ]);
 
@@ -72,7 +74,7 @@ export const CommunityDiscussionsPage: React.FC = () => {
   const [newContent, setNewContent] = useState("");
   const [newTags, setNewTags] = useState("");
 
-  const categories = ["All", "Vector Databases", "Mastra Swarms", "AI Security", "Algorithms", "Career Advice"];
+  const categories = ["All", "Vector Databases", "AI Architectures", "AI Security", "Algorithms", "Career Advice"];
 
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +83,7 @@ export const CommunityDiscussionsPage: React.FC = () => {
     const created: DiscussionPost = {
       id: `post-${Date.now()}`,
       title: newTitle,
-      author: "Alex Chen (You)",
+      author: `${user?.name || "Sujith Kumar"} (You)`,
       authorLevel: "Level 8 Scholar",
       category: newCategory,
       snippet: newContent,
@@ -249,7 +251,7 @@ export const CommunityDiscussionsPage: React.FC = () => {
               className="w-full bg-obsidian-900 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
               <option value="Vector Databases">Vector Databases</option>
-              <option value="Mastra Swarms">Mastra Swarms</option>
+              <option value="AI Architectures">AI Architectures</option>
               <option value="AI Security">AI Security</option>
               <option value="Algorithms">Algorithms</option>
               <option value="Career Advice">Career Advice</option>

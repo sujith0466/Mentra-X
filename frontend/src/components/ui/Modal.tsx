@@ -50,7 +50,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-obsidian-900/80 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-900/60 dark:bg-obsidian-900/80 backdrop-blur-sm"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -58,20 +58,20 @@ export const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className={cn(
-              "relative w-full bg-obsidian-800 border border-obsidian-600 rounded-xl shadow-glass p-6 z-10 overflow-hidden",
+              "relative w-full bg-white dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-600 rounded-xl shadow-xl dark:shadow-glass p-6 z-10 overflow-hidden",
               maxWidthClasses[maxWidth],
               className
             )}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-obsidian-600/50 mb-4">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-obsidian-600/50 mb-4">
               <div>
-                {title && <h3 className="text-lg font-semibold text-white">{title}</h3>}
-                {description && <p className="text-sm text-slate-400 mt-0.5">{description}</p>}
+                {title && <h3 className="text-lg font-semibold text-slate-900 dark:text-white">{title}</h3>}
+                {description && <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">{description}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="text-slate-400 hover:text-white rounded-lg p-1 hover:bg-white/5 transition-colors"
+                className="text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-lg p-1 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>

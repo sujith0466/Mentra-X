@@ -21,18 +21,18 @@ export const ProjectsPage: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([
     {
       id: "proj-01",
-      title: "Autonomous RAG Knowledge Assistant with Qdrant",
+      title: "Autonomous RAG Knowledge Assistant with Vector Memory",
       domain: "Generative AI & Semantic Memory",
       difficulty: "Advanced",
-      description: "Build an enterprise document ingestion pipeline that chunks markdown specifications, embeds them using OpenAI text-embedding-3-large, and serves cosine similarity queries via Flask and Qdrant.",
+      description: "Build an enterprise document ingestion pipeline that chunks markdown specifications, embeds them using OpenAI text-embedding-3-large, and serves cosine similarity queries via REST API and Vector Memory.",
       progress: 65,
       milestones: [
-        { title: "Initialize Flask REST API & Qdrant HNSW Collection", completed: true },
+        { title: "Initialize REST API & Vector Collection", completed: true },
         { title: "Implement Recursive Character Text Chunking Pipeline", completed: true },
-        { title: "Connect Enkrypt Layer 6 Prompt Injection Defense", completed: false },
+        { title: "Connect AI Safety Prompt Injection Defense", completed: false },
         { title: "Deploy Frontend Chat Widget with Citation Badges", completed: false },
       ],
-      techStack: ["Python", "Flask", "Qdrant", "React", "TypeScript"],
+      techStack: ["Python", "Flask", "VectorDB", "React", "TypeScript"],
     },
     {
       id: "proj-02",
@@ -51,7 +51,7 @@ export const ProjectsPage: React.FC = () => {
     {
       id: "proj-03",
       title: "Deterministic Tool Router for Multi-Agent Swarms",
-      domain: "Mastra Swarm Architecture",
+      domain: "Multi-Agent Swarm Architecture",
       difficulty: "Expert",
       description: "Engineer a high-performance orchestration engine where specialized LLM agents dynamically invoke external database tools with strict JSON schema validation and fallback retry loops.",
       progress: 25,
@@ -60,7 +60,7 @@ export const ProjectsPage: React.FC = () => {
         { title: "Implement Multi-Agent Swarm Router Logic", completed: false },
         { title: "Simulate Concurrency Stress Tests under Heavy Load", completed: false },
       ],
-      techStack: ["Python 3.11", "Mastra", "Pydantic", "AsyncIO"],
+      techStack: ["Python 3.11", "Multi-Agent Engine", "Pydantic", "AsyncIO"],
     },
   ]);
 
@@ -81,14 +81,14 @@ export const ProjectsPage: React.FC = () => {
         title: `AI-Powered ${genDomain} Synthesizer Engine`,
         domain: genDomain,
         difficulty: genDifficulty,
-        description: `An autonomous end-to-end ${genDomain.toLowerCase()} application tailored to your current Digital Twin mastery vectors. Features real-time telemetry and Enkrypt safety validation.`,
+        description: `An autonomous end-to-end ${genDomain.toLowerCase()} application tailored to your current Digital Twin mastery vectors. Features real-time telemetry and AI safety validation.`,
         progress: 0,
         milestones: [
           { title: "Project Architecture Blueprint & Schema Setup", completed: false },
           { title: "Core Algorithmic Logic & Vector Index Integration", completed: false },
           { title: "Unit Testing & ESDLC Regression Suite", completed: false },
         ],
-        techStack: ["TypeScript", "Python", "Qdrant", "Vite"],
+        techStack: ["TypeScript", "Python", "VectorDB", "Vite"],
       };
       setProjects([newProj, ...projects]);
       setActiveProjectId(newProj.id);
@@ -240,7 +240,7 @@ export const ProjectsPage: React.FC = () => {
               <div className="pt-6 border-t border-white/10 flex flex-wrap justify-between items-center gap-4">
                 <span className="text-xs text-slate-400 inline-flex items-center gap-1.5">
                   <Shield className="w-3.5 h-3.5 text-indigo-400" />
-                  Code assertions verified by Enkrypt Layer 6
+                  Code assertions verified by AI Safety Layer
                 </span>
                 <div className="flex gap-3">
                   <Button variant="secondary" className="text-xs py-2">
@@ -262,7 +262,7 @@ export const ProjectsPage: React.FC = () => {
       <Modal isOpen={isGeneratorOpen} onClose={() => setIsGeneratorOpen(false)} title="AI Project Generator">
         <form onSubmit={handleGenerateProject} className="space-y-5 text-slate-300">
           <p className="text-sm">
-            Select your preferred domain and target difficulty. Our Mastra swarm agent will formulate an end-to-end project specification tailored to your Qdrant mastery vector.
+            Select your preferred domain and target difficulty. Our intelligent AI assistant will formulate an end-to-end project specification tailored to your learning mastery profile.
           </p>
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">

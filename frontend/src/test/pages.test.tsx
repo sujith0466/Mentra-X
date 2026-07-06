@@ -7,6 +7,11 @@ import { LoginPage } from '@/pages/auth/LoginPage';
 import { StudentDashboardPage } from '@/pages/student/StudentDashboardPage';
 import { DigitalTwinPage } from '@/pages/student/DigitalTwinPage';
 import { AdminDashboardPage } from '@/pages/admin/AdminDashboardPage';
+import { CourseCatalogPage } from '@/pages/public/CourseCatalogPage';
+import { ProfilePage } from '@/pages/auth/ProfilePage';
+import { CommunityDiscussionsPage } from '@/pages/community/CommunityDiscussionsPage';
+import { CodingArenaPage } from '@/pages/student/CodingArenaPage';
+import { ManageCoursesPage } from '@/pages/admin/ManageCoursesPage';
 
 describe('Enterprise Frontend Page Suites & Routing', () => {
   it('renders LandingPage cleanly with Enkrypt active banner', () => {
@@ -56,5 +61,54 @@ describe('Enterprise Frontend Page Suites & Routing', () => {
     );
     expect(screen.getByText(/AI Operations & Cluster Monitor/i)).toBeDefined();
     expect(screen.getByText(/Mastra Swarm Agent Queries/i)).toBeDefined();
+  });
+
+  it('renders CourseCatalogPage with enterprise courses and AI filters', () => {
+    render(
+      <MemoryRouter>
+        <CourseCatalogPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Enterprise Course Catalog/i)).toBeDefined();
+    expect(screen.getByText(/Advanced Agentic Coding & Orchestration/i)).toBeDefined();
+  });
+
+  it('renders ProfilePage with verified student badge and user identity', () => {
+    render(
+      <MemoryRouter>
+        <ProfilePage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Student Profile & Settings/i)).toBeDefined();
+    expect(screen.getByText(/Verified Student/i)).toBeDefined();
+  });
+
+  it('renders CommunityDiscussionsPage with scholar discussions and sanitized topics', () => {
+    render(
+      <MemoryRouter>
+        <CommunityDiscussionsPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Community Forum & Discussions/i)).toBeDefined();
+    expect(screen.getByText(/Optimal chunk size for embedding PDF textbooks into Vector Memory/i)).toBeDefined();
+  });
+
+  it('renders CodingArenaPage with test runner and code editor', () => {
+    render(
+      <MemoryRouter>
+        <CodingArenaPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Interactive Coding Challenge #4: Vector Retrieval Tool/i)).toBeDefined();
+  });
+
+  it('renders ManageCoursesPage with admin syllabus management', () => {
+    render(
+      <MemoryRouter>
+        <ManageCoursesPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Syllabus & Course Catalog Management/i)).toBeDefined();
+    expect(screen.getByText(/AI Swarm/i)).toBeDefined();
   });
 });

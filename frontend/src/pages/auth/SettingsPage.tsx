@@ -23,7 +23,7 @@ export const SettingsPage: React.FC = () => {
     setExporting(true);
     setTimeout(() => {
       setExporting(false);
-      alert("Your Qdrant semantic memory vectors and LMS transcript have been exported as mentra_data_export.json.");
+      alert("Your personalized learning memory vectors and LMS transcript have been exported as mentra_data_export.json.");
     }, 1500);
   };
 
@@ -51,10 +51,10 @@ export const SettingsPage: React.FC = () => {
             <div className="space-y-1">
               <h3 className="text-base font-bold text-white flex items-center gap-2">
                 <Cpu className="w-5 h-5 text-indigo-400" />
-                Mastra AI Tutoring Interaction Mode
+                AI Tutoring Interaction Mode
               </h3>
               <p className="text-xs text-slate-400">
-                Choose how autonomous tutoring swarms guide you through difficult concepts and coding challenges.
+                Choose how intelligent tutoring assistants guide you through difficult concepts and coding challenges.
               </p>
             </div>
             <Badge variant={tutorMode === "socratic" ? "success" : "default"}>
@@ -142,7 +142,7 @@ export const SettingsPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
             <div>
               <span className="text-sm font-bold text-white block">Export Semantic Memory Vectors</span>
-              <span className="text-xs text-slate-400">Download all your Qdrant knowledge state embeddings in JSON format.</span>
+              <span className="text-xs text-slate-400">Download all your learning memory state embeddings in JSON format.</span>
             </div>
             <Button variant="secondary" onClick={handleExport} disabled={exporting} className="text-xs py-2">
               <Download className="w-4 h-4 mr-1.5" />
@@ -153,7 +153,7 @@ export const SettingsPage: React.FC = () => {
           <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
             <div>
               <span className="text-sm font-bold text-red-400 block">Delete Academic Account & Twin</span>
-              <span className="text-xs text-slate-400">Permanently erase your account, XP, course progress, and Qdrant embeddings.</span>
+              <span className="text-xs text-slate-400">Permanently erase your account, XP, course progress, and memory embeddings.</span>
             </div>
             <Button variant="danger" onClick={() => setIsDeleteModalOpen(true)} className="text-xs py-2">
               <Trash2 className="w-4 h-4 mr-1.5" />
@@ -173,7 +173,7 @@ export const SettingsPage: React.FC = () => {
       <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Confirm Account Deletion">
         <div className="space-y-4 text-slate-300">
           <p className="text-sm">
-            Are you absolutely certain you wish to delete your account? This action will permanently erase your Digital Twin graph, revoke access to all enterprise courses, and purge your vector embeddings from Qdrant.
+            Are you absolutely certain you wish to delete your account? This action will permanently erase your Digital Twin graph, revoke access to all enterprise courses, and purge your learning memory embeddings.
           </p>
           <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300">
             <strong>Warning:</strong> Institutional SLA compliance requires a 30-day grace period before irreversible storage purge.

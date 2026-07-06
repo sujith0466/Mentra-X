@@ -59,12 +59,12 @@ export const LoginPage: React.FC = () => {
   return (
     <Card variant="glass" className="w-full space-y-6 p-8 shadow-2xl">
       <div className="text-center space-y-1">
-        <h2 className="text-2xl font-bold text-white">Sign In to Your Account</h2>
-        <p className="text-xs text-slate-400">Access your Digital Twin and AI adaptive study tools.</p>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Sign In to Your Account</h2>
+        <p className="text-xs text-slate-600 dark:text-slate-400">Access your Digital Twin and AI adaptive study tools.</p>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-300 text-center">
+        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-600 dark:text-rose-300 text-center">
           {error}
         </div>
       )}
@@ -87,28 +87,28 @@ export const LoginPage: React.FC = () => {
           required
         />
 
-        <Button type="submit" size="lg" className="w-full mt-2" isLoading={isLoading} leftIcon={<LogIn className="w-4 h-4" />}>
+        <Button type="submit" size="lg" className="w-full mt-2 font-bold" isLoading={isLoading} leftIcon={<LogIn className="w-4 h-4" />}>
           Sign In
         </Button>
       </form>
 
-      <div className="pt-4 border-t border-obsidian-600/60 space-y-3">
-        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block text-center">
+      <div className="pt-4 border-t border-slate-200 dark:border-obsidian-600/60 space-y-3">
+        <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-400 block text-center">
           Instant Enterprise Demo Access
         </span>
         <div className="grid grid-cols-2 gap-3">
-          <Button size="sm" variant="outline" onClick={() => handleQuickDemo("student")} leftIcon={<Sparkles className="w-3.5 h-3.5 text-indigo-400" />}>
+          <Button size="sm" variant="outline" onClick={() => handleQuickDemo("student")} leftIcon={<Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />}>
             Student Portal
           </Button>
-          <Button size="sm" variant="outline" onClick={() => handleQuickDemo("admin")} leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-400" />}>
+          <Button size="sm" variant="outline" onClick={() => handleQuickDemo("admin")} leftIcon={<Sparkles className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />}>
             Admin Operations
           </Button>
         </div>
       </div>
 
-      <p className="text-xs text-center text-slate-400">
+      <p className="text-xs text-center text-slate-600 dark:text-slate-400">
         Don&apos;t have an account?{" "}
-        <Link to="/register" className="text-primary-500 font-semibold hover:underline">
+        <Link to="/register" className="text-primary-600 dark:text-primary-500 font-semibold hover:underline">
           Create one now
         </Link>
       </p>

@@ -18,7 +18,7 @@ interface SecurityLog {
 
 export const EnkryptDashboardPage: React.FC = () => {
   const [logs, setLogs] = useState<SecurityLog[]>([
-    { id: "log-1", timestamp: "02:14:02 UTC", user: "stu_010 (Alex)", event: "Socratic Tutor Query", layer: "Layer 6 (Hallucination Check)", status: "APPROVE", confidence: 0.99 },
+    { id: "log-1", timestamp: "02:14:02 UTC", user: "stu_101 (Sujith)", event: "Socratic Tutor Query", layer: "Layer 6 (Hallucination Check)", status: "APPROVE", confidence: 0.99 },
     { id: "log-2", timestamp: "02:12:45 UTC", user: "stu_409 (Sarah)", event: "SQL Injection Probe in Code Sandbox", layer: "Layer 3 (Injection Defense)", status: "INTERCEPT", confidence: 0.98 },
     { id: "log-3", timestamp: "01:58:12 UTC", user: "stu_882 (David)", event: "API Key PII Inclusion in Chat", layer: "Layer 2 (PII Redactor)", status: "REDACT", confidence: 0.95 },
     { id: "log-4", timestamp: "01:45:00 UTC", user: "fac_001 (Prof. Thorne)", event: "Syllabus Embedding Batch Sync", layer: "Layer 6 (Integrity Verifier)", status: "APPROVE", confidence: 1.00 },
