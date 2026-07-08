@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { BookOpen, Plus, Search, Sparkles, Tag, Trash2, Edit3, Save, CheckCircle2 } from "lucide-react";
+import { BookOpen, Plus, Search, Sparkles, Tag, Trash2, Edit3, Save, CheckCircle2, FileText } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -26,17 +27,17 @@ export const NotesPage: React.FC = () => {
     },
     {
       id: "2",
-      title: "Vector Graph Indexing & Distance Metrics",
-      course: "CS-305: Enterprise Vector Databases",
-      content: "Hierarchical Navigable Small World (HNSW) graphs construct multi-layer skip lists for high-dimensional vectors. Cosine distance is optimal for normalized embeddings, while Euclidean distance is sensitive to vector magnitude.",
-      tags: ["VectorMemory", "Indexing", "Algorithms"],
+      title: "Graph Indexing & Distance Metrics",
+      course: "CS-305: Database Systems & Algorithms",
+      content: "Hierarchical Navigable Small World (HNSW) graphs construct multi-layer skip lists for high-dimensional search. Cosine distance is optimal for normalized data, while Euclidean distance is sensitive to magnitude.",
+      tags: ["Indexing", "Algorithms", "Databases"],
       lastUpdated: "Yesterday",
     },
     {
       id: "3",
-      title: "AI Safety Prompt Injection Defense Strategies",
+      title: "AI Safety: Prompt Injection Defense Strategies",
       course: "SEC-502: AI Safety & Governance",
-      content: "Never rely solely on system prompt instructions for security. Implement external immutable validation layers that evaluate embedding distance and semantic intent before prompt dispatch.",
+      content: "Never rely solely on system prompt instructions for security. Implement external immutable validation layers that evaluate semantic intent before prompt dispatch.",
       tags: ["Security", "AI Safety", "Governance"],
       lastUpdated: "3 days ago",
     },
@@ -76,7 +77,7 @@ export const NotesPage: React.FC = () => {
       id: Date.now().toString(),
       title: "New Untitled Note",
       course: "CS-101: General Computing",
-      content: "Start typing your markdown notes here...",
+      content: "Start typing your notes here...",
       tags: ["Draft"],
       lastUpdated: "Just now",
     };
@@ -99,7 +100,7 @@ export const NotesPage: React.FC = () => {
     setSummarizing(true);
     setTimeout(() => {
       setSummarizing(false);
-      alert("AI Summary:\n" + activeNote.content.substring(0, 120) + "...\n\n[Synchronized with Personalized Learning Memory]");
+      alert("AI Summary:\n" + activeNote.content.substring(0, 120) + "...\n\n[Saved to your notes]");
     }, 1200);
   };
 
@@ -112,23 +113,29 @@ export const NotesPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div>
-          <Badge variant="info" className="mb-2">Cognitive Knowledge Base</Badge>
-          <h1 className="text-3xl font-extrabold text-white">Student Notes & Lecture Synthesis</h1>
-          <p className="text-sm text-slate-400">Organize academic notes with automatic vector indexing and AI summary swarms.</p>
+          <Badge variant="info" className="mb-2">
+            <BookOpen className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
+            Personal Knowledge Base
+          </Badge>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">My Notes</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Organise your lecture notes, tag topics, and get instant AI summaries.
+          </p>
         </div>
         <Button variant="primary" onClick={handleCreateNew} className="px-5 py-2.5 self-start sm:self-center">
           <Plus className="w-4 h-4 mr-2" />
-          Create New Note
+          New Note
         </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
         {/* Left Column: Notes List & Search */}
         <div className="space-y-4">
+          {/* Search */}
           <div className="relative">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" />
             <Input
               placeholder="Search notes or tags..."
               value={searchQuery}
@@ -137,10 +144,20 @@ export const NotesPage: React.FC = () => {
             />
           </div>
 
-          <div className="space-y-3 max-h-[650px] overflow-y-auto pr-1">
+          {/* Notes List */}
+          <div className="space-y-2.5 max-h-[650px] overflow-y-auto pr-1">
             {filteredNotes.length === 0 ? (
-              <Card variant="glass" className="p-6 text-center text-xs text-slate-400">
-                No matching notes found.
+              <Card variant="glass" className="p-8 text-center space-y-3">
+                <FileText className="w-8 h-8 text-slate-300 dark:text-obsidian-600 mx-auto" />
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                  {searchQuery ? "No notes match your search." : "No notes yet."}
+                </p>
+                {!searchQuery && (
+                  <Button variant="secondary" onClick={handleCreateNew} className="text-xs">
+                    <Plus className="w-3.5 h-3.5 mr-1" />
+                    Create your first note
+                  </Button>
+                )}
               </Card>
             ) : (
               filteredNotes.map((note) => {
@@ -150,30 +167,35 @@ export const NotesPage: React.FC = () => {
                     key={note.id}
                     variant={isActive ? "glow" : "default"}
                     onClick={() => handleSelectNote(note)}
-                    className={`p-4 cursor-pointer transition-all border ${
-                      isActive ? "border-indigo-500/50 shadow-md" : "border-white/5 hover:border-white/15"
+                    className={`p-4 cursor-pointer transition-all duration-200 border ${
+                      isActive
+                        ? "border-indigo-500/50 shadow-md"
+                        : "border-slate-200 dark:border-white/5 hover:border-indigo-300 dark:hover:border-white/15 hover:-translate-y-0.5 hover:shadow-sm"
                     }`}
                   >
-                    <div className="flex justify-between items-start gap-2 mb-1">
-                      <h4 className="text-sm font-bold text-white line-clamp-1">{note.title}</h4>
+                    <div className="flex justify-between items-start gap-2 mb-1.5">
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white line-clamp-1 leading-snug">{note.title}</h4>
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDelete(note.id); }}
-                        className="text-slate-500 hover:text-red-400 p-1"
+                        className="text-slate-400 hover:text-red-400 transition-colors p-0.5 shrink-0"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
                     <p className="text-xs text-indigo-400 font-semibold mb-2">{note.course}</p>
-                    <p className="text-xs text-slate-400 line-clamp-2 mb-3 font-sans">{note.content}</p>
-                    <div className="flex justify-between items-center text-[10px] text-slate-500">
-                      <div className="flex gap-1">
+                    <p className="text-xs text-slate-400 line-clamp-2 mb-3 leading-relaxed">{note.content}</p>
+                    <div className="flex justify-between items-center">
+                      <div className="flex flex-wrap gap-1">
                         {note.tags.map((t) => (
-                          <span key={t} className="px-1.5 py-0.5 rounded bg-obsidian-900 text-slate-400 border border-white/5">
+                          <span
+                            key={t}
+                            className="px-1.5 py-0.5 rounded text-[10px] bg-slate-100 dark:bg-obsidian-900 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-white/5"
+                          >
                             #{t}
                           </span>
                         ))}
                       </div>
-                      <span>{note.lastUpdated}</span>
+                      <span className="text-[10px] text-slate-400 shrink-0 ml-2">{note.lastUpdated}</span>
                     </div>
                   </Card>
                 );
@@ -184,74 +206,95 @@ export const NotesPage: React.FC = () => {
 
         {/* Right Column: Note Editor / Viewer */}
         <div className="lg:col-span-2">
-          {activeNote ? (
-            <Card variant="default" className="p-8 space-y-6 min-h-[600px] flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
-                  {isEditing ? (
-                    <Input
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)}
-                      className="text-lg font-bold text-white w-full"
-                    />
-                  ) : (
-                    <div>
-                      <Badge variant="success" className="mb-1">{activeNote.course}</Badge>
-                      <h2 className="text-2xl font-bold text-white">{activeNote.title}</h2>
+          <AnimatePresence mode="wait">
+            {activeNote ? (
+              <motion.div
+                key={activeNoteId}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.18 }}
+              >
+                <Card variant="default" className="p-8 space-y-6 min-h-[600px] flex flex-col justify-between">
+                  <div className="space-y-5">
+                    {/* Note Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-5 border-b border-slate-200 dark:border-white/10">
+                      {isEditing ? (
+                        <Input
+                          value={editTitle}
+                          onChange={(e) => setEditTitle(e.target.value)}
+                          className="text-lg font-bold w-full"
+                          placeholder="Note title..."
+                        />
+                      ) : (
+                        <div>
+                          <Badge variant="success" className="mb-1.5">{activeNote.course}</Badge>
+                          <h2 className="text-2xl font-bold text-slate-900 dark:text-white leading-snug">{activeNote.title}</h2>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        {!isEditing && (
+                          <Button
+                            variant="secondary"
+                            onClick={handleAISummarize}
+                            disabled={summarizing}
+                            className="text-xs py-2"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
+                            {summarizing ? "AI Summarizing..." : "AI Summary"}
+                          </Button>
+                        )}
+                        {isEditing ? (
+                          <Button variant="primary" onClick={handleSaveEdit} className="text-xs py-2">
+                            <Save className="w-3.5 h-3.5 mr-1.5" />
+                            Save Note
+                          </Button>
+                        ) : (
+                          <Button variant="secondary" onClick={handleStartEdit} className="text-xs py-2">
+                            <Edit3 className="w-3.5 h-3.5 mr-1.5" />
+                            Edit
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  )}
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    {!isEditing && (
-                      <Button variant="secondary" onClick={handleAISummarize} disabled={summarizing} className="text-xs py-2">
-                        <Sparkles className="w-3.5 h-3.5 mr-1.5 text-cyan-400" />
-                        {summarizing ? "Synthesizing..." : "AI Swarm Summary"}
-                      </Button>
-                    )}
+                    {/* Content */}
                     {isEditing ? (
-                      <Button variant="primary" onClick={handleSaveEdit} className="text-xs py-2">
-                        <Save className="w-3.5 h-3.5 mr-1.5" />
-                        Save Note
-                      </Button>
+                      <textarea
+                        rows={16}
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-white/10 rounded-xl p-4 text-sm text-slate-900 dark:text-white font-mono placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                        placeholder="Write your notes here..."
+                      />
                     ) : (
-                      <Button variant="secondary" onClick={handleStartEdit} className="text-xs py-2">
-                        <Edit3 className="w-3.5 h-3.5 mr-1.5" />
-                        Edit
-                      </Button>
+                      <div className="prose dark:prose-invert max-w-none text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line leading-relaxed font-sans pt-1">
+                        {activeNote.content}
+                      </div>
                     )}
                   </div>
-                </div>
 
-                {isEditing ? (
-                  <textarea
-                    rows={16}
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    className="w-full bg-obsidian-900 border border-white/10 rounded-xl p-4 text-sm text-white font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                ) : (
-                  <div className="prose prose-invert max-w-none text-sm text-slate-300 whitespace-pre-line leading-relaxed font-sans pt-2">
-                    {activeNote.content}
+                  {/* Footer */}
+                  <div className="pt-5 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-400">
+                    <div className="flex items-center gap-2">
+                      <Tag className="w-3.5 h-3.5 text-indigo-400" />
+                      <span>{activeNote.tags.join(", ")}</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1 text-emerald-500 font-semibold">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      Auto-saved
+                    </span>
                   </div>
-                )}
-              </div>
-
-              <div className="pt-6 border-t border-white/10 flex items-center justify-between text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-3.5 h-3.5 text-indigo-400" />
-                  <span>Tags: {activeNote.tags.join(", ")}</span>
-                </div>
-                <span className="inline-flex items-center gap-1 text-emerald-400">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  Synced with Personalized Learning Memory
-                </span>
-              </div>
-            </Card>
-          ) : (
-            <Card variant="glass" className="p-12 text-center text-slate-400">
-              Select a note from the left sidebar or create a new one.
-            </Card>
-          )}
+                </Card>
+              </motion.div>
+            ) : (
+              <Card variant="glass" className="p-16 text-center space-y-4">
+                <FileText className="w-12 h-12 text-slate-300 dark:text-obsidian-600 mx-auto" />
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Select a note from the list or create a new one.</p>
+              </Card>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 
       <div className="mt-4 flex items-baseline justify-between">
         <div className="flex flex-col">
-          <span className="text-2xl font-bold tracking-tight text-white">{value}</span>
+          <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{value}</span>
           {subtitle && <span className="text-xs text-slate-500 mt-0.5">{subtitle}</span>}
         </div>
 

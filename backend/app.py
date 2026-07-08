@@ -118,6 +118,7 @@ from backend.routes.explainability_routes import explainability_bp
 from backend.routes.dashboard_routes import dashboard_bp
 from backend.routes.adaptive_routes import adaptive_bp
 from backend.routes.safety_routes import safety_bp
+from backend.routes.weakness_routes import weakness_bp
 
 app.register_blueprint(auth_bp)
 app.register_blueprint(student_bp)
@@ -150,6 +151,7 @@ app.register_blueprint(explainability_bp)
 app.register_blueprint(dashboard_bp)
 app.register_blueprint(adaptive_bp)
 app.register_blueprint(safety_bp)
+app.register_blueprint(weakness_bp)
 
 # Register Phase 5 Enterprise Observability Middleware
 from backend.services.observability.middleware import observability_middleware

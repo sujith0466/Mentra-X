@@ -7,94 +7,36 @@ import { Badge } from "@/components/ui/Badge";
 import { Link } from "react-router-dom";
 import { Modal } from "@/components/ui/Modal";
 import { useAuthStore } from "@/store/useAuthStore";
-
-interface DiscussionPost {
-  id: string;
-  title: string;
-  author: string;
-  authorLevel: string;
-  category: string;
-  snippet: string;
-  upvotes: number;
-  commentsCount: number;
-  isAIAnswered: boolean;
-  timeAgo: string;
-  tags: string[];
-}
+import { useCommunityStore, DiscussionPost } from "@/store/useCommunityStore";
 
 export const CommunityDiscussionsPage: React.FC = () => {
   const { user } = useAuthStore();
-  const [posts, setPosts] = useState<DiscussionPost[]>([
-    {
-      id: "post-1",
-      title: "Optimal chunk size for embedding PDF textbooks into Vector Memory?",
-      author: "Elena Rostova",
-      authorLevel: "Level 7 Scholar",
-      category: "Vector Databases",
-      snippet: "When chunking 500-page computer science textbooks, what is the best balance between semantic context preservation and embedding token limits using text-embedding-3-large?",
-      upvotes: 42,
-      commentsCount: 14,
-      isAIAnswered: true,
-      timeAgo: "3 hours ago",
-      tags: ["VectorDB", "RAG", "Embeddings"],
-    },
-    {
-      id: "post-2",
-      title: "How to prevent recursive tool calling loops in multi-agent workflows?",
-      author: "Marcus Vance",
-      authorLevel: "Level 9 Architect",
-      category: "AI Architectures",
-      snippet: "My DevTools AI agent occasionally enters an infinite retry loop when an external API returns a 429 rate limit. What is the recommended fallback pattern in Python?",
-      upvotes: 29,
-      commentsCount: 8,
-      isAIAnswered: true,
-      timeAgo: "5 hours ago",
-      tags: ["Orchestration", "Python", "Agents"],
-    },
-    {
-      id: "post-3",
-      title: "Understanding AI Safety cosine similarity thresholds",
-      author: "Sarah Jenkins",
-      authorLevel: "Level 5 Student",
-      category: "AI Security",
-      snippet: "Why did my prompt get flagged by safety verification when asking for a mock SQL injection script for my cybersecurity assignment? Can we adjust confidence boundaries?",
-      upvotes: 18,
-      commentsCount: 5,
-      isAIAnswered: false,
-      timeAgo: "1 day ago",
-      tags: ["Safety", "Security", "ESDLC"],
-    },
-  ]);
+  const { posts, addPost, upvotePost } = useCommunityStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string>("All");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
-  const [newCategory, setNewCategory] = useState("Vector Databases");
+  const [newCategory, setNewCategory] = useState("Database Systems");
   const [newContent, setNewContent] = useState("");
   const [newTags, setNewTags] = useState("");
 
-  const categories = ["All", "Vector Databases", "AI Architectures", "AI Security", "Algorithms", "Career Advice"];
+  const categories = ["All", "Database Systems", "AI Architectures", "AI Security", "Algorithms", "Career Advice"];
 
   const handleCreatePost = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim() || !newContent.trim()) return;
 
-    const created: DiscussionPost = {
-      id: `post-${Date.now()}`,
+    addPost({
       title: newTitle,
-      author: `${user?.name || "Sujith Kumar"} (You)`,
-      authorLevel: "Level 8 Scholar",
+      author: `${user?.name || "You"}`,
+      authorLevel: "Level 1 Starter",
       category: newCategory,
       snippet: newContent,
-      upvotes: 1,
-      commentsCount: 0,
-      isAIAnswered: false,
-      timeAgo: "Just now",
+      content: newContent,
       tags: newTags.split(",").map((t) => t.trim()).filter(Boolean),
-    };
+    });
 
-    setPosts([created, ...posts]);
     setIsModalOpen(false);
     setNewTitle("");
     setNewContent("");
@@ -104,9 +46,7 @@ export const CommunityDiscussionsPage: React.FC = () => {
   const handleUpvote = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    setPosts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, upvotes: p.upvotes + 1 } : p))
-    );
+    upvotePost(id);
   };
 
   const filteredPosts = posts.filter((post) => {
@@ -121,14 +61,14 @@ export const CommunityDiscussionsPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div>
           <Badge variant="info" className="mb-2">
             <MessageSquare className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
             Peer & AI Collaborative Network
           </Badge>
-          <h1 className="text-3xl font-extrabold text-white">Community Forum & Discussions</h1>
-          <p className="text-sm text-slate-400">Ask technical questions, share architectural patterns, and receive verified answers from AI swarm mentors.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Community Forum & Discussions</h1>
+          <p className="text-sm text-slate-400">Ask questions, share insights, and get answers from peers and AI mentors.</p>
         </div>
         <Button variant="primary" onClick={() => setIsModalOpen(true)} className="px-5 py-2.5 self-start sm:self-center">
           <Plus className="w-4 h-4 mr-2" />
@@ -156,8 +96,8 @@ export const CommunityDiscussionsPage: React.FC = () => {
               onClick={() => setActiveCategory(cat)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                 activeCategory === cat
-                  ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md shadow-indigo-500/20"
-                  : "bg-obsidian-800/60 text-slate-400 hover:text-white border border-white/5"
+                  ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-slate-900 dark:text-white shadow-md shadow-indigo-500/20"
+                  : "bg-white dark:bg-obsidian-800/60 text-slate-400 hover:text-slate-900 dark:text-white border border-slate-200 dark:border-white/5"
               }`}
             >
               {cat}
@@ -179,7 +119,7 @@ export const CommunityDiscussionsPage: React.FC = () => {
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-2 flex-1">
                     <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span className="font-bold text-white">{post.author}</span>
+                      <span className="font-bold text-slate-900 dark:text-white">{post.author}</span>
                       <Badge variant="default" className="text-[10px]">{post.authorLevel}</Badge>
                       <span className="text-slate-500">&bull;</span>
                       <span className="text-indigo-400 font-semibold">{post.category}</span>
@@ -187,26 +127,26 @@ export const CommunityDiscussionsPage: React.FC = () => {
                       <span className="text-slate-400">{post.timeAgo}</span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-white group-hover:text-cyan-400 transition-colors">
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-cyan-400 transition-colors">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-slate-300 line-clamp-2 leading-relaxed font-sans">
+                    <p className="text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed font-sans">
                       {post.snippet}
                     </p>
 
                     <div className="flex flex-wrap gap-1.5 pt-2">
                       {post.tags.map((tag) => (
-                        <span key={tag} className="px-2 py-0.5 rounded bg-obsidian-900 text-slate-400 text-xs border border-white/5">
+                        <span key={tag} className="px-2 py-0.5 rounded bg-slate-50 dark:bg-obsidian-900 text-slate-400 text-xs border border-slate-200 dark:border-white/5">
                           #{tag}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="flex sm:flex-col items-center justify-between sm:justify-center gap-4 sm:gap-2 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-white/10 shrink-0">
+                  <div className="flex sm:flex-col items-center justify-between sm:justify-center gap-4 sm:gap-2 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-slate-200 dark:border-white/10 shrink-0">
                     <button
                       onClick={(e) => handleUpvote(post.id, e)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-obsidian-900 hover:bg-indigo-600/20 hover:text-indigo-400 border border-white/10 text-slate-300 text-xs font-bold transition-all"
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-obsidian-900 hover:bg-indigo-600/20 hover:text-indigo-400 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 text-xs font-bold transition-all"
                     >
                       <ThumbsUp className="w-3.5 h-3.5" />
                       <span>{post.upvotes}</span>
@@ -233,9 +173,9 @@ export const CommunityDiscussionsPage: React.FC = () => {
 
       {/* New Post Modal */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Start a Community Discussion">
-        <form onSubmit={handleCreatePost} className="space-y-4 text-slate-300">
+        <form onSubmit={handleCreatePost} className="space-y-4 text-slate-600 dark:text-slate-300">
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Title / Question Summary</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Title / Question Summary</label>
             <Input
               placeholder="e.g., How to optimize attention memory in PyTorch?"
               value={newTitle}
@@ -244,13 +184,13 @@ export const CommunityDiscussionsPage: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Category</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Category</label>
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="w-full bg-obsidian-900 border border-white/10 rounded-xl p-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
-              <option value="Vector Databases">Vector Databases</option>
+              <option value="Database Systems">Database Systems</option>
               <option value="AI Architectures">AI Architectures</option>
               <option value="AI Security">AI Security</option>
               <option value="Algorithms">Algorithms</option>
@@ -258,18 +198,18 @@ export const CommunityDiscussionsPage: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Detailed Explanation / Context</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Detailed Explanation / Context</label>
             <textarea
               rows={5}
               placeholder="Provide background, code snippets, or error messages..."
               value={newContent}
               onChange={(e) => setNewContent(e.target.value)}
               required
-              className="w-full bg-obsidian-900 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Tags (comma separated)</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Tags (comma separated)</label>
             <Input
               placeholder="e.g., PyTorch, Transformers, Attention"
               value={newTags}

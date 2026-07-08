@@ -44,13 +44,13 @@ export const AIResponseCard: React.FC<AIResponseCardProps> = ({
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
       
-      <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-white/10 mb-4">
         <div className="flex items-center space-x-2">
           <div className="p-1.5 rounded-lg bg-primary-500/20 text-primary-500">
             <Sparkles className="w-4 h-4 animate-pulse" />
           </div>
-          <span className="font-semibold text-sm text-white">{title}</span>
-          <span className="text-[10px] text-slate-500 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-white/10">
+          <span className="font-semibold text-sm text-slate-900 dark:text-white">{title}</span>
+          <span className="text-[10px] text-slate-500 font-mono px-1.5 py-0.5 rounded bg-white/5 border border-slate-200 dark:border-white/10">
             {modelName}
           </span>
         </div>
@@ -59,11 +59,11 @@ export const AIResponseCard: React.FC<AIResponseCardProps> = ({
         </div>
       </div>
 
-      <div className="prose prose-invert max-w-none text-sm text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
+      <div className="prose prose-invert max-w-none text-sm text-slate-700 dark:text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">
         {content}
       </div>
 
-      <div className="flex items-center justify-between pt-4 border-t border-white/10 mt-4 text-xs text-slate-400">
+      <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-white/10 mt-4 text-xs text-slate-400">
         <div className="flex items-center space-x-2">
           <span>Was this explanation helpful?</span>
           <button
@@ -90,7 +90,7 @@ export const AIResponseCard: React.FC<AIResponseCardProps> = ({
 
         <button
           onClick={handleCopy}
-          className="inline-flex items-center space-x-1 px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white transition-colors"
+          className="inline-flex items-center space-x-1 px-2 py-1 rounded bg-white/5 hover:bg-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:text-white transition-colors"
         >
           {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
           <span>{copied ? "Copied" : "Copy Code"}</span>

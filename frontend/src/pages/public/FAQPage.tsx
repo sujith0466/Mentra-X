@@ -14,20 +14,20 @@ export const FAQPage: React.FC = () => {
     {
       id: 1,
       category: "ai",
-      question: "How does the Cognitive Digital Twin graph track my academic progress?",
-      answer: "The Digital Twin graph is seeded with your initial skill profile during onboarding. As you complete video lectures, practice quizzes, and coding challenges, real-time telemetry updates your knowledge state vectors in your Personalized Learning Memory. This allows our intelligent AI tutoring engines to precisely identify concepts requiring reinforcement without repeating already mastered material.",
+      question: "How does the Personalized Learning Profile graph track my academic progress?",
+      answer: "The Learning Profile graph is seeded with your initial skill profile during onboarding. As you complete video lectures, practice quizzes, and coding challenges, real-time telemetry updates your knowledge state vectors in your Personalized Learning Memory. This allows our intelligent AI tutoring engines to precisely identify concepts requiring reinforcement without repeating already mastered material.",
     },
     {
       id: 2,
       category: "ai",
-      question: "What is Intelligent Multi-Agent tutoring and how is it different from standard ChatGPT?",
+      question: "What is Intelligent advanced AI tutoring and how is it different from standard ChatGPT?",
       answer: "Instead of a single monolithic LLM prompt, Mentra X utilizes advanced orchestration to coordinate specialized AI assistants (Career AI, Tutor AI, DevTools AI, and Community AI). Each assistant has dedicated tool access, deterministic memory context, and is governed by real-time AI Safety Verification monitors to eliminate hallucinations and ensure pedagogical accuracy.",
     },
     {
       id: 3,
       category: "security",
       question: "How does AI Safety Verification protect my student data and AI interactions?",
-      answer: "AI Safety Verification acts as an immutable real-time interceptor between all user inputs and AI model executions. It performs continuous similarity scoring, PII redaction, and prompt injection filtering. Every response generated is accompanied by a verifiable safety badge and audit log entry.",
+      answer: "AI Safety Verification acts as an immutable real-time interceptor between all user inputs and AI model executions. It performs continuous similarity scoring, privacy protection, and prompt injection filtering. Every response generated is accompanied by a verifiable safety badge and audit log entry.",
     },
     {
       id: 4,
@@ -39,7 +39,7 @@ export const FAQPage: React.FC = () => {
       id: 5,
       category: "academic",
       question: "How do course certificates and career roadmaps work?",
-      answer: "Upon completing all required course modules and passing the adaptive skill assessments, your Digital Twin certifies your competency. The Career AI module then uses this verified DNA to generate customized career roadmaps, resume enhancements, and targeted mock interview simulations.",
+      answer: "Upon completing all required course modules and passing the adaptive skill assessments, your Learning Profile certifies your competency. The Career AI module then uses this verified DNA to generate customized career roadmaps, resume enhancements, and targeted mock interview simulations.",
     },
     {
       id: 6,
@@ -51,7 +51,7 @@ export const FAQPage: React.FC = () => {
 
   const categories = [
     { id: "all", label: "All Questions", icon: HelpCircle },
-    { id: "ai", label: "AI & Digital Twin", icon: Brain },
+    { id: "ai", label: "AI & Learning Profile", icon: Brain },
     { id: "coding", label: "Coding Arena", icon: Code },
     { id: "academic", label: "Courses & Career", icon: BookOpen },
     { id: "security", label: "Safety & GDPR", icon: ShieldCheck },
@@ -72,20 +72,20 @@ export const FAQPage: React.FC = () => {
           <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
           Enterprise Knowledge Base
         </Badge>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           Frequently Asked <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Questions</span>
         </h1>
-        <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-          Everything you need to know about our cognitive AI swarms, real-time Digital Twin tracking, and enterprise security governance.
+        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+          Everything you need to know about Mentra X, our AI features, and how we protect your data.
         </p>
 
         {/* Search Bar */}
         <div className="max-w-xl mx-auto pt-4">
           <Input
-            placeholder="Search questions, concepts, or security terms..."
+            placeholder="Search questions or topics..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-obsidian-800/80 border-white/10 text-white placeholder-slate-500 py-3 px-4 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500"
+            className="w-full bg-white dark:bg-obsidian-800/80 border-slate-200 dark:border-white/10 text-slate-900 dark:text-white placeholder-slate-500 py-3 px-4 rounded-xl shadow-lg focus:ring-2 focus:ring-indigo-500"
           />
         </div>
 
@@ -100,8 +100,8 @@ export const FAQPage: React.FC = () => {
                 onClick={() => setActiveCategory(cat.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                   isActive
-                    ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md shadow-indigo-500/20"
-                    : "bg-obsidian-800/60 text-slate-400 hover:text-white hover:bg-obsidian-700/60 border border-white/5"
+                    ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-slate-900 dark:text-white shadow-md shadow-indigo-500/20"
+                    : "bg-white dark:bg-obsidian-800/60 text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-100 dark:bg-obsidian-700/60 border border-slate-200 dark:border-white/5"
                 }`}
               >
                 <Icon className="w-4 h-4" />
@@ -125,13 +125,13 @@ export const FAQPage: React.FC = () => {
               <Card
                 key={faq.id}
                 variant={isOpen ? "glow" : "default"}
-                className="overflow-hidden border border-white/10 transition-colors"
+                className="overflow-hidden border border-slate-200 dark:border-white/10 transition-colors"
               >
                 <button
                   onClick={() => setOpenId(isOpen ? null : faq.id)}
                   className="w-full p-6 text-left flex justify-between items-center gap-4 focus:outline-none"
                 >
-                  <span className="text-base font-bold text-white flex items-center gap-3">
+                  <span className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-3">
                     <span className="w-2 h-2 rounded-full bg-indigo-400 shrink-0" />
                     {faq.question}
                   </span>
@@ -146,7 +146,7 @@ export const FAQPage: React.FC = () => {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="px-6 pb-6 pt-2 text-sm text-slate-300 leading-relaxed border-t border-white/5"
+                      className="px-6 pb-6 pt-2 text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-t border-slate-200 dark:border-white/5"
                     >
                       <p className="pl-5 border-l-2 border-indigo-500/50">{faq.answer}</p>
                     </motion.div>

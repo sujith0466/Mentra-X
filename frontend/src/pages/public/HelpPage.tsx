@@ -33,19 +33,19 @@ export const HelpPage: React.FC = () => {
     },
     {
       title: "AI Tutor & Study Planner",
-      description: "Troubleshooting intelligent AI tutoring interactions or adjusting study schedule parameters.",
+      description: "Get help using the AI Tutor or managing your study schedule.",
       icon: MessageSquare,
       link: "/faq",
     },
     {
       title: "Coding Arena & Sandboxes",
-      description: "Resolving code compilation timeouts, terminal output errors, or automated test discrepancies.",
+      description: "Get help with coding challenges, errors, or test failures.",
       icon: AlertCircle,
       link: "/faq",
     },
     {
-      title: "Account, Billing & GDPR",
-      description: "Managing subscription renewals, payment methods, exporting vector memory, or privacy requests.",
+      title: "Account, Billing & Privacy",
+      description: "Manage your subscription, billing, and privacy settings.",
       icon: CheckCircle,
       link: "/contact",
     },
@@ -57,12 +57,12 @@ export const HelpPage: React.FC = () => {
       <div className="max-w-4xl mx-auto text-center space-y-6">
         <Badge variant="info" className="px-3 py-1 text-xs">
           <LifeBuoy className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
-          24/7 Enterprise Support
+          24/7 Support
         </Badge>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
           How Can We <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Help You?</span>
         </h1>
-        <p className="text-lg text-slate-300 max-w-2xl mx-auto">
+        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
           Our specialized support engineers and autonomous diagnostic agents are ready to assist with any technical or academic inquiries.
         </p>
 
@@ -89,7 +89,7 @@ export const HelpPage: React.FC = () => {
                 <Icon className="w-6 h-6 text-indigo-400" />
               </div>
               <div className="space-y-2 flex-1">
-                <h3 className="text-lg font-bold text-white">{topic.title}</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{topic.title}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{topic.description}</p>
                 <div className="pt-2">
                   <a href={topic.link} className="text-xs font-semibold text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-1">
@@ -107,8 +107,8 @@ export const HelpPage: React.FC = () => {
         <Card variant="gradient" className="p-8 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
           <div className="space-y-2">
             <Badge variant="success">Institutional SLAs Active</Badge>
-            <h3 className="text-2xl font-bold text-white">Need Urgent Campus Assistance?</h3>
-            <p className="text-sm text-slate-300">
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Need Urgent Campus Assistance?</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
               Enterprise Campus administrators have access to dedicated 1-hour response SLAs and direct phone escalation.
             </p>
           </div>
@@ -126,15 +126,15 @@ export const HelpPage: React.FC = () => {
         {ticketSubmitted ? (
           <div className="p-8 text-center space-y-4">
             <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto animate-bounce" />
-            <h3 className="text-xl font-bold text-white">Ticket Submitted Successfully!</h3>
-            <p className="text-sm text-slate-300">
-              Your diagnostic telemetry has been captured. Support Ticket #TCK-{Math.floor(1000 + Math.random() * 9000)} has been dispatched to our support swarms.
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Ticket Submitted Successfully!</h3>
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              Your request has been received. Support Ticket #TCK-{Math.floor(1000 + Math.random() * 9000)} has been created and our team will get back to you shortly.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmitTicket} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Subject</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Subject</label>
               <Input
                 placeholder="e.g., Code compilation timeout on Challenge #4"
                 value={ticketSubject}
@@ -143,14 +143,14 @@ export const HelpPage: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1">Message & Steps to Reproduce</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1">Message & Steps to Reproduce</label>
               <textarea
                 rows={4}
                 placeholder="Describe what occurred, any error messages displayed, and what you expected..."
                 value={ticketMessage}
                 onChange={(e) => setTicketMessage(e.target.value)}
                 required
-                className="w-full bg-obsidian-900 border border-white/10 rounded-xl p-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
             <div className="pt-4 flex justify-end gap-3">

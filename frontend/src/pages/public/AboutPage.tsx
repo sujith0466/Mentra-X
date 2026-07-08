@@ -8,10 +8,10 @@ export const AboutPage: React.FC = () => {
   return (
     <div className="space-y-16 py-8 max-w-5xl mx-auto">
       <div className="text-center space-y-4">
-        <Badge variant="cyan">Enterprise Architecture Vision</Badge>
-        <h1 className="text-4xl font-extrabold text-white">Engineering the Future of AI Learning</h1>
-        <p className="text-base text-slate-300 max-w-3xl mx-auto leading-relaxed">
-          Mentra X is an enterprise-grade AI student platform that bridges the gap between traditional Learning Management Systems and autonomous AI tutoring swarms.
+        <Badge variant="cyan">Our Vision</Badge>
+        <h1 className="text-4xl font-extrabold text-slate-900 dark:text-white">The Future of Learning</h1>
+        <p className="text-base text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed">
+          Mentra X is a next-generation AI learning platform designed to adapt to your unique learning style and help you achieve your goals.
         </p>
       </div>
 
@@ -20,9 +20,9 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
             <BrainCircuit className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Cognitive Digital Twins</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Every student is paired with a persistent Digital Twin that models knowledge graphs, learning velocity, and retrieval retention in real-time, enabling hyper-personalized syllabus adaptation.
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Personalized Learning Profile</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Our system learns how you study best, tracking your progress and adapting course materials to help you learn faster and remember longer.
           </p>
         </Card>
 
@@ -30,9 +30,9 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">AI Safety Verification Layer</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            All AI interactions pass through rigorous multi-agent governance interceptors that verify cosine similarity against authoritative course syllabi, eliminating AI hallucinations and PII leaks.
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Safe & Verified Content</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            All AI responses are cross-checked against authoritative course materials to ensure accuracy and prevent misinformation.
           </p>
         </Card>
 
@@ -40,9 +40,9 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
             <Zap className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Intelligent AI Orchestration Engines</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Our multi-agent swarms dynamically route complex coding questions, architecture reviews, and resume analysis to specialized LLM agents for deterministic, high-accuracy execution.
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Smart AI Tutors</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Get instant, accurate help with coding, architecture, and career prep from our specialized AI tutors.
           </p>
         </Card>
 
@@ -50,17 +50,17 @@ export const AboutPage: React.FC = () => {
           <div className="w-10 h-10 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center">
             <Server className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-bold text-white">Personalized Vector Memory</h3>
-          <p className="text-sm text-slate-300 leading-relaxed">
-            We utilize high-performance vector databases to maintain long-term semantic memory across semesters, ensuring tutoring agents never lose context of prior student milestones.
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white">Long-Term Learning Memory</h3>
+          <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            Our AI remembers what you've learned in the past, connecting new concepts to your existing knowledge for a deeper understanding.
           </p>
         </Card>
       </div>
 
       <Card variant="default" className="p-8 text-center space-y-4 bg-gradient-to-tr from-obsidian-900 via-obsidian-800 to-indigo-950/40">
-        <h2 className="text-2xl font-bold text-white">Enterprise Certified & Audited</h2>
-        <p className="text-sm text-slate-300 max-w-2xl mx-auto">
-          Our platform has completed 36/36 ESDLC compliance tests and achieved full enterprise certification across all cognitive architecture layers.
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Built for Student Success</h2>
+        <p className="text-sm text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+          Mentra X is trusted by thousands of students to deliver a safe, effective, and personalized learning experience.
         </p>
         <div className="flex justify-center gap-3 pt-2">
           <SafetyBadge status="APPROVE" score={1.0} />

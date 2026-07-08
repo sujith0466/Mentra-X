@@ -19,14 +19,8 @@ export interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      user: {
-        id: "stu_101",
-        name: "Sujith Kumar",
-        email: "sujith@mentrax.ai",
-        role: "student",
-        twin_id: "twin_alpha_99",
-      },
-      isAuthenticated: true,
+      user: null,
+      isAuthenticated: false,
       setUser: (user) => set({ user, isAuthenticated: !!user }),
       logout: () => set({ user: null, isAuthenticated: false }),
     }),

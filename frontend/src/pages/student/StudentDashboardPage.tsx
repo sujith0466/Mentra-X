@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BrainCircuit, BookOpen, Clock, Flame, ArrowRight, CheckCircle2, Award, Zap } from "lucide-react";
+import { BrainCircuit, BookOpen, Clock, Flame, ArrowRight, CheckCircle2, Award, Zap, TrendingUp, Target } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -16,46 +16,61 @@ export const StudentDashboardPage: React.FC = () => {
 
   return (
     <div className="space-y-8 py-4">
-      {/* Welcome Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-obsidian-600 pb-6">
-        <div>
-          <div className="flex items-center space-x-2">
-            <Badge variant="cyan" size="sm">Enterprise License Active</Badge>
-            <span className="text-xs font-mono text-slate-500">Session ID: #MX-9942</span>
+
+      {/* ── Welcome Banner ─────────────────────────────── */}
+      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-indigo-700 p-6 sm:p-8">
+        {/* Subtle orbs */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 bg-white/8 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-purple-400/15 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-2">
+              <Badge variant="success" size="sm">Free Plan Active</Badge>
+              <span className="text-xs text-indigo-200">Student ID: #{user?.id || "—"}</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white">
+              Welcome back, {user?.name?.split(" ")[0] || "Student"} 👋
+            </h1>
+            <p className="text-sm text-indigo-200 mt-1">
+              Your AI tutor has identified 3 new practice exercises for you today.
+            </p>
           </div>
-          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-            Welcome back, {user?.name || "Student"} 👋
-          </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-0.5">
-            Your Digital Twin has processed 14 new concept embeddings since your last login.
-          </p>
-        </div>
 
-        <div className="flex items-center space-x-3">
-          <Link to="/student/twin">
-            <Button size="md" variant="outline" leftIcon={<BrainCircuit className="w-4 h-4 text-ai-violet" />}>
-              Inspect Twin Graph
-            </Button>
-          </Link>
-          <Link to="/student/coding">
-            <Button size="md" leftIcon={<Zap className="w-4 h-4 text-amber-500 dark:text-amber-400" />}>
-              Coding Arena
-            </Button>
-          </Link>
+          <div className="flex items-center gap-3 shrink-0">
+            <Link to="/student/twin">
+              <Button
+                size="md"
+                className="bg-white/15 hover:bg-white/25 text-white border border-white/25 backdrop-blur-sm"
+                leftIcon={<BrainCircuit className="w-4 h-4" />}
+              >
+                Learning Profile
+              </Button>
+            </Link>
+            <Link to="/student/coding">
+              <Button
+                size="md"
+                className="bg-white text-indigo-700 hover:bg-slate-50 shadow-lg font-bold"
+                leftIcon={<Zap className="w-4 h-4 text-amber-500" />}
+              >
+                Coding Arena
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
 
-      {/* KPI Metric Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard title="Overall Mastery" value="84.2%" trend={4.5} icon={<Award className="w-5 h-5" />} subtitle="Top 5% of cohort" />
-        <MetricCard title="Study Velocity" value="2.8x" trend={12.0} icon={<Zap className="w-5 h-5" />} subtitle="vs baseline average" />
-        <MetricCard title="Active Courses" value="3" trend={0} icon={<BookOpen className="w-5 h-5" />} subtitle="Enrolled syllabus" />
-        <MetricCard title="Learning Streak" value="14 Days" trend={20.0} icon={<Flame className="w-5 h-5" />} subtitle="Personal best streak!" />
+      {/* ── KPI Metrics ────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        <MetricCard title="Overall Mastery"  value="84.2%" trend={4.5}  icon={<Award className="w-5 h-5" />}   subtitle="Top 5% of cohort" />
+        <MetricCard title="Study Velocity"   value="2.8×"  trend={12.0} icon={<TrendingUp className="w-5 h-5" />} subtitle="vs. average learner" />
+        <MetricCard title="Active Courses"   value="3"     trend={0}    icon={<BookOpen className="w-5 h-5" />} subtitle="Enrolled this term" />
+        <MetricCard title="Learning Streak"  value="14 days" trend={20} icon={<Flame className="w-5 h-5" />}   subtitle="Personal best!" />
       </div>
 
-      {/* Digital Twin Widget */}
+      {/* ── Learning Profile Widget ─────────────────────── */}
       <DigitalTwinCard
-        studentName={user?.name || "Sujith"}
+        studentName={user?.name || "Student"}
         healthScore={92}
         knowledgeMastery={84}
         studyVelocity={2.8}
@@ -63,80 +78,114 @@ export const StudentDashboardPage: React.FC = () => {
         status="healthy"
       />
 
-      {/* Main Grid: Enrolled Courses & AI Tutoring Feed */}
+      {/* ── Main Grid ──────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* Left: Courses & Recommendations */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-indigo-500 dark:text-indigo-400" /> In-Progress Courses
-            </h2>
-            <Link to="/student/my-courses" className="text-xs text-primary-600 dark:text-primary-500 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1">
-              View All <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+
+          {/* In-Progress Courses */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+                In-Progress Courses
+              </h2>
+              <Link to="/student/my-courses" className="text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 transition-colors flex items-center gap-1">
+                View All <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+            <div className="space-y-3">
+              <LearningProgress courseTitle="Data Structures & Algorithms"      completedModules={8} totalModules={12} estimatedTimeLeft="3.5 hrs remaining" />
+              <LearningProgress courseTitle="Cloud Computing & Distributed Systems" completedModules={5} totalModules={8}  estimatedTimeLeft="6 hrs remaining" />
+              <LearningProgress courseTitle="Natural Language Processing"           completedModules={9} totalModules={10} estimatedTimeLeft="1 hr remaining" />
+            </div>
           </div>
 
-          <div className="space-y-4">
-            <LearningProgress courseTitle="Advanced Agentic Coding & Orchestration" completedModules={8} totalModules={12} estimatedTimeLeft="3.5 hrs remaining" />
-            <LearningProgress courseTitle="Enterprise Cloud Architecture & Distributed Systems" completedModules={5} totalModules={8} estimatedTimeLeft="6 hrs remaining" />
-            <LearningProgress courseTitle="Vector Memory Systems & Similarity Engineering" completedModules={9} totalModules={10} estimatedTimeLeft="1 hr remaining" />
-          </div>
-
-          <div className="space-y-4 pt-4">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <Zap className="w-5 h-5 text-amber-500 dark:text-amber-400" /> Adaptive AI Recommendations
+          {/* AI Recommendations */}
+          <div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2 mb-4">
+              <Target className="w-5 h-5 text-rose-500 dark:text-rose-400" />
+              AI Recommendations
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <RecommendationCard
-                title="Review Personalized Memory Index Parameters"
-                description="Your Digital Twin detected a slight retention drop in similarity search heuristics."
+                title="Review Search & Sorting Algorithms"
+                description="Your practice results show a slight retention drop in binary search. A quick review will solidify your understanding."
                 category="Retention Boost"
                 priority="high"
               />
               <RecommendationCard
                 title="Complete Cloud Architecture Autoscaling Lab"
-                description="You are 1 lab away from unlocking your Enterprise Architecture badge."
-                category="Milestone Goal"
+                description="You are 1 lab away from unlocking your Cloud Architecture badge."
+                category="Next Milestone"
                 priority="medium"
               />
             </div>
           </div>
         </div>
 
-        {/* Right Column: AI Tutor & Live Feed */}
-        <div className="space-y-6">
+        {/* Right: AI Feed & Deadlines */}
+        <div className="space-y-5">
+
+          {/* Daily AI Brief */}
           <Card variant="glass" className="space-y-4">
             <div className="flex items-center justify-between">
-              <Badge variant="cyan" size="sm">Intelligent Learning Engine</Badge>
-              <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400">AI Safety Verified</span>
+              <Badge variant="cyan" size="sm">AI Tutor</Badge>
+              <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">Live</span>
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white">Daily Cognitive Briefing</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Today's Study Brief</h3>
             <AIResponseCard
-              title="Twin Diagnostic Note"
-              content="Good morning! I reviewed your recent submissions in the Developer Arena. Your code structure is clean, but pay close attention to async error boundaries when structuring multi-agent learning workflows."
+              title="Study Tip"
+              content="Great progress on Data Structures! You're 8 modules in. Today's focus: review DFS and BFS graph traversal — you scored 73% on those concepts in your last quiz. Let's push that to 90%!"
               confidenceScore={0.99}
-              modelName="Adaptive Intelligence v2.5"
+              modelName="Mentra AI v2.5"
             />
           </Card>
 
-          <Card variant="default" className="p-5 space-y-4">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">Upcoming Deadlines</h3>
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-2.5 rounded bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-600">
-                <div>
-                  <span className="font-semibold text-slate-900 dark:text-white block">Multi-Agent Routing Quiz</span>
-                  <span className="text-slate-600 dark:text-slate-400">Course: Agentic Coding</span>
-                </div>
-                <Badge variant="warning">In 2 Days</Badge>
-              </div>
-              <div className="flex items-center justify-between p-2.5 rounded bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-600">
-                <div>
-                  <span className="font-semibold text-slate-900 dark:text-white block">Vector Memory Lab Submission</span>
-                  <span className="text-slate-600 dark:text-slate-400">Course: Vector Systems</span>
-                </div>
-                <Badge variant="primary">In 5 Days</Badge>
-              </div>
+          {/* Upcoming Deadlines */}
+          <Card variant="default" className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Clock className="w-4 h-4 text-slate-400" />
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Upcoming Deadlines</h3>
             </div>
+            <div className="space-y-2.5">
+              {[
+                { title: "Algorithms Quiz — Module 9",    course: "Data Structures",    badge: "In 2 Days", variant: "warning" as const },
+                { title: "Cloud Architecture Lab Report", course: "Cloud Computing",     badge: "In 5 Days", variant: "primary" as const },
+              ].map((d, i) => (
+                <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-obsidian-900/60 border border-slate-100 dark:border-obsidian-600 text-xs">
+                  <div>
+                    <span className="font-semibold text-slate-900 dark:text-white block">{d.title}</span>
+                    <span className="text-slate-500 dark:text-slate-400">{d.course}</span>
+                  </div>
+                  <Badge variant={d.variant} size="sm">{d.badge}</Badge>
+                </div>
+              ))}
+            </div>
+            <Link to="/student/planner">
+              <Button variant="outline" size="sm" className="w-full" rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>
+                Open Planner
+              </Button>
+            </Link>
           </Card>
+
+          {/* Quick Links */}
+          <div className="grid grid-cols-2 gap-2.5">
+            {[
+              { to: "/student/ai-tutor",      label: "AI Tutor",       icon: BrainCircuit, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-500/10" },
+              { to: "/student/weakness",      label: "Weaknesses",     icon: Target,       color: "text-rose-600 dark:text-rose-400",     bg: "bg-rose-50 dark:bg-rose-500/10" },
+              { to: "/student/career-resume", label: "Career",         icon: Award,        color: "text-amber-600 dark:text-amber-400",   bg: "bg-amber-50 dark:bg-amber-500/10" },
+              { to: "/student/interview",     label: "Interview Prep", icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400",bg: "bg-emerald-50 dark:bg-emerald-500/10" },
+            ].map((q) => (
+              <Link key={q.to} to={q.to}>
+                <div className={`flex flex-col items-center gap-2 p-3 rounded-xl border border-slate-100 dark:border-obsidian-600 ${q.bg} hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer`}>
+                  <q.icon className={`w-5 h-5 ${q.color}`} />
+                  <span className="text-[10px] font-semibold text-slate-700 dark:text-slate-300">{q.label}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

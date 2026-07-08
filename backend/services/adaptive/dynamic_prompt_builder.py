@@ -103,6 +103,11 @@ class DynamicPromptBuilder:
             rendered_prompt = f"Teach {concept} at pedagogical level {level}. Avoid: {avoided_str}."
 
         style_note = self.STYLE_INSTRUCTIONS.get(style, self.STYLE_INSTRUCTIONS["Default"])
-        final_prompt = f"[SYSTEM PEDAGOGICAL INSTRUCTION — LEVEL {level}]\n{rendered_prompt}\n[LEARNING STYLE ADJUSTMENT]\n{style_note}"
+        weakness_note = ""
+        if constraints and (constraints.levels_to_avoid or constraints.analogies_to_avoid):
+            levels_avoid_str = ", ".join(map(str, constraints.levels_to_avoid)) if constraints.levels_to_avoid else "none"
+            weakness_note = f"\n[WEAKNESS INTELLIGENCE CONSTRAINTS]\nAVOID pedagogical levels: [{levels_avoid_str}]. AVOID analogies: [{avoided_str}]. PRIORITIZE approaches that worked: [{worked_str}]."
+
+        final_prompt = f"[SYSTEM PEDAGOGICAL INSTRUCTION — LEVEL {level}]\n{rendered_prompt}\n[LEARNING STYLE ADJUSTMENT]\n{style_note}{weakness_note}"
 
         return final_prompt

@@ -22,7 +22,7 @@ export const ForgotPasswordPage: React.FC = () => {
           <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mx-auto mb-4">
             <KeyRound className="w-6 h-6 text-indigo-400" />
           </div>
-          <h1 className="text-2xl font-extrabold text-white">Reset Account Password</h1>
+          <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Reset Account Password</h1>
           <p className="text-sm text-slate-400">
             Enter your student or faculty email address and we will dispatch a secure AI verification link.
           </p>
@@ -31,9 +31,9 @@ export const ForgotPasswordPage: React.FC = () => {
         {submitted ? (
           <div className="p-6 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-3">
             <CheckCircle className="w-10 h-10 text-emerald-400 mx-auto" />
-            <h3 className="text-base font-bold text-white">Verification Link Sent!</h3>
-            <p className="text-xs text-slate-300">
-              If an active Mentra X account exists for <strong className="text-white">{email}</strong>, a password reset link has been dispatched. Please check your inbox and spam folder.
+            <h3 className="text-base font-bold text-slate-900 dark:text-white">Verification Link Sent!</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300">
+              If an active Mentra X account exists for <strong className="text-slate-900 dark:text-white">{email}</strong>, a password reset link has been dispatched. Please check your inbox and spam folder.
             </p>
             <div className="pt-2">
               <Link to="/login">
@@ -46,7 +46,7 @@ export const ForgotPasswordPage: React.FC = () => {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300 mb-1.5">
                 Email Address
               </label>
               <div className="relative">
@@ -68,8 +68,8 @@ export const ForgotPasswordPage: React.FC = () => {
           </form>
         )}
 
-        <div className="pt-4 border-t border-white/10 text-center flex justify-between items-center text-xs text-slate-400">
-          <Link to="/login" className="hover:text-white inline-flex items-center gap-1">
+        <div className="pt-4 border-t border-slate-200 dark:border-white/10 text-center flex justify-between items-center text-xs text-slate-400">
+          <Link to="/login" className="hover:text-slate-900 dark:text-white inline-flex items-center gap-1">
             <ArrowLeft className="w-3.5 h-3.5" />
             Back to Login
           </Link>

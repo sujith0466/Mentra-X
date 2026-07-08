@@ -28,14 +28,14 @@ export const ExplainabilityPanel: React.FC<ExplainabilityPanelProps> = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card variant="default" className={cn("p-4 border-indigo-500/20 bg-obsidian-900/60", className)}>
+    <Card variant="default" className={cn("p-4 border-indigo-500/20 bg-slate-50 dark:bg-obsidian-900/60", className)}>
       <div
         onClick={() => setIsExpanded(!isExpanded)}
         className="flex items-center justify-between cursor-pointer select-none"
       >
         <div className="flex items-center space-x-2">
           <HelpCircle className="w-4 h-4 text-indigo-400" />
-          <span className="text-sm font-semibold text-white">AI Explainability & Reasoning</span>
+          <span className="text-sm font-semibold text-slate-900 dark:text-white">AI Explainability & Reasoning</span>
           <Badge variant="cyan" size="sm">{model}</Badge>
         </div>
         <div className="flex items-center space-x-3">
@@ -53,17 +53,17 @@ export const ExplainabilityPanel: React.FC<ExplainabilityPanelProps> = ({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="overflow-hidden pt-4 mt-4 border-t border-obsidian-600 space-y-3"
+            className="overflow-hidden pt-4 mt-4 border-t border-slate-200 dark:border-obsidian-600 space-y-3"
           >
             {steps.map((st) => (
-              <div key={st.step} className="flex items-start space-x-3 p-2.5 rounded-lg bg-obsidian-800/80 border border-obsidian-600/50">
+              <div key={st.step} className="flex items-start space-x-3 p-2.5 rounded-lg bg-white dark:bg-obsidian-800/80 border border-slate-200 dark:border-obsidian-600/50">
                 {st.status === "flagged" ? (
                   <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
                 ) : (
                   <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                 )}
                 <div>
-                  <span className="text-xs font-semibold text-white block">Step {st.step}: {st.title}</span>
+                  <span className="text-xs font-semibold text-slate-900 dark:text-white block">Step {st.step}: {st.title}</span>
                   <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">{st.detail}</p>
                 </div>
               </div>

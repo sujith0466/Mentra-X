@@ -19,31 +19,31 @@ export const AnalyticsPage: React.FC = () => {
   const domainData = [
     { label: "AI & Neural Networks", value: 42 },
     { label: "Full-Stack Enterprise", value: 28 },
-    { label: "Vector Databases", value: 18 },
+    { label: "Database Systems", value: 18 },
     { label: "Cybersecurity & AI Safety", value: 12 },
   ];
 
   return (
     <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/10 pb-6">
         <div>
           <Badge variant="cyan" className="mb-2">
             <BarChart3 className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
             Executive Intelligence Console
           </Badge>
-          <h1 className="text-3xl font-extrabold text-white">Platform Analytics & Telemetry</h1>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Platform Analytics & Telemetry</h1>
           <p className="text-sm text-slate-400">Real-time student retention, course completion velocity, and institutional growth metrics.</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex bg-obsidian-900 rounded-lg p-1 border border-white/10">
+          <div className="flex bg-slate-50 dark:bg-obsidian-900 rounded-lg p-1 border border-slate-200 dark:border-white/10">
             {(["7d", "30d", "90d", "1y"] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => setTimeRange(range)}
                 className={`px-3 py-1 rounded-md text-xs font-bold transition-all ${
-                  timeRange === range ? "bg-indigo-600 text-white shadow-sm" : "text-slate-400 hover:text-white"
+                  timeRange === range ? "bg-indigo-600 text-slate-900 dark:text-white shadow-sm" : "text-slate-400 hover:text-slate-900 dark:text-white"
                 }`}
               >
                 {range.toUpperCase()}
@@ -74,7 +74,7 @@ export const AnalyticsPage: React.FC = () => {
           icon="activity"
         />
         <MetricCard
-          title="Qdrant Vector Syncs"
+          title="Database Vector Syncs"
           value="1.42M"
           trend={0.5}
           trendLabel="12ms avg latency"
@@ -109,11 +109,11 @@ export const AnalyticsPage: React.FC = () => {
 
       {/* Detailed Domain Breakdown Table */}
       <Card variant="default" className="p-6 space-y-4">
-        <h3 className="text-lg font-bold text-white">Top Performing Academic Modules</h3>
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Top Performing Academic Modules</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
-              <tr className="border-b border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-400">
+              <tr className="border-b border-slate-200 dark:border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-400">
                 <th className="py-3 px-4">Course Module Name</th>
                 <th className="py-3 px-4">Enrolled Students</th>
                 <th className="py-3 px-4">Avg Mastery Score</th>
@@ -121,23 +121,23 @@ export const AnalyticsPage: React.FC = () => {
                 <th className="py-3 px-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-slate-300">
+            <tbody className="divide-y divide-white/5 text-slate-600 dark:text-slate-300">
               <tr>
-                <td className="py-3 px-4 font-bold text-white">CS-401: Advanced Neural Architectures</td>
+                <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">CS-401: Advanced Neural Architectures</td>
                 <td className="py-3 px-4">4,210</td>
                 <td className="py-3 px-4 font-bold text-cyan-400">91.4%</td>
                 <td className="py-3 px-4">14.2 queries / student</td>
                 <td className="py-3 px-4 text-right"><Badge variant="success">Optimal</Badge></td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-bold text-white">CS-305: Enterprise Vector Databases</td>
+                <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">CS-305: Enterprise Database Systems</td>
                 <td className="py-3 px-4">3,890</td>
                 <td className="py-3 px-4 font-bold text-indigo-400">88.7%</td>
                 <td className="py-3 px-4">18.5 queries / student</td>
                 <td className="py-3 px-4 text-right"><Badge variant="success">Optimal</Badge></td>
               </tr>
               <tr>
-                <td className="py-3 px-4 font-bold text-white">SEC-502: AI Safety & Governance</td>
+                <td className="py-3 px-4 font-bold text-slate-900 dark:text-white">SEC-502: AI Safety & Governance</td>
                 <td className="py-3 px-4">2,950</td>
                 <td className="py-3 px-4 font-bold text-emerald-400">94.1%</td>
                 <td className="py-3 px-4">8.1 queries / student</td>

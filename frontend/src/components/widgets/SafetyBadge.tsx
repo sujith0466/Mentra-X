@@ -49,7 +49,7 @@ export const SafetyBadge: React.FC<SafetyBadgeProps> = ({
     DEFAULT: {
       label: String(status),
       bg: "bg-slate-500/10",
-      text: "text-slate-300",
+      text: "text-slate-600 dark:text-slate-300",
       border: "border-slate-500/30",
       icon: AlertTriangle,
     },
@@ -71,7 +71,7 @@ export const SafetyBadge: React.FC<SafetyBadgeProps> = ({
       {showIcon && <Icon className="w-3.5 h-3.5 shrink-0" />}
       <span>{config.label}</span>
       {score !== undefined && (
-        <span className="ml-1 pl-1 border-l border-white/20 font-mono text-[10px]">
+        <span className="ml-1 pl-1 border-l border-slate-300 dark:border-white/20 font-mono text-[10px]">
           {(score * 100).toFixed(0)}%
         </span>
       )}

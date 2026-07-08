@@ -30,11 +30,11 @@ export const SettingsPage: React.FC = () => {
   return (
     <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-6">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-6">
         <div>
           <Badge variant="info" className="mb-2">Platform Preferences</Badge>
-          <h1 className="text-3xl font-extrabold text-white">Account & AI Governance Settings</h1>
-          <p className="text-sm text-slate-400">Configure your cognitive tutoring swarms, notification schedules, and GDPR privacy controls.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Account & AI Governance Settings</h1>
+          <p className="text-sm text-slate-400">Configure your AI tutoring preferences, notification schedules, and privacy controls.</p>
         </div>
         {saved && (
           <span className="inline-flex items-center gap-1.5 text-xs text-emerald-400 font-semibold">
@@ -49,7 +49,7 @@ export const SettingsPage: React.FC = () => {
         <Card variant="default" className="p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Cpu className="w-5 h-5 text-indigo-400" />
                 AI Tutoring Interaction Mode
               </h3>
@@ -67,8 +67,8 @@ export const SettingsPage: React.FC = () => {
               onClick={() => setTutorMode("socratic")}
               className={`p-4 rounded-xl text-left border transition-all ${
                 tutorMode === "socratic"
-                  ? "bg-indigo-500/10 border-indigo-500/50 text-white shadow-md"
-                  : "bg-obsidian-900 border-white/5 text-slate-400 hover:border-white/20"
+                  ? "bg-indigo-500/10 border-indigo-500/50 text-slate-900 dark:text-white shadow-md"
+                  : "bg-slate-50 dark:bg-obsidian-900 border-slate-200 dark:border-white/5 text-slate-400 hover:border-slate-300 dark:border-white/20"
               }`}
             >
               <h4 className="text-sm font-bold mb-1">Socratic Mentoring (Recommended)</h4>
@@ -81,8 +81,8 @@ export const SettingsPage: React.FC = () => {
               onClick={() => setTutorMode("direct")}
               className={`p-4 rounded-xl text-left border transition-all ${
                 tutorMode === "direct"
-                  ? "bg-cyan-500/10 border-cyan-500/50 text-white shadow-md"
-                  : "bg-obsidian-900 border-white/5 text-slate-400 hover:border-white/20"
+                  ? "bg-cyan-500/10 border-cyan-500/50 text-slate-900 dark:text-white shadow-md"
+                  : "bg-slate-50 dark:bg-obsidian-900 border-slate-200 dark:border-white/5 text-slate-400 hover:border-slate-300 dark:border-white/20"
               }`}
             >
               <h4 className="text-sm font-bold mb-1">Direct Solutions Mode</h4>
@@ -95,7 +95,7 @@ export const SettingsPage: React.FC = () => {
 
         {/* Notifications & Reminders */}
         <Card variant="default" className="p-6 space-y-4">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Bell className="w-5 h-5 text-cyan-400" />
             Notifications & Learning Reminders
           </h3>
@@ -103,27 +103,27 @@ export const SettingsPage: React.FC = () => {
           <div className="space-y-4 divide-y divide-white/10 text-sm">
             <div className="flex items-center justify-between pt-2">
               <div>
-                <span className="font-semibold text-white block">Daily Study Streak Reminders</span>
+                <span className="font-semibold text-slate-900 dark:text-white block">Daily Study Streak Reminders</span>
                 <span className="text-xs text-slate-400">Receive an email prompt if you haven't completed a lesson or quiz today.</span>
               </div>
               <input
                 type="checkbox"
                 checked={streakReminders}
                 onChange={(e) => setStreakReminders(e.target.checked)}
-                className="w-5 h-5 rounded bg-obsidian-900 border-white/20 text-indigo-500 focus:ring-0"
+                className="w-5 h-5 rounded bg-slate-50 dark:bg-obsidian-900 border-slate-300 dark:border-white/20 text-indigo-500 focus:ring-0"
               />
             </div>
 
             <div className="flex items-center justify-between pt-4">
               <div>
-                <span className="font-semibold text-white block">Course & Syllabus Announcements</span>
+                <span className="font-semibold text-slate-900 dark:text-white block">Course & Syllabus Announcements</span>
                 <span className="text-xs text-slate-400">Receive alerts when new video lectures or coding challenges are published.</span>
               </div>
               <input
                 type="checkbox"
                 checked={emailAlerts}
                 onChange={(e) => setEmailAlerts(e.target.checked)}
-                className="w-5 h-5 rounded bg-obsidian-900 border-white/20 text-indigo-500 focus:ring-0"
+                className="w-5 h-5 rounded bg-slate-50 dark:bg-obsidian-900 border-slate-300 dark:border-white/20 text-indigo-500 focus:ring-0"
               />
             </div>
           </div>
@@ -131,17 +131,17 @@ export const SettingsPage: React.FC = () => {
 
         {/* GDPR Privacy & Data Sovereignty */}
         <Card variant="default" className="p-6 space-y-4">
-          <h3 className="text-base font-bold text-white flex items-center gap-2">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Shield className="w-5 h-5 text-emerald-400" />
             GDPR Privacy & Data Sovereignty
           </h3>
           <p className="text-xs text-slate-400">
-            You maintain full ownership over your Digital Twin vector embeddings, chat transcripts, and coding history.
+            You maintain full ownership over your Learning Profile Study Profile, chat transcripts, and coding history.
           </p>
 
           <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
             <div>
-              <span className="text-sm font-bold text-white block">Export Semantic Memory Vectors</span>
+              <span className="text-sm font-bold text-slate-900 dark:text-white block">Export Semantic Memory Vectors</span>
               <span className="text-xs text-slate-400">Download all your learning memory state embeddings in JSON format.</span>
             </div>
             <Button variant="secondary" onClick={handleExport} disabled={exporting} className="text-xs py-2">
@@ -150,7 +150,7 @@ export const SettingsPage: React.FC = () => {
             </Button>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-white/10">
+          <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-200 dark:border-white/10">
             <div>
               <span className="text-sm font-bold text-red-400 block">Delete Academic Account & Twin</span>
               <span className="text-xs text-slate-400">Permanently erase your account, XP, course progress, and memory embeddings.</span>
@@ -171,9 +171,9 @@ export const SettingsPage: React.FC = () => {
 
       {/* Delete Modal */}
       <Modal isOpen={isDeleteModalOpen} onClose={() => setIsDeleteModalOpen(false)} title="Confirm Account Deletion">
-        <div className="space-y-4 text-slate-300">
+        <div className="space-y-4 text-slate-600 dark:text-slate-300">
           <p className="text-sm">
-            Are you absolutely certain you wish to delete your account? This action will permanently erase your Digital Twin graph, revoke access to all enterprise courses, and purge your learning memory embeddings.
+            Are you absolutely certain you wish to delete your account? This action will permanently erase your Learning Profile graph, revoke access to all enterprise courses, and purge your learning memory embeddings.
           </p>
           <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-xs text-red-300">
             <strong>Warning:</strong> Institutional SLA compliance requires a 30-day grace period before irreversible storage purge.

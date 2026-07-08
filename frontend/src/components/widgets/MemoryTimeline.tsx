@@ -25,20 +25,20 @@ export const MemoryTimeline: React.FC<MemoryTimelineProps> = ({
 }) => {
   return (
     <Card variant="default" className={cn("p-6", className)}>
-      <div className="flex items-center justify-between pb-4 border-b border-obsidian-600 mb-6">
+      <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-obsidian-600 mb-6">
         <div className="flex items-center space-x-2.5">
           <Database className="w-5 h-5 text-indigo-400" />
-          <h3 className="font-semibold text-white">{title}</h3>
+          <h3 className="font-semibold text-slate-900 dark:text-white">{title}</h3>
         </div>
         <Badge variant="cyan" size="sm">Semantic Index</Badge>
       </div>
 
-      <div className="relative border-l border-obsidian-600 ml-3 space-y-6">
+      <div className="relative border-l border-slate-200 dark:border-obsidian-600 ml-3 space-y-6">
         {events.map((ev, idx) => (
           <div key={ev.id || idx} className="relative pl-6 group">
             <span className="absolute -left-1.5 top-1 w-3 h-3 rounded-full bg-primary-500 ring-4 ring-obsidian-900 group-hover:scale-125 transition-transform" />
             <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold text-white">{ev.concept}</span>
+              <span className="text-sm font-semibold text-slate-900 dark:text-white">{ev.concept}</span>
               <div className="flex items-center space-x-2">
                 <Badge variant="primary" size="sm">
                   Score: {(ev.retrievalScore * 100).toFixed(0)}%

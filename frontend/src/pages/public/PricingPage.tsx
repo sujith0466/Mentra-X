@@ -14,12 +14,12 @@ export const PricingPage: React.FC = () => {
       name: "Student Starter",
       price: billingCycle === "annual" ? "0" : "0",
       period: "forever",
-      description: "Essential AI tutoring and basic Digital Twin DNA tracking for individual learners.",
+      description: "Essential AI tutoring and basic progress tracking for individual learners.",
       badge: "Free Forever",
       variant: "default" as const,
       features: [
         "Access to 5+ Core AI & Computer Science Courses",
-        "Standard Cognitive Digital Twin Graph",
+        "Personalized Study Recommendations",
         "50 AI Tutor Interactions / day",
         "Community Discussion Forum Access",
         "Standard Progress Tracking",
@@ -31,23 +31,23 @@ export const PricingPage: React.FC = () => {
       name: "Scholar Pro",
       price: billingCycle === "annual" ? "19" : "29",
       period: "per month",
-      description: "Advanced cognitive swarms, unlimited code sandbox, and career mock interviews.",
+      description: "Advanced AI tutoring, unlimited code sandbox, and career mock interviews.",
       badge: "Most Popular",
       variant: "glow" as const,
       features: [
-        "Unlimited Access to All Enterprise Courses",
-        "Real-Time Adaptive Digital Twin Mutation",
-        "Unlimited Intelligent AI Tutoring Assistant",
+        "Unlimited Access to All Premium Courses",
+        "Real-Time Adaptive Learning Profile",
+        "Unlimited AI Tutoring Assistant",
         "Interactive Coding Arena & Debug Assistant",
         "AI Career Roadmap & Mock Interview Scoring",
-        "Personalized Learning Memory Timeline Sync",
-        "Priority AI Safety Verification",
+        "Personalized Learning History & Sync",
+        "Priority Support & Performance",
       ],
       cta: "Start 14-Day Pro Trial",
       link: "/register?plan=pro",
     },
     {
-      name: "Enterprise Campus",
+      name: "Campus Plan",
       price: "Custom",
       period: "per institution",
       description: "Full university deployment with administrative governance, custom syllabuses, and analytics.",
@@ -55,10 +55,10 @@ export const PricingPage: React.FC = () => {
       variant: "gradient" as const,
       features: [
         "Everything in Scholar Pro for All Students",
-        "Dedicated Admin Operations & Telemetry Console",
+        "Dedicated Admin Dashboard & Analytics",
         "Custom Course & Video Ingestion Engine",
-        "Institutional AI Observability & Safety Logs",
-        "GDPR Privacy Export & Compliance Governance",
+        "Institutional AI Safety Controls",
+        "Advanced Privacy & Compliance Controls",
         "Dedicated Enterprise Success Architect",
         "Custom Domain & SSO Integration",
       ],
@@ -73,24 +73,24 @@ export const PricingPage: React.FC = () => {
       <div className="max-w-4xl mx-auto text-center space-y-6">
         <Badge variant="info" className="px-3 py-1 text-xs">
           <Sparkles className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
-          Transparent Enterprise Pricing
+          Simple & Transparent Pricing
         </Badge>
-        <h1 className="text-4xl sm:text-5xl font-extrabold text-white tracking-tight">
-          Invest in Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Cognitive AI Future</span>
+        <h1 className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          Invest in Your <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Future</span>
         </h1>
-        <p className="text-lg text-slate-300 max-w-2xl mx-auto">
-          Choose the plan that fits your academic journey or campus infrastructure. Scale seamlessly with our deterministic multi-agent tutoring swarms.
+        <p className="text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto">
+          Choose the plan that fits your academic journey and start learning smarter today.
         </p>
 
         {/* Billing Toggle */}
         <div className="flex items-center justify-center gap-4 pt-4">
-          <span className={`text-sm font-semibold ${billingCycle === "monthly" ? "text-white" : "text-slate-400"}`}>
+          <span className={`text-sm font-semibold ${billingCycle === "monthly" ? "text-slate-900 dark:text-white" : "text-slate-400"}`}>
             Monthly Billing
           </span>
           <button
             type="button"
             onClick={() => setBillingCycle(billingCycle === "monthly" ? "annual" : "monthly")}
-            className="w-14 h-8 flex items-center bg-obsidian-800 rounded-full p-1 border border-white/10 transition-colors focus:outline-none"
+            className="w-14 h-8 flex items-center bg-white dark:bg-obsidian-800 rounded-full p-1 border border-slate-200 dark:border-white/10 transition-colors focus:outline-none"
           >
             <motion.div
               layout
@@ -99,7 +99,7 @@ export const PricingPage: React.FC = () => {
               transition={{ type: "spring", stiffness: 500, damping: 30 }}
             />
           </button>
-          <span className={`text-sm font-semibold flex items-center gap-1.5 ${billingCycle === "annual" ? "text-white" : "text-slate-400"}`}>
+          <span className={`text-sm font-semibold flex items-center gap-1.5 ${billingCycle === "annual" ? "text-slate-900 dark:text-white" : "text-slate-400"}`}>
             Annual Billing
             <span className="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full border border-emerald-500/30">
               Save 35%
@@ -125,20 +125,20 @@ export const PricingPage: React.FC = () => {
               
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-bold text-white">{plan.name}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">{plan.name}</h3>
                   <Badge variant={plan.variant === "glow" ? "success" : "default"}>{plan.badge}</Badge>
                 </div>
                 <p className="text-sm text-slate-400 min-h-[40px]">{plan.description}</p>
                 
                 <div className="pt-2">
-                  <span className="text-4xl font-extrabold text-white">${plan.price}</span>
+                  <span className="text-4xl font-extrabold text-slate-900 dark:text-white">${plan.price}</span>
                   {plan.price !== "Custom" && <span className="text-slate-400 text-sm ml-1">/ {plan.period}</span>}
                 </div>
               </div>
 
-              <div className="space-y-3 flex-1 pt-4 border-t border-white/10">
-                <p className="text-xs font-semibold uppercase tracking-wider text-slate-300">Included Features:</p>
-                <ul className="space-y-2.5 text-sm text-slate-300">
+              <div className="space-y-3 flex-1 pt-4 border-t border-slate-200 dark:border-white/10">
+                <p className="text-xs font-semibold uppercase tracking-wider text-slate-600 dark:text-slate-300">Included Features:</p>
+                <ul className="space-y-2.5 text-sm text-slate-600 dark:text-slate-300">
                   {plan.features.map((feat) => (
                     <li key={feat} className="flex items-start gap-2.5">
                       <Check className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
@@ -166,17 +166,17 @@ export const PricingPage: React.FC = () => {
         <Card variant="glass" className="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
           <div className="space-y-2">
             <Shield className="w-8 h-8 text-indigo-400 mx-auto" />
-            <h4 className="text-sm font-bold text-white">Safety Protected</h4>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">Safety Protected</h4>
             <p className="text-xs text-slate-400">All data encrypted at rest and audited by AI Safety monitors.</p>
           </div>
           <div className="space-y-2">
             <Zap className="w-8 h-8 text-cyan-400 mx-auto" />
-            <h4 className="text-sm font-bold text-white">Instant Activation</h4>
-            <p className="text-xs text-slate-400">No waitlists. Your Digital Twin graph begins seeding immediately.</p>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">Instant Activation</h4>
+            <p className="text-xs text-slate-400">No waitlists. Your Learning Profile graph begins seeding immediately.</p>
           </div>
           <div className="space-y-2">
             <Award className="w-8 h-8 text-emerald-400 mx-auto" />
-            <h4 className="text-sm font-bold text-white">14-Day Refund Guarantee</h4>
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">14-Day Refund Guarantee</h4>
             <p className="text-xs text-slate-400">Cancel anytime with 1-click in your account settings. Zero hassle.</p>
           </div>
         </Card>

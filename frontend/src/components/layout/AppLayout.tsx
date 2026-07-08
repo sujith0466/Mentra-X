@@ -45,7 +45,7 @@ export const AppLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-obsidian-900 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-obsidian-900 text-slate-800 dark:text-slate-100 flex flex-col font-sans">
       <Navbar />
       <div className="flex flex-1 relative">
         {user && <Sidebar />}
@@ -56,7 +56,7 @@ export const AppLayout: React.FC = () => {
 
       <Drawer isOpen={isChatOpen} onClose={toggleChat} title="Intelligent AI Tutoring Assistant" position="right">
         <div className="flex flex-col h-[calc(100vh-8rem)] justify-between space-y-4">
-          <div className="flex items-center justify-between p-2 rounded-lg bg-obsidian-900 border border-white/5 text-xs text-slate-400">
+          <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-white/5 text-xs text-slate-400">
             <span className="flex items-center gap-1.5 text-indigo-400">
               <Sparkles className="w-3.5 h-3.5" /> AI Engine: Adaptive Intelligence v2.5
             </span>
@@ -71,7 +71,7 @@ export const AppLayout: React.FC = () => {
                 <AIResponseCard key={m.id} content={m.content} safetyStatus="APPROVE" confidenceScore={0.98} />
               ) : (
                 <div key={m.id} className="flex justify-end">
-                  <div className="bg-primary-600 text-white p-3 rounded-xl rounded-tr-none max-w-[85%] text-sm shadow-md shadow-indigo-500/10">
+                  <div className="bg-primary-600 text-slate-900 dark:text-white p-3 rounded-xl rounded-tr-none max-w-[85%] text-sm shadow-md shadow-indigo-500/10">
                     {m.content}
                   </div>
                 </div>
@@ -79,7 +79,7 @@ export const AppLayout: React.FC = () => {
             )}
           </div>
 
-          <div className="flex items-center space-x-2 pt-3 border-t border-obsidian-600">
+          <div className="flex items-center space-x-2 pt-3 border-t border-slate-200 dark:border-obsidian-600">
             <Input
               placeholder="Ask anything about your courses..."
               value={inputVal}

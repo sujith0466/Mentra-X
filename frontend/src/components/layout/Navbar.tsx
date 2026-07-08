@@ -21,7 +21,7 @@ export const Navbar: React.FC = () => {
         </button>
         <Link to="/" className="flex items-center space-x-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-indigo-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
+            <Sparkles className="w-5 h-5 text-slate-900 dark:text-white" />
           </div>
           <div className="flex flex-col">
             <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white leading-none">
@@ -90,7 +90,7 @@ export const Navbar: React.FC = () => {
             </Link>
             <Link
               to="/register"
-              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-600 text-white hover:bg-primary-500 transition-colors shadow-md shadow-indigo-500/20"
+              className="px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-600 text-slate-900 dark:text-white hover:bg-primary-500 transition-colors shadow-md shadow-indigo-500/20"
             >
               Register
             </Link>

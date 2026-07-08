@@ -41,12 +41,12 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
             {priorityBadges[priority].label}
           </Badge>
         </div>
-        <h4 className="font-bold text-white text-base leading-snug">{title}</h4>
+        <h4 className="font-bold text-slate-900 dark:text-white text-base leading-snug">{title}</h4>
         <p className="text-xs text-slate-400 mt-1.5 line-clamp-2 leading-relaxed">{description}</p>
       </div>
 
-      <div className="flex items-center justify-between pt-4 mt-4 border-t border-obsidian-600/50">
-        <button className="text-slate-500 hover:text-slate-300 transition-colors p-1" title="Save for later">
+      <div className="flex items-center justify-between pt-4 mt-4 border-t border-slate-200 dark:border-obsidian-600/50">
+        <button className="text-slate-500 hover:text-slate-600 dark:text-slate-300 transition-colors p-1" title="Save for later">
           <Bookmark className="w-4 h-4" />
         </button>
         <Button size="sm" variant="outline" onClick={onAction} rightIcon={<ArrowRight className="w-3.5 h-3.5" />}>

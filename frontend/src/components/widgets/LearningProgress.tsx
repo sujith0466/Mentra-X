@@ -21,16 +21,16 @@ export const LearningProgress: React.FC<LearningProgressProps> = ({
   const percentage = totalModules > 0 ? Math.round((completedModules / totalModules) * 100) : 0;
 
   return (
-    <div className={cn("p-4 rounded-xl bg-obsidian-800 border border-obsidian-600 space-y-3", className)}>
+    <div className={cn("p-4 rounded-xl bg-white dark:bg-obsidian-800 border border-slate-200 dark:border-obsidian-600 space-y-3", className)}>
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-2">
           <BookOpen className="w-4 h-4 text-primary-500" />
-          <span className="text-sm font-bold text-white truncate max-w-[200px] sm:max-w-xs">{courseTitle}</span>
+          <span className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[200px] sm:max-w-xs">{courseTitle}</span>
         </div>
         <span className="text-xs font-mono text-indigo-400 font-bold">{percentage}%</span>
       </div>
 
-      <div className="w-full h-2 rounded-full bg-obsidian-900 border border-obsidian-600 overflow-hidden">
+      <div className="w-full h-2 rounded-full bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-600 overflow-hidden">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${percentage}%` }}

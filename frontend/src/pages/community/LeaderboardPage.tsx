@@ -1,37 +1,23 @@
-import React, { useState } from "react";
-import { Award, Trophy, Medal, Sparkles, Flame, GitPullRequest, Search, ShieldCheck } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Trophy, Medal, Award, Flame, GitPullRequest, Search } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { Input } from "@/components/ui/Input";
 import { useAuthStore } from "@/store/useAuthStore";
-
-interface StudentRank {
-  rank: number;
-  name: name;
-  campus: string;
-  level: string;
-  xp: number;
-  streakDays: number;
-  prCount: number;
-  badge: string;
-}
-
-type name = string;
+import { useCommunityStore, StudentRank } from "@/store/useCommunityStore";
+import { motion } from "framer-motion";
 
 export const LeaderboardPage: React.FC = () => {
   const { user } = useAuthStore();
+  const { leaderboard, updateLeaderboardWithUser } = useCommunityStore();
   const [filter, setFilter] = useState<"global" | "campus" | "streak">("global");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const leaderboard: StudentRank[] = [
-    { rank: 1, name: "Marcus Vance", campus: "MIT AI Lab", level: "Level 10 Master", xp: 48500, streakDays: 142, prCount: 34, badge: "Grand Architect" },
-    { rank: 2, name: "Elena Rostova", campus: "Stanford CS Campus", level: "Level 9 Architect", xp: 44200, streakDays: 98, prCount: 28, badge: "Vector Pioneer" },
-    { rank: 3, name: "David Kim", campus: "UC Berkeley Tech", level: "Level 9 Architect", xp: 41150, streakDays: 115, prCount: 22, badge: "AI Specialist" },
-    { rank: 4, name: `${user?.name || "Sujith Kumar"} (You)`, campus: "Campus Enterprise", level: "Level 8 Scholar", xp: 38900, streakDays: 64, prCount: 18, badge: "DNA Seeder" },
-    { rank: 5, name: "Aria Montgomery", campus: "Oxford AI Institute", level: "Level 8 Scholar", xp: 35400, streakDays: 72, prCount: 15, badge: "Safety Audited" },
-    { rank: 6, name: "Kenji Sato", campus: "Tokyo Tech AI", level: "Level 7 Scholar", xp: 31200, streakDays: 45, prCount: 12, badge: "Full-Stack Dev" },
-    { rank: 7, name: "Sarah Jenkins", campus: "Georgia Tech", level: "Level 6 Student", xp: 27800, streakDays: 31, prCount: 9, badge: "Code Arena Pro" },
-  ];
+  useEffect(() => {
+    if (user && user.role === "student") {
+      updateLeaderboardWithUser(`${user.name} (You)`, "Enterprise University", 120, 1);
+    }
+  }, [user, updateLeaderboardWithUser]);
 
   const filtered = leaderboard.filter((item) =>
     item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -39,68 +25,132 @@ export const LeaderboardPage: React.FC = () => {
     item.badge.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Podium medal config
+  const podiumConfig = [
+    {
+      medal: Trophy,
+      iconColor: "text-amber-400",
+      ringColor: "ring-amber-400/40",
+      bgGradient: "from-amber-500/10 via-yellow-400/5 to-transparent",
+      label: "🥇 Gold",
+    },
+    {
+      medal: Medal,
+      iconColor: "text-slate-400 dark:text-slate-300",
+      ringColor: "ring-slate-400/30",
+      bgGradient: "from-slate-400/10 via-slate-300/5 to-transparent",
+      label: "🥈 Silver",
+    },
+    {
+      medal: Award,
+      iconColor: "text-amber-600",
+      ringColor: "ring-amber-700/30",
+      bgGradient: "from-amber-700/10 via-orange-600/5 to-transparent",
+      label: "🥉 Bronze",
+    },
+  ] as const;
+
+  // Rank badge for table rows
+  const rankBadge = (rank: number) => {
+    if (rank === 1) return <span className="text-base">🥇</span>;
+    if (rank === 2) return <span className="text-base">🥈</span>;
+    if (rank === 3) return <span className="text-base">🥉</span>;
+    return (
+      <span className="text-xs font-bold text-slate-500 dark:text-slate-400 w-6 text-center">
+        #{rank}
+      </span>
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/10 pb-6">
-        <div>
-          <Badge variant="info" className="mb-2">
-            <Trophy className="w-3.5 h-3.5 mr-1.5 inline text-indigo-400" />
-            Global Student Telemetry Rankings
-          </Badge>
-          <h1 className="text-3xl font-extrabold text-white">Academic XP Leaderboard</h1>
-          <p className="text-sm text-slate-400">Ranked by vector memory mastery velocity, coding arena submissions, and study streaks.</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="success" className="px-3 py-1.5">
-            <ShieldCheck className="w-4 h-4 mr-1.5 inline" />
-            Safety Verified Telemetry
-          </Badge>
-        </div>
-      </div>
+      <motion.div
+        className="border-b border-slate-200 dark:border-white/10 pb-6"
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <Badge variant="warning" className="mb-3">
+          <Trophy className="w-3.5 h-3.5 mr-1.5 inline text-amber-500" />
+          Live Rankings
+        </Badge>
+        <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">
+          Academic XP Leaderboard
+        </h1>
+        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          Ranked by coding challenges, study streaks, and course completions.
+        </p>
+      </motion.div>
 
       {/* Top 3 Podium Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
-        {leaderboard.slice(0, 3).map((item, idx) => {
-          const variants = ["glow", "gradient", "default"] as const;
-          const medals = [Trophy, Medal, Award];
-          const MedalIcon = medals[idx];
-          const colors = ["text-amber-400", "text-slate-300", "text-amber-600"];
-          return (
-            <Card key={item.rank} variant={variants[idx]} className="p-6 text-center space-y-4 relative overflow-hidden">
-              <div className="flex justify-between items-center">
-                <Badge variant="default" className="text-xs">Rank #{item.rank}</Badge>
-                <MedalIcon className={`w-6 h-6 ${colors[idx]}`} />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-white">{item.name}</h3>
-                <p className="text-xs text-indigo-300 font-semibold">{item.campus}</p>
-                <p className="text-[10px] text-slate-400">{item.level}</p>
-              </div>
-              <div className="pt-2 border-t border-white/10 flex justify-around text-xs">
-                <div>
-                  <span className="block font-extrabold text-white">{item.xp.toLocaleString()}</span>
-                  <span className="text-[10px] text-slate-400">Total XP</span>
-                </div>
-                <div>
-                  <span className="block font-extrabold text-cyan-400 flex items-center justify-center gap-1">
-                    <Flame className="w-3 h-3 text-red-400" />
-                    {item.streakDays}d
-                  </span>
-                  <span className="text-[10px] text-slate-400">Streak</span>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
+      {leaderboard.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+          {leaderboard.slice(0, 3).map((item, idx) => {
+            const cfg = podiumConfig[idx];
+            const MedalIcon = cfg.medal;
+            return (
+              <motion.div
+                key={item.rank}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: idx * 0.08 }}
+              >
+                <Card
+                  variant={idx === 0 ? "glow" : "default"}
+                  className={`p-6 text-center space-y-4 relative overflow-hidden ring-1 ${cfg.ringColor} hover:-translate-y-0.5 hover:shadow-lg transition-all duration-200`}
+                >
+                  {/* Background gradient accent */}
+                  <div className={`absolute inset-0 bg-gradient-to-b ${cfg.bgGradient} pointer-events-none`} />
+
+                  <div className="relative flex justify-between items-center">
+                    <Badge
+                      variant={idx === 0 ? "warning" : "default"}
+                      className="text-[10px] font-bold px-2 py-1"
+                    >
+                      {cfg.label}
+                    </Badge>
+                    <MedalIcon className={`w-6 h-6 ${cfg.iconColor}`} />
+                  </div>
+
+                  <div className="relative space-y-0.5">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug">
+                      {item.name}
+                    </h3>
+                    <p className="text-xs text-indigo-500 dark:text-indigo-300 font-semibold">
+                      {item.campus}
+                    </p>
+                    <p className="text-[10px] text-slate-400">{item.level}</p>
+                  </div>
+
+                  <div className="relative pt-3 border-t border-slate-200 dark:border-white/10 flex justify-around text-xs">
+                    <div>
+                      <span className="block font-extrabold text-slate-900 dark:text-white text-sm">
+                        {item.xp.toLocaleString()}
+                      </span>
+                      <span className="text-[10px] text-slate-400">Total XP</span>
+                    </div>
+                    <div>
+                      <span className="flex items-center justify-center gap-1 font-extrabold text-cyan-500 dark:text-cyan-400 text-sm">
+                        <Flame className="w-3.5 h-3.5 text-orange-400" />
+                        {item.streakDays}d
+                      </span>
+                      <span className="text-[10px] text-slate-400">Streak</span>
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Filters & Search */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-3.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <Input
-            placeholder="Search scholar or campus..."
+            placeholder="Search student or campus…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 w-full"
@@ -116,10 +166,10 @@ export const LeaderboardPage: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setFilter(tab.id as any)}
-              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs font-bold transition-all duration-150 ${
                 filter === tab.id
-                  ? "bg-gradient-to-r from-indigo-600 to-cyan-600 text-white shadow-md shadow-indigo-500/20"
-                  : "bg-obsidian-800/60 text-slate-400 hover:text-white border border-white/5"
+                  ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-md shadow-indigo-500/20"
+                  : "bg-white dark:bg-obsidian-800 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"
               }`}
             >
               {tab.label}
@@ -133,55 +183,91 @@ export const LeaderboardPage: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-400 bg-obsidian-900/50">
-                <th className="py-4 px-6">Rank</th>
-                <th className="py-4 px-6">Student & Campus</th>
-                <th className="py-4 px-6">Mastery Level</th>
-                <th className="py-4 px-6">Study Streak</th>
-                <th className="py-4 px-6">Code PRs</th>
-                <th className="py-4 px-6 text-right">Total XP</th>
+              <tr className="border-b border-slate-200 dark:border-white/10 text-xs font-semibold uppercase tracking-wider text-slate-400 bg-slate-50 dark:bg-obsidian-900/60">
+                <th className="py-3.5 px-6">Rank</th>
+                <th className="py-3.5 px-6">Student &amp; Campus</th>
+                <th className="py-3.5 px-6">Level</th>
+                <th className="py-3.5 px-6">Streak</th>
+                <th className="py-3.5 px-6">Code PRs</th>
+                <th className="py-3.5 px-6 text-right">Total XP</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-sm">
-              {filtered.map((item) => {
-                const isUser = item.name.includes("(You)");
-                return (
-                  <tr
-                    key={item.rank}
-                    className={`transition-colors ${isUser ? "bg-indigo-600/10 hover:bg-indigo-600/20" : "hover:bg-white/5"}`}
-                  >
-                    <td className="py-4 px-6 font-bold text-white flex items-center gap-2">
-                      <span>#{item.rank}</span>
-                      {item.rank <= 3 && <Trophy className="w-3.5 h-3.5 text-amber-400" />}
-                    </td>
-                    <td className="py-4 px-6">
-                      <div className="font-bold text-white flex items-center gap-2">
-                        <span>{item.name}</span>
-                        {isUser && <Badge variant="info" className="text-[10px]">You</Badge>}
-                      </div>
-                      <span className="text-xs text-slate-400">{item.campus} &bull; {item.badge}</span>
-                    </td>
-                    <td className="py-4 px-6 text-xs font-semibold text-indigo-300">{item.level}</td>
-                    <td className="py-4 px-6 font-bold text-cyan-400 flex items-center gap-1.5 pt-5">
-                      <Flame className="w-3.5 h-3.5 text-red-400" />
-                      {item.streakDays} days
-                    </td>
-                    <td className="py-4 px-6 text-xs text-slate-300 font-mono">
-                      <span className="inline-flex items-center gap-1">
-                        <GitPullRequest className="w-3.5 h-3.5 text-emerald-400" />
-                        {item.prCount} PRs
-                      </span>
-                    </td>
-                    <td className="py-4 px-6 text-right font-extrabold text-white text-base">
-                      {item.xp.toLocaleString()} XP
-                    </td>
-                  </tr>
-                );
-              })}
+            <tbody className="divide-y divide-slate-100 dark:divide-white/5 text-sm">
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-14 px-6 text-center">
+                    <div className="flex flex-col items-center gap-3">
+                      <Trophy className="w-10 h-10 text-slate-300 dark:text-slate-600" />
+                      <p className="text-slate-500 dark:text-slate-400 font-medium">
+                        No results found. Complete lessons to appear on the leaderboard!
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((item, index) => {
+                  const isUser = item.name.includes("(You)");
+                  return (
+                    <motion.tr
+                      key={item.rank}
+                      initial={{ opacity: 0, x: -8 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.3, delay: index * 0.04 }}
+                      className={`group transition-colors duration-150 ${
+                        isUser
+                          ? "bg-indigo-50 dark:bg-indigo-600/10 hover:bg-indigo-100 dark:hover:bg-indigo-600/20"
+                          : "hover:bg-slate-50 dark:hover:bg-white/5"
+                      }`}
+                    >
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          {rankBadge(item.rank)}
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <span>{item.name}</span>
+                          {isUser && (
+                            <Badge variant="info" className="text-[10px] py-0">
+                              You
+                            </Badge>
+                          )}
+                        </div>
+                        <span className="text-xs text-slate-400">
+                          {item.campus} &bull; {item.badge}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-xs font-semibold text-indigo-500 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-500/10 px-2 py-0.5 rounded-full">
+                          {item.level}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="inline-flex items-center gap-1.5 font-bold text-cyan-600 dark:text-cyan-400">
+                          <Flame className="w-3.5 h-3.5 text-orange-400" />
+                          {item.streakDays} days
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-xs text-slate-600 dark:text-slate-300 font-mono">
+                        <span className="inline-flex items-center gap-1">
+                          <GitPullRequest className="w-3.5 h-3.5 text-emerald-400" />
+                          {item.prCount} PRs
+                        </span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <span className="font-extrabold text-slate-900 dark:text-white text-base tabular-nums">
+                          {item.xp.toLocaleString()}
+                        </span>
+                        <span className="text-xs text-slate-400 ml-1">XP</span>
+                      </td>
+                    </motion.tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </Card>
     </div>
   );
-};
+};

@@ -33,10 +33,18 @@ export const RegisterPage: React.FC = () => {
   };
 
   return (
-    <Card variant="glass" className="w-full space-y-6 p-8 shadow-2xl">
-      <div className="text-center space-y-1">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Create Enterprise Account</h2>
-        <p className="text-xs text-slate-600 dark:text-slate-400">Initialize your personal AI Digital Twin and learning graph.</p>
+    <Card
+      variant="glass"
+      className="w-full p-8 space-y-6 rounded-2xl shadow-2xl border border-slate-200/60 dark:border-white/8 bg-white/90 dark:bg-obsidian-800/90 backdrop-blur-xl"
+    >
+      {/* Heading */}
+      <div className="text-center space-y-1.5">
+        <h2 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Create your account
+        </h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Start learning smarter with your personalised AI study plan.
+        </p>
       </div>
 
       <form onSubmit={handleRegister} className="space-y-4">
@@ -44,7 +52,7 @@ export const RegisterPage: React.FC = () => {
           label="Full Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Sujith Kumar"
+          placeholder="Enter your full name"
           leftIcon={<User className="w-4 h-4" />}
           required
         />
@@ -53,7 +61,7 @@ export const RegisterPage: React.FC = () => {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="sujith@mentrax.ai"
+          placeholder="you@university.edu"
           leftIcon={<Mail className="w-4 h-4" />}
           required
         />
@@ -67,43 +75,64 @@ export const RegisterPage: React.FC = () => {
           required
         />
 
-        <div className="space-y-1.5">
-          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Account Role</label>
+        {/* Role selector */}
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            I am joining as a…
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
               onClick={() => setRole("student")}
-              className={`p-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
                 role === "student"
-                  ? "bg-primary-600/20 border-primary-500 text-slate-900 dark:text-white shadow-sm"
-                  : "bg-slate-100 dark:bg-obsidian-900 border-slate-300 dark:border-obsidian-600 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-indigo-600/10 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                  : "bg-slate-50 dark:bg-obsidian-900 border-slate-200 dark:border-obsidian-600 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-obsidian-500"
               }`}
             >
-              <BrainCircuit className="w-4 h-4 text-indigo-500 dark:text-indigo-400" /> Student / Learner
+              <BrainCircuit className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+              Student
             </button>
             <button
               type="button"
               onClick={() => setRole("instructor")}
-              className={`p-3 rounded-lg border text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+              className={`p-3 rounded-xl border text-xs font-semibold flex items-center justify-center gap-2 transition-all duration-150 ${
                 role === "instructor"
-                  ? "bg-primary-600/20 border-primary-500 text-slate-900 dark:text-white shadow-sm"
-                  : "bg-slate-100 dark:bg-obsidian-900 border-slate-300 dark:border-obsidian-600 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                  ? "bg-indigo-600/10 border-indigo-500 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                  : "bg-slate-50 dark:bg-obsidian-900 border-slate-200 dark:border-obsidian-600 text-slate-500 dark:text-slate-400 hover:border-slate-300 dark:hover:border-obsidian-500"
               }`}
             >
-              <UserPlus className="w-4 h-4 text-ai-violet" /> Instructor / Faculty
+              <UserPlus className="w-4 h-4 text-violet-500 dark:text-violet-400" />
+              Instructor
             </button>
           </div>
         </div>
 
-        <Button type="submit" size="lg" className="w-full mt-4 font-bold" isLoading={isLoading} leftIcon={<UserPlus className="w-4 h-4" />}>
-          Register & Initialize Twin
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full mt-2 font-bold tracking-wide"
+          isLoading={isLoading}
+          leftIcon={<UserPlus className="w-4 h-4" />}
+        >
+          Create My Account
         </Button>
       </form>
 
-      <p className="text-xs text-center text-slate-600 dark:text-slate-400">
-        Already registered?{" "}
-        <Link to="/login" className="text-primary-600 dark:text-primary-500 font-semibold hover:underline">
-          Sign In here
+      {/* Divider */}
+      <div className="relative flex items-center gap-3">
+        <div className="flex-1 border-t border-slate-200 dark:border-white/10" />
+        <span className="text-[11px] text-slate-400 font-medium uppercase tracking-wider">or</span>
+        <div className="flex-1 border-t border-slate-200 dark:border-white/10" />
+      </div>
+
+      <p className="text-sm text-center text-slate-500 dark:text-slate-400">
+        Already have an account?{" "}
+        <Link
+          to="/login"
+          className="text-indigo-600 dark:text-indigo-400 font-semibold hover:underline underline-offset-2"
+        >
+          Sign in here
         </Link>
       </p>
     </Card>

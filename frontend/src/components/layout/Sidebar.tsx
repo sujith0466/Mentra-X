@@ -34,6 +34,7 @@ export const Sidebar: React.FC = () => {
     { title: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
     { title: "My Courses", href: "/student/my-courses", icon: BookOpen },
     { title: "Digital Twin", href: "/student/twin", icon: BrainCircuit, badge: "AI" },
+    { title: "Weakness Defense", href: "/student/weakness", icon: ShieldAlert },
     { title: "AI Study Tutor", href: "/student/ai/tutor", icon: MessageSquare, badge: "24/7" },
     { title: "Skill Assessment", href: "/student/assessment", icon: Activity },
     { title: "Study Notes", href: "/student/notes", icon: FileText },
@@ -56,7 +57,7 @@ export const Sidebar: React.FC = () => {
     { title: "AI Operations", href: "/admin/dashboard", icon: LayoutDashboard },
     { title: "Platform Analytics", href: "/admin/analytics", icon: TrendingUp },
     { title: "AI Monitoring", href: "/admin/ai-monitoring", icon: Activity, badge: "Live" },
-    { title: "Security & Safety", href: "/admin/enkrypt", icon: Shield, badge: "Layer 6" },
+    { title: "Security & Safety", href: "/admin/enkrypt", icon: Shield, badge: "System" },
     { title: "Manage Students", href: "/admin/students", icon: Users },
     { title: "Manage Courses", href: "/admin/courses", icon: BookOpen },
     { title: "Audit Logs", href: "/admin/audit-logs", icon: ShieldAlert },
@@ -100,7 +101,7 @@ export const Sidebar: React.FC = () => {
                   "flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all relative group",
                   isActive
                     ? "bg-primary-600/10 text-primary-600 dark:text-primary-500 border border-primary-500/20 shadow-sm shadow-indigo-500/10"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
                 )}
               >
                 {isActive && (
@@ -110,7 +111,7 @@ export const Sidebar: React.FC = () => {
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                   />
                 )}
-                <Icon className={cn("w-5 h-5 shrink-0", isActive ? "text-primary-600 dark:text-primary-500" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200")} />
+                <Icon className={cn("w-5 h-5 shrink-0", isActive ? "text-primary-600 dark:text-primary-500" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-700 dark:text-slate-200")} />
                 {!isSidebarCollapsed && <span className="truncate">{link.title}</span>}
                 {!isSidebarCollapsed && link.badge && (
                   <span className="ml-auto px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30">
@@ -141,10 +142,10 @@ export const Sidebar: React.FC = () => {
                     "flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs transition-all relative group",
                     isActive
                       ? "bg-cyan-600/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5"
                   )}
                 >
-                  <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-cyan-600 dark:text-cyan-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-200")} />
+                  <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-cyan-600 dark:text-cyan-400" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-slate-700 dark:text-slate-200")} />
                   {!isSidebarCollapsed && <span className="truncate">{link.title}</span>}
                   {!isSidebarCollapsed && link.badge && (
                     <span className="ml-auto px-1.5 py-0.5 rounded text-[9px] font-bold bg-cyan-500/20 text-cyan-700 dark:text-cyan-300 border border-cyan-500/30">

@@ -20,20 +20,20 @@ export const CareerResumePage: React.FC = () => {
 
   const skillGaps = [
     { label: "Modern Web Architecture", value: 95, color: "from-emerald-500 to-teal-400" },
-    { label: "Intelligent Swarm Orchestration", value: 85, color: "from-primary-600 to-indigo-400" },
-    { label: "Vector Memory Engineering", value: 80, color: "from-ai-violet to-purple-500" },
+    { label: "Intelligent tutor Orchestration", value: 85, color: "from-primary-600 to-indigo-400" },
+    { label: "Database Engineering", value: 80, color: "from-ai-violet to-purple-500" },
     { label: "Cloud Enterprise Scaling", value: 65, color: "from-amber-500 to-orange-400" },
   ];
 
   return (
     <div className="space-y-8 py-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-obsidian-600 pb-6">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200 dark:border-obsidian-600 pb-6">
         <div>
           <div className="flex items-center space-x-2">
             <Badge variant="cyan" size="sm">AI Career Navigator</Badge>
           </div>
-          <h1 className="text-3xl font-extrabold text-white mt-1">Resume Analyzer & Career Roadmap</h1>
-          <p className="text-sm text-slate-400 mt-1">Match your Digital Twin competencies against live enterprise job market vectors.</p>
+          <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white mt-1">Resume Analyzer & Career Roadmap</h1>
+          <p className="text-sm text-slate-400 mt-1">Match your Learning Profile competencies against live enterprise job market vectors.</p>
         </div>
         <Button size="md" onClick={handleUpload} isLoading={analyzing} leftIcon={<Upload className="w-4 h-4" />}>
           Upload New Resume (.pdf)
@@ -57,18 +57,18 @@ export const CareerResumePage: React.FC = () => {
             />
 
             <Card variant="default" className="p-6 space-y-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-emerald-400" /> Personalized Career Roadmap
               </h3>
               <div className="space-y-4">
                 {[
-                  { step: "Step 1: Immediate Action", desc: "Complete Module 4 of Vector Memory Systems to achieve 90%+ vector memory competency.", status: "In Progress" },
+                  { step: "Step 1: Immediate Action", desc: "Complete Module 4 of Learning Memory Systems to achieve 90%+ Learning Memory competency.", status: "In Progress" },
                   { step: "Step 2: Portfolio Polish", desc: "Deploy your AI Safety Verification demo to cloud and link it in your portfolio.", status: "Recommended" },
                   { step: "Step 3: Mock Technical Interview", desc: "Run a 30-minute system design simulation with our AI Interview Assistant.", status: "Unlocked" },
                 ].map((item, idx) => (
-                  <div key={idx} className="p-4 rounded-xl bg-obsidian-900 border border-obsidian-600 flex items-start justify-between">
+                  <div key={idx} className="p-4 rounded-xl bg-slate-50 dark:bg-obsidian-900 border border-slate-200 dark:border-obsidian-600 flex items-start justify-between">
                     <div>
-                      <h4 className="font-semibold text-sm text-white">{item.step}</h4>
+                      <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{item.step}</h4>
                       <p className="text-xs text-slate-400 mt-1">{item.desc}</p>
                     </div>
                     <Badge variant={item.status === "In Progress" ? "primary" : "purple"}>{item.status}</Badge>
@@ -80,13 +80,13 @@ export const CareerResumePage: React.FC = () => {
 
           <div className="space-y-6">
             <Card variant="glow" className="p-6 space-y-4">
-              <h3 className="font-bold text-sm text-white uppercase tracking-wider">Target Role Compatibility</h3>
+              <h3 className="font-bold text-sm text-slate-900 dark:text-white uppercase tracking-wider">Target Role Compatibility</h3>
               <div className="text-4xl font-extrabold text-emerald-400">88.5%</div>
               <p className="text-xs text-slate-400">Matched against Senior AI Frontend Engineer roles at Tier-1 tech enterprises.</p>
-              <div className="pt-4 border-t border-obsidian-600 space-y-2 text-xs text-slate-300">
+              <div className="pt-4 border-t border-slate-200 dark:border-obsidian-600 space-y-2 text-xs text-slate-600 dark:text-slate-300">
                 <div className="flex items-center justify-between">
                   <span>Avg Salary Band</span>
-                  <span className="font-bold text-white">$180k - $240k</span>
+                  <span className="font-bold text-slate-900 dark:text-white">$180k - $240k</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Market Demand</span>
