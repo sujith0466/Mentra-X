@@ -20,6 +20,8 @@ import {
   FileText,
   Activity,
   Shield,
+  Sparkles,
+  Compass,
 } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useUIStore } from "@/store/useUIStore";
@@ -34,6 +36,8 @@ export const Sidebar: React.FC = () => {
     { title: "Dashboard", href: "/student/dashboard", icon: LayoutDashboard },
     { title: "My Courses", href: "/student/my-courses", icon: BookOpen },
     { title: "Digital Twin", href: "/student/twin", icon: BrainCircuit, badge: "AI" },
+    { title: "AI Companion", href: "/student/autonomous-companion", icon: Sparkles, badge: "NEW" },
+    { title: "Opportunity Center", href: "/student/opportunities", icon: Compass, badge: "MATCH" },
     { title: "Weakness Defense", href: "/student/weakness", icon: ShieldAlert },
     { title: "AI Study Tutor", href: "/student/ai/tutor", icon: MessageSquare, badge: "24/7" },
     { title: "Skill Assessment", href: "/student/assessment", icon: Activity },

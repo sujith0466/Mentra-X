@@ -38,6 +38,8 @@ import { RecommendationsPage } from "@/pages/student/RecommendationsPage";
 import { ProjectsPage } from "@/pages/student/ProjectsPage";
 import { AITutorPage } from "@/pages/student/AITutorPage";
 import { WeaknessIntelligencePage } from "@/pages/student/WeaknessIntelligencePage";
+import { AutonomousLearningPage } from "@/pages/student/AutonomousLearningPage";
+import { OpportunityCenterPage } from "@/pages/student/OpportunityCenterPage";
 
 // Community Pages
 import { CommunityDiscussionsPage } from "@/pages/community/CommunityDiscussionsPage";
@@ -104,6 +106,8 @@ export default function App() {
               <Route path="/student/projects" element={<ProjectsPage />} />
               <Route path="/student/ai/tutor" element={<AITutorPage />} />
               <Route path="/student/weakness" element={<WeaknessIntelligencePage />} />
+              <Route path="/student/autonomous-companion" element={<AutonomousLearningPage />} />
+              <Route path="/student/opportunities" element={<OpportunityCenterPage />} />
               <Route path="/student/ai/weakness" element={<Navigate to="/student/weakness" replace />} />
 
               {/* Legacy Student Route Redirects for 100% Backward Compatibility */}

@@ -12,6 +12,8 @@ import { ProfilePage } from '@/pages/auth/ProfilePage';
 import { CommunityDiscussionsPage } from '@/pages/community/CommunityDiscussionsPage';
 import { CodingArenaPage } from '@/pages/student/CodingArenaPage';
 import { ManageCoursesPage } from '@/pages/admin/ManageCoursesPage';
+import { AutonomousLearningPage } from '@/pages/student/AutonomousLearningPage';
+import { OpportunityCenterPage } from '@/pages/student/OpportunityCenterPage';
 
 describe('Enterprise Frontend Page Suites & Routing', () => {
   beforeAll(() => {
@@ -125,5 +127,28 @@ describe('Enterprise Frontend Page Suites & Routing', () => {
     expect(screen.getByText(/Syllabus & Course Catalog Management/i)).toBeDefined();
     expect(screen.getAllByText(/AI Tutor/i).length).toBeGreaterThan(0);
   });
+
+  it('renders AutonomousLearningPage with proactive AI mentor feed and daily missions', () => {
+    render(
+      <MemoryRouter>
+        <AutonomousLearningPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Autonomous Learning Companion/i)).toBeDefined();
+    expect(screen.getByText(/Proactive AI Mentor Feed/i)).toBeDefined();
+  });
+
+  it('renders OpportunityCenterPage with multi-provider feed, skill gap bridge, and 9-stage lifecycle timeline', () => {
+    render(
+      <MemoryRouter>
+        <OpportunityCenterPage />
+      </MemoryRouter>
+    );
+    expect(screen.getByText(/Opportunity Center/i)).toBeDefined();
+    expect(screen.getByText(/Recommended Opportunity Feed/i)).toBeDefined();
+    expect(screen.getByText(/Skill Gap & Readiness Bridge/i)).toBeDefined();
+    expect(screen.getByText(/Opportunity Lifecycle Timeline/i)).toBeDefined();
+  });
 });
+
 
